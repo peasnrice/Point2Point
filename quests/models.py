@@ -13,6 +13,8 @@ class Competition(models.Model):
     end_date = models.DateTimeField()
     start_destination = models.CharField(max_length=140)
     description = models.CharField(max_length=512)
+    greeting = models.CharField(max_length=140)
+    congratulation = models.CharField(max_length=140)
     estimated_duration = models.IntegerField()
     team_size_limit = models.IntegerField()
     creators_name = models.CharField(max_length=32)
@@ -28,7 +30,7 @@ class Competition(models.Model):
         return QuestionsSolutionPair.objects.select_related("competition").get(question_number=question_number_).question_text
 
     def getQuestLength(self):
-        return QuestionsSolutionPair.objects.select_related("competition").all().count()
+        return QuestionsSolutionPair.objects.select_related("competition").all().count()-1
 
     def getQuestion(self, question_number_):
         return QuestionsSolutionPair.objects.select_related("competition").get(question_number=question_number_).question_text

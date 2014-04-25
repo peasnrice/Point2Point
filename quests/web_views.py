@@ -31,28 +31,37 @@ def detail(request, competition_id):
     form_t = TeamForm(request.POST or None)
 
     if form_t.is_valid():
-        save_team = form_t.save(commit=False)
-        save_team.save()
+        #check to see if user is already registered in an active game
+        phone = form_t.phone_number  
+        teams = Team.objects.filter(phone_number=phone)
+        # if phone number is not recognised, return <super awesome marketing slogan>
+        if teams:
 
-        competition = Competition.objects.get(id=competition_id)
-        competition.createGameInstance(save_team.id)
-        competition.save()
+        else:
+            
 
-        team = Team.objects.get(id=save_team.id)
-        game = team.gameinstance
-        question = game.current_question
+            save_team = form_t.save(commit=False)
+            save_team.save()
 
-        sms_text = competition.getQSPairTextByQNum(question)
+            competition = Competition.objects.get(id=competition_id)
+            competition.createGameInstance(save_team.id)
+            competition.save()
 
-        sms_text = sms_text.replace("<TEAM>", save_team.name)
-        sms_text = sms_text.replace("<CAPTAIN>", save_team.captain_name)        
+            team = Team.objects.get(id=save_team.id)
+            game = team.gameinstance
+            question = game.current_question
 
-        client = TwilioRestClient(TWILIO_ACCOUNT_SID,
-                                  TWILIO_AUTH_TOKEN)
+            sms_text = competition.getQSPairTextByQNum(question)
 
-        message = client.messages.create(body=sms_text,
-            to=save_team.phone_number,
-            from_="+14385001559")
+            sms_text = sms_text.replace("<TEAM>", save_team.name)
+            sms_text = sms_text.replace("<CAPTAIN>", save_team.captain_name)        
+
+            client = TwilioRestClient(TWILIO_ACCOUNT_SID,
+                                      TWILIO_AUTH_TOKEN)
+
+            message = client.messages.create(body=sms_text,
+                to=save_team.phone_number,
+                from_="+14385001559")
 
     return render_to_response('quests/detail.html', locals(), context_instance=RequestContext(request)) 
  
@@ -116,18 +125,45 @@ def verify_sms(request):
         r.message("Sorry, you aren't registered in an active Quest, register at www.Point2Point.com")
     # otherwise let's see if they are already playing
     else:
-    	has_active_game = False
-    	active_team = Team()
-    	for team in teams:
-    		if team.gameinstance.ended == False:
-    			has_active_game = True
-    			active_team = team
-    			break
-    	if has_active_game == True:
-    		game = active_team.gameinstance
-    		solutions = game.competition.getSolutions(game.current_question)
-       		from_text = request.POST.get('Body', None).lower()
-    		r.message(from_text)
+        has_active_game = False
+        active_team = Team()
+        for team in teams:
+            if team.gameinstance.ended == False:
+                has_active_game = True
+                active_team = team
+                break
+        # active game detected! start verifying the message
+        if has_active_game == True:
+            game = active_team.gameinstance
+            from_text = request.POST.get('Body', None).lower()
+            solutions = game.competition.getSolutions(game.current_question)
+            sln_found = False
+            for solution in solutions:
+                if from_text == solution.solution_text.lower():
+                    if game.current_question == 0:
+                        game.started = True
+                        game.current_question += 1
+                        game.save()
+                        #start timer
+                    elif game.current_question < game.competition.getQuestLength():
+                        game.current_question += 1
+                        game.save()
+                        #check if pause is needed
+                    else:
+                        game.ended = True
+                        game.current_question += 1
+                        game.save()
+                        #stop timer
+                    if game.ended == True:
+                        r.message(game.competition.congratulation)
+                    else:
+                        r.message(game.competition.getQuestion(game.current_question))
+                    sln_found = True
+                    break
+            if sln_found == False:
+                r.message("try again")
+
+        # they exist but uhoh they don't have a game. let them know
         else:
             r.message("Sorry, you don't appear to be participating in an active game")
     return r
