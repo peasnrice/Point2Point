@@ -12,6 +12,8 @@ import pytz
 
 from django.http import HttpResponse
 from twilio.rest import TwilioRestClient
+from twilio.twiml import Response
+from django_twilio.decorators import twilio_view
 
 # Returns Home Page from url /quests/
 def index(request):
@@ -51,7 +53,6 @@ def detail(request, competition_id):
         message = client.messages.create(body=sms_text,
             to=save_team.phone_number,
             from_="+14385001559")
-
 
     return render_to_response('quests/detail.html', locals(), context_instance=RequestContext(request)) 
  
@@ -102,72 +103,34 @@ def registered(request, team_id):
 
     return render_to_response('quests/detail.html', locals(), context_instance=RequestContext(request)) 
 
+# When the user replies to a question the response is checked here
 @twilio_view
 def verify_sms(request):
-    from_text = request.REQUEST.get('Body', None)    
-    r = Response()
-    r.message(from_text.lower())
-    return r
+    from_number = request.POST.get('From', None)  
 
-# When the user replies to a question the response is checked here
-@csrf_exempt
-def verify_sms(request):
-    """Respond to incoming calls with a simple text message."""
-      
-    client = TwilioRestClient(TWILIO_ACCOUNT_SID,
-                              TWILIO_AUTH_TOKEN)
-
-    # retrieve phone number
-    from_number = request.REQUEST.get('From', None)
-    # find all teams belonging to number
     teams = Team.objects.filter(phone_number=from_number)
-    # if no teams exist, tell user to register otherwise 
+
+    r = Response()
+    # if phone number is not recognised, return <super awesome marketing slogan>
     if not teams:
-        reply_text = "Sorry, you aren't registered in an active Quest, register at www.PointToPoint.com"
+        r.message("Sorry, you aren't registered in an active Quest, register at www.Point2Point.com")
+    # otherwise let's see if they are already playing
     else:
-        has_active_game = False
-        active_team = Team()
-        for team in teams:
-            if team.gameinstance.ended == False:
-                has_active_game = True
-                active_team = team
-                break
-        if has_active_game == True:
-            game = active_team.gameinstance
-            solutions = game.competition.getSolutions(game.current_question)
-            from_text = request.REQUEST.get('Body', None).lower()
-            
-            break_flag = False
-            for solution in solutions:
-                if from_text == solution.solution_text.lower():
-                    if game.current_question == 0:
-                        game.started = True
-                        montreal = timezone('America/Montreal')
-                        game.start_time = datetime.utcnow().replace(tzinfo=montreal)
-                        game.save()
-                    game.current_question += 1
-                    game.save()
-                    if game.current_question >= game.competition.getQuestLength():
-                        game.started = True
-                        game.ended = True
-                        montreal = timezone('America/Montreal')
-                        game.end_time = datetime.utcnow().replace(tzinfo=montreal)
-                        dt = game.getTimeDelta()
-                        game.time_taken = dt
-                        game.save()
-                        reply_text = "Congratulations you have finished the quest in " + str(dt) + "!"
-                    else:
-                        reply_text = game.competition.getQuestion(game.current_question)
-                    break_flag = True
-            if break_flag == False:
-                reply_text = "sorry, " + from_text + " is not a valid input, please try again." 
+    	has_active_game = False
+    	active_team = Team()
+    	for team in teams:
+    		if team.gameinstance.ended == False:
+    			has_active_game = True
+    			active_team = team
+    			break
+    	if has_active_game == True:
+    		game = active_team.gameinstance
+    		solutions = game.competition.getSolutions(game.current_question)
+       		from_text = request.POST.get('Body', None).lower()
+    		r.message(from_text)
         else:
-            reply_text = "Sorry, you don't appear to be participating in an active game"          
-    
-    message = client.messages.create(body=reply_text,
-        to=from_number,
-        from_="+14385001559")
-    print message.sid
+            r.message("Sorry, you don't appear to be participating in an active game")
+    return r
 
 @csrf_exempt
 def echo(request):
