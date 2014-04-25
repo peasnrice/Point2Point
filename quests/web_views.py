@@ -15,6 +15,8 @@ from twilio.rest import TwilioRestClient
 from twilio.twiml import Response
 from django_twilio.decorators import twilio_view
 
+from quests.sms_handling import game_logic
+
 # Returns Home Page from url /quests/
 def index(request):
     competition_list = Competition.objects.all()
@@ -35,33 +37,31 @@ def detail(request, competition_id):
         phone = form_t.phone_number  
         teams = Team.objects.filter(phone_number=phone)
         # if phone number is not recognised, return <super awesome marketing slogan>
-        if teams:
-
-        else:
+        
             
 
-            save_team = form_t.save(commit=False)
-            save_team.save()
+        save_team = form_t.save(commit=False)
+        save_team.save()
 
-            competition = Competition.objects.get(id=competition_id)
-            competition.createGameInstance(save_team.id)
-            competition.save()
+        competition = Competition.objects.get(id=competition_id)
+        competition.createGameInstance(save_team.id)
+        competition.save()
 
-            team = Team.objects.get(id=save_team.id)
-            game = team.gameinstance
-            question = game.current_question
+        team = Team.objects.get(id=save_team.id)
+        game = team.gameinstance
+        question = game.current_question
 
-            sms_text = competition.getQSPairTextByQNum(question)
+        sms_text = competition.getQSPairTextByQNum(question)
 
-            sms_text = sms_text.replace("<TEAM>", save_team.name)
-            sms_text = sms_text.replace("<CAPTAIN>", save_team.captain_name)        
+        sms_text = sms_text.replace("<TEAM>", save_team.name)
+        sms_text = sms_text.replace("<CAPTAIN>", save_team.captain_name)        
 
-            client = TwilioRestClient(TWILIO_ACCOUNT_SID,
-                                      TWILIO_AUTH_TOKEN)
+        client = TwilioRestClient(TWILIO_ACCOUNT_SID,
+                                  TWILIO_AUTH_TOKEN)
 
-            message = client.messages.create(body=sms_text,
-                to=save_team.phone_number,
-                from_="+14385001559")
+        message = client.messages.create(body=sms_text,
+            to=save_team.phone_number,
+            from_="+14385001559")
 
     return render_to_response('quests/detail.html', locals(), context_instance=RequestContext(request)) 
  
@@ -120,76 +120,6 @@ def verify_sms(request):
     teams = Team.objects.filter(phone_number=from_number)
 
     r = Response()
-    # if phone number is not recognised, return <super awesome marketing slogan>
-    if not teams:
-        r.message("Sorry, you aren't registered in an active Quest, register at www.Point2Point.com")
-    # otherwise let's see if they are already playing
-    else:
-        has_active_game = False
-        active_team = Team()
-        for team in teams:
-            if team.gameinstance.ended == False:
-                has_active_game = True
-                active_team = team
-                break
-        # active game detected! start verifying the message
-        if has_active_game == True:
-            game = active_team.gameinstance
-            from_text = request.POST.get('Body', None).lower()
-            solutions = game.competition.getSolutions(game.current_question)
-            sln_found = False
-            for solution in solutions:
-                if from_text == solution.solution_text.lower():
-                    if game.current_question == 0:
-                        game.started = True
-                        game.current_question += 1
-                        game.save()
-                        #start timer
-                    elif game.current_question < game.competition.getQuestLength():
-                        game.current_question += 1
-                        game.save()
-                        #check if pause is needed
-                    else:
-                        game.ended = True
-                        game.current_question += 1
-                        game.save()
-                        #stop timer
-                    if game.ended == True:
-                        r.message(game.competition.congratulation)
-                    else:
-                        r.message(game.competition.getQuestion(game.current_question))
-                    sln_found = True
-                    break
-            if sln_found == False:
-                r.message("try again")
-
-        # they exist but uhoh they don't have a game. let them know
-        else:
-            r.message("Sorry, you don't appear to be participating in an active game")
+    #sms_handling.py handles sms verification and game logic
+    r.message(game_logic(teams))
     return r
-
-@csrf_exempt
-def echo(request):
-    """Respond to incoming calls with a simple text message."""
-      
-    client = TwilioRestClient(TWILIO_ACCOUNT_SID,
-                              TWILIO_AUTH_TOKEN)
-
-    from_number = request.REQUEST.get('From', None)
-    from_text = request.REQUEST.get('Body', None)
-    message = client.messages.create(body=from_text,
-        to=from_number,
-        from_="+14385001559")
-
-    print message.sid
-
-
-def mysms(request):
-    client = TwilioRestClient(TWILIO_ACCOUNT_SID,
-                              TWILIO_AUTH_TOKEN)
-
-    message = client.messages.create(body="Hello!",
-        to="+15149240757",
-        from_="+14385001559")
-
-    print message.sid
