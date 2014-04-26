@@ -115,7 +115,7 @@ class GameInstance(models.Model):
         new_game_stage_instance.save() 
         self.gamestage_set.add(GameStage.objects.get(id=new_game_stage_instance.id))      
     def __unicode__(self):
-        return u"%s" % self.id
+        return "COMP: " + str(self.competition.name) + " - ID: " + str(self.id)
 
 class GameStage(models.Model):
     gameinstance = models.ForeignKey('GameInstance')
@@ -123,7 +123,7 @@ class GameStage(models.Model):
     start_time = models.DateTimeField(auto_now_add=True)
     Penalty = models.IntegerField(default=0)
     def __unicode__(self):
-        return str(self.stage) + " - " + str(self.start_time)
+        return "GAME INST: " + str(self.gameinstance.id) + " - STAGE: " + str(self.stage) + " - TIME STAMP: " + str(self.start_time)
 
 class Team(models.Model):
     gameinstance = models.ForeignKey('GameInstance', blank=True, null=True)
@@ -173,7 +173,7 @@ class QuestionsSolutionPair(models.Model):
     def getSolutions(self):
         return Solution.objects.select_related("questions_solution_pair").filter(id=self.id)
     def __unicode__(self):
-        return self.question_text
+        return "COMP: " + str(self.competition.name) + " - Q#: " + str(self.question_number)
 
 class Solution(models.Model):
     questions_solution_pair = models.ForeignKey('QuestionsSolutionPair')
