@@ -6,6 +6,8 @@ from django.forms import ModelForm
 from django.db.models import Count
 from pytz import timezone
 import pytz
+from django.db import models
+import timedelta
 
 class Competition(models.Model):
     name = models.CharField(max_length=32)
@@ -18,7 +20,7 @@ class Competition(models.Model):
     estimated_duration = models.IntegerField()
     team_size_limit = models.IntegerField()
     creators_name = models.CharField(max_length=32)
-    date_created = models.DateTimeField()
+    date_created = models.DateTimeField(auto_now_add=True)
     def addQuestionSolutionPair(self, question_, solutions_):
         return null
     def getNumberOfQuestions(self):
@@ -48,8 +50,7 @@ class Competition(models.Model):
         new_game_instance.save()
         new_game_instance.team_set.add(Team.objects.get(id=team_id_))
         
-        self.gameinstance_set.add(GameInstance.objects.get(id=new_game_instance.id))     
-
+        self.gameinstance_set.add(GameInstance.objects.get(id=new_game_instance.id))
     def getGameInstances(self):
         return GameInstance.objects.select_related("competition").all().order_by('time_taken')
     def __unicode__(self):
@@ -64,7 +65,7 @@ class GameInstance(models.Model):
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
     pause_time = models.FloatField()
-    total_time = models.FloatField()
+    total_time = timedelta.fields.TimedeltaField(blank=True, null=True)
     time_taken = models.DateTimeField(blank=True, null=True)
     current_question = models.IntegerField()
     started = models.BooleanField()
@@ -98,31 +99,31 @@ class GameInstance(models.Model):
         t.removeForeignKey()
 
     #function makes no sense, should be the other way around
-    def getTimeDelta(self):
-        return self.start_time - self.end_time
-
+    def getTotalTime(self):
+        start_game_stage = GameStage.objects.filter(gameinstance=self.id).earliest("id")
+        end_game_stage = GameStage.objects.filter(gameinstance=self.id).latest("id")
+        return end_game_stage.start_time - start_game_stage.start_time
 
     def setCurrentQuestion(self, question_number_):
         self.current_question = question_number_
-    def addPenalty(self, question_number_, severity_):
-        pen = Penalty(question_id = question_number_, severity = severity_)
-        pen.save()
-        Penalty.objects.select_related("gameinstance").filter(id=self.id)
     def getQuest(self):
         return Competition.objects.select_related("gameinstance").filter(id=self.id)
     def getTeam(self):
         return Team.objects.select_related("gameinstance").all()[0]
-    def getPenaltyList(self):
-        return Penalty.objects.select_related("gameinstance").filter(id=self.id)
+    def createGameStage(self):
+        new_game_stage_instance = GameStage(gameinstance = self, stage = self.current_question) 
+        new_game_stage_instance.save() 
+        self.gamestage_set.add(GameStage.objects.get(id=new_game_stage_instance.id))      
     def __unicode__(self):
         return u"%s" % self.id
 
-class Penalty(models.Model):
-    game_instance = models.ForeignKey('GameInstance')
-    question_id = models.IntegerField()
-    severity = models.IntegerField()
+class GameStage(models.Model):
+    gameinstance = models.ForeignKey('GameInstance')
+    stage = models.IntegerField()
+    start_time = models.DateTimeField(auto_now_add=True)
+    Penalty = models.IntegerField(default=0)
     def __unicode__(self):
-        return u"%s" % self.id
+        return str(self.stage) + " - " + str(self.start_time)
 
 class Team(models.Model):
     gameinstance = models.ForeignKey('GameInstance', blank=True, null=True)
@@ -160,6 +161,7 @@ class QuestionsSolutionPair(models.Model):
     competition = models.ForeignKey('Competition')
     question_number = models.IntegerField()
     question_text = models.CharField(max_length=140)
+    is_pause = models.BooleanField(default=False)
     def addSolution(self, solution_):
         sol = Solution(solution_text = solution_)
         sol.save()

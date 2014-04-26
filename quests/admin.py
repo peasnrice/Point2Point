@@ -1,5 +1,5 @@
 from django.contrib import admin
-from quests.models import Competition, GameInstance, Penalty, Team, Player, QuestionsSolutionPair, Solution
+from quests.models import Competition, GameInstance, Team, Player, QuestionsSolutionPair, Solution, GameStage
 
 class GameSolutionInline(admin.TabularInline):
     model = GameInstance
@@ -16,12 +16,12 @@ class TeamInline(admin.TabularInline):
     model = Team
     extra = 0
 
-class PenaltyInline(admin.TabularInline):
-    model = Penalty
-    extra = 0
+class GameStageInline(admin.TabularInline):
+    model = GameStage
+    extra = 3
 
 class GameInstanceAdmin(admin.ModelAdmin):
-    inlines = [TeamInline, PenaltyInline]
+    inlines = [TeamInline, GameStageInline]
 
 class SolutionInline(admin.TabularInline):
     model = Solution
@@ -40,9 +40,8 @@ class TeamAdmin(admin.ModelAdmin):
 
 admin.site.register(Competition, CompetitionAdmin)
 admin.site.register(GameInstance, GameInstanceAdmin)
-admin.site.register(Penalty)
+admin.site.register(GameStage)
 admin.site.register(Team, TeamAdmin)
 admin.site.register(Player)
 admin.site.register(QuestionsSolutionPair, QuestionsSolutionPairAdmin)
 admin.site.register(Solution)
-

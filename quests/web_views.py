@@ -17,6 +17,11 @@ from django_twilio.decorators import twilio_view
 
 from quests.sms_handling import game_logic
 
+'''
+import logging
+logger = logging.getLogger(__name__)
+'''
+
 # Returns Home Page from url /quests/
 def index(request):
     competition_list = Competition.objects.all()
@@ -46,6 +51,8 @@ def detail(request, competition_id):
         question = game.current_question
 
         sms_text = competition.getQSPairTextByQNum(question)
+
+        game.createGameStage()
 
         sms_text = sms_text.replace("<TEAM>", save_team.name)
         sms_text = sms_text.replace("<CAPTAIN>", save_team.captain_name)        
