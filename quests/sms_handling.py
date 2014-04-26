@@ -1,6 +1,9 @@
 from quests.models import Competition, Team, GameInstance
 
-def game_logic(teams):
+def game_logic(from_number, from_text):
+
+    teams = Team.objects.filter(phone_number=from_number)
+
     return_message = ""
     if not teams:
         return_message = "Sorry, you aren't registered in an active Quest, register at www.Point2Point.com"
@@ -16,7 +19,7 @@ def game_logic(teams):
         # active game detected! start verifying the message
         if has_active_game == True:
             game = active_team.gameinstance
-            from_text = request.POST.get('Body', None).lower()
+            from_text = from_text.lower()
             solutions = game.competition.getSolutions(game.current_question)
             sln_found = False
             for solution in solutions:

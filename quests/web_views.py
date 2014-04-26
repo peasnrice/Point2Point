@@ -110,54 +110,8 @@ def registered(request, team_id):
 @twilio_view
 def verify_sms(request):
     from_number = request.POST.get('From', None)  
-
-    teams = Team.objects.filter(phone_number=from_number)
-
+    from_text = request.POST.get('Body', None)  
+    msg = game_logic(from_number, from_text)
     r = Response()
-    # if phone number is not recognised, return <super awesome marketing slogan>
-    if not teams:
-        r.message("Sorry, you aren't registered in an active Quest, register at www.Point2Point.com")
-    # otherwise let's see if they are already playing
-    else:
-        has_active_game = False
-        active_team = Team()
-        for team in teams:
-            if team.gameinstance.ended == False:
-                has_active_game = True
-                active_team = team
-                break
-        # active game detected! start verifying the message
-        if has_active_game == True:
-            game = active_team.gameinstance
-            from_text = request.POST.get('Body', None).lower()
-            solutions = game.competition.getSolutions(game.current_question)
-            sln_found = False
-            for solution in solutions:
-                if from_text == solution.solution_text.lower():
-                    if game.current_question == 0:
-                        game.started = True
-                        game.current_question += 1
-                        game.save()
-                        #start timer
-                    elif game.current_question < game.competition.getQuestLength():
-                        game.current_question += 1
-                        game.save()
-                        #check if pause is needed
-                    else:
-                        game.ended = True
-                        game.current_question += 1
-                        game.save()
-                        #stop timer
-                    if game.ended == True:
-                        r.message(game.competition.congratulation)
-                    else:
-                        r.message(game.competition.getQuestion(game.current_question))
-                    sln_found = True
-                    break
-            if sln_found == False:
-                r.message("try again")
-
-        # they exist but uhoh they don't have a game. let them know
-        else:
-            r.message("Sorry, you don't appear to be participating in an active game")
+    r.message(msg)
     return r
