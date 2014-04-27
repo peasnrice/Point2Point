@@ -28,18 +28,21 @@ class Competition(models.Model):
         return questions[0].num_questions
     def getQuestionSolutionPairsByQNum(self, question_number_):
         return QuestionsSolutionPair.objects.select_related("competition").filter(question_number=question_number_)
+    
     def getQSPairTextByQNum(self, question_number_):
-        return QuestionsSolutionPair.objects.select_related("competition").get(question_number=question_number_).question_text
+        questions = QuestionsSolutionPair.objects.filter(competition=self.id)
+        return questions.get(question_number=question_number_).question_text
 
     def getQuestLength(self):
-        return QuestionsSolutionPair.objects.select_related("competition").all().count()-1
+        return QuestionsSolutionPair.objects.filter(competition=self.id).count()-1
 
     def getQuestion(self, question_number_):
-        return QuestionsSolutionPair.objects.select_related("competition").get(question_number=question_number_).question_text
+        return QuestionsSolutionPair.objects.filter(competition=self.id).get(question_number=question_number_).question_text
 
     def getSolutions(self, question_number_):
-        question = QuestionsSolutionPair.objects.select_related("competition").get(question_number=question_number_)
-        return Solution.objects.select_related("questions_solution_pair").filter(questions_solution_pair=question.id)
+        questions = QuestionsSolutionPair.objects.filter(competition=self.id)
+        question = questions.get(question_number=question_number_)
+        return Solution.objects.filter(questions_solution_pair=question.id)
 
     def createGameInstance(self, team_id_):
         montreal = timezone('America/Montreal')
