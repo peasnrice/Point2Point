@@ -48,40 +48,46 @@ class GameInstance(models.Model):
     total_time = timedelta.fields.TimedeltaField(blank=True, null=True)
     game_time = timedelta.fields.TimedeltaField(blank=True, null=True)
     penalty_time = timedelta.fields.TimedeltaField(blank=True, null=True)
+    average_time = timedelta.fields.TimedeltaField(blank=True, null=True)
     current_question = models.IntegerField()
     started = models.BooleanField(default=False)
     ended = models.BooleanField(default=False)
     __pauseStartTime = datetime
-    #returns time from start to finish, including break/pause time
-    def getTotalTime(self):
-        start_time = GameStage.objects.filter(gameinstance=self.id).earliest("id").time_stamp
-        game_stages = GameStage.objects.filter(gameinstance=self.id).order_by("id")
-        time_delta = game_stages[0].time_stamp - game_stages[0].time_stamp
-        for i in range(len(game_stages)-1):
-            time_delta += game_stages[i+1].time_stamp - game_stages[i].time_stamp
-        return time_delta
     #returns time excluding break/pause time
     def getGameTime(self):
-        start_time = GameStage.objects.filter(gameinstance=self.id).earliest("id").time_stamp
         game_stages = GameStage.objects.filter(gameinstance=self.id).order_by("id")
-        time_delta = game_stages[0].time_stamp - game_stages[0].time_stamp
-        penalties = timedelta
+        time_delta = datetime.timedelta(0)
         for i in range(len(game_stages)-1):
             if game_stages[i].is_pause == False:
                 time_delta += game_stages[i+1].time_stamp - game_stages[i].time_stamp
-        return time_delta     
+        return time_delta 
     def getPenaltyTime(self):
         game_stages = GameStage.objects.filter(gameinstance=self.id).order_by("id")
         time_delta = datetime.timedelta(0)
         for i in range(len(game_stages)-1):
             time_delta += datetime.timedelta(seconds=game_stages[i].penalty*60)
-        return time_delta    
+        return time_delta  
+    #returns time from start to finish, including break/pause time
+    def getTotalTime(self):
+        return self.getGameTime() + self.getPenaltyTime()
+    def getAverageTime(self):
+        game_stages = GameStage.objects.filter(gameinstance=self.id).order_by("id")
+        time_delta = datetime.timedelta(0)
+        questions = 0
+        for i in range(len(game_stages)-1):
+            if game_stages[i].is_pause == False:
+                questions += 1
+        if questions == 0:
+            time_delta = 0
+        else:
+            time_delta = self.getGameTime()/questions
+        return time_delta         
     def addPenalty(self,mins):
         game_stage = GameStage.objects.filter(gameinstance=self.id).get(stage=self.current_question)
         game_stage.penalty += mins
         game_stage.save()
-    def getTeam(self):
-        return Team.objects.filter(gameinstance=self.id)[0]
+    def getTeamName(self):
+        return Team.objects.get(gameinstance=self.id)
     def createGameStage(self):
         competition = self.competition
         questions_query = QuestionsSolutionPair.objects.filter(competition=competition)

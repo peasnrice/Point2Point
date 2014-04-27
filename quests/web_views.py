@@ -53,16 +53,37 @@ def detail(request, competition_id):
             from_="+14385001559")
     return render_to_response('quests/detail.html', locals(), context_instance=RequestContext(request)) 
  
+class LeaderboardData:
+    def __init__(self, position_, name_, time_bp_, time_ap_, average_time_):
+        self.competition = competition_
+        self.position = position_
+        self.name = name_
+        self.time_bp = time_bp_
+        self.time_ap = time_ap_
+        self.average_time = average_time_
+
 def leaderboards(request):
+    game_list = []
+    position = 1
     competition_list = Competition.objects.all()
+    for competition in competition_list:
+        game_instances = GameInstance.objects.filter(competition=competition.id).order_by("ended", "-game_time")
+        for game_instance in game_instances:
+            team_name = game_instance.getTeamName()
+            if game_instance.ended == False:
+                time_bp = game_instance.game_time
+                time_ap = game_instance.total_time
+                average_time = gameinstance.average_time
+                
+            else:
+                time_bp = gameinstance.getGameTime()
+
+
+            l = LeaderboardData(position, team_name, time_bp, time_ap, average_time)
+            position += 1
     context = {'competition_list': competition_list}
     return render(request, 'quests/leaderboards.html', context)
 
-class LeaderboardData:
-    def __init__(self, position_, name_, time_):
-        self.position = position_
-        self.name = name_
-        self.time = time_
 
 def leaderboard_detail(request, competition_id):
     competition = get_object_or_404(Competition, pk=competition_id)
