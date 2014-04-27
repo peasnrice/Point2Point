@@ -40,11 +40,12 @@ def game_logic(from_number, from_text):
                         game.save()
                         #stop timer
                     
-                    game.createGameStage()                    
+                    game.createGameStage()             
                     
                     if game.ended == True:
                         return_message = game.competition.congratulation
                         game.total_time = game.getTotalTime()
+                        game.game_time = game.getGameTime()
                         game.save()
                     else:
                         return_message = game.competition.getQuestion(game.current_question)
