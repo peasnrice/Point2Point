@@ -1,11 +1,8 @@
 from quests.models import Competition, Team, GameInstance
 
 def game_logic(from_number, from_text):
-
     teams = Team.objects.filter(phone_number=from_number)
-
     return_message = ""
-
     if not teams:
         return_message = "Sorry, you aren't registered in an active Quest, register at www.Point2Point.com"
     # otherwise let's see if they are already playing
@@ -29,19 +26,14 @@ def game_logic(from_number, from_text):
                         game.started = True
                         game.current_question += 1
                         game.save()
-                        #Time Stamp
                     elif game.current_question < game.competition.getQuestLength():
                         game.current_question += 1
                         game.save()
-                        #check if pause is needed
                     else:
                         game.ended = True
                         game.current_question += 1
                         game.save()
-                        #stop timer
-                    
-                    game.createGameStage()             
-                    
+                    game.createGameStage()
                     if game.ended == True:
                         return_message = game.competition.congratulation
                         game.total_time = game.getTotalTime()

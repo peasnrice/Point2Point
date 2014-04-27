@@ -37,7 +37,6 @@ class PlayerInline(admin.TabularInline):
 class TeamAdmin(admin.ModelAdmin):
     inlines = [PlayerInline]
 
-
 admin.site.register(Competition, CompetitionAdmin)
 admin.site.register(GameInstance, GameInstanceAdmin)
 admin.site.register(GameStage)

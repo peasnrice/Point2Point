@@ -9,18 +9,16 @@ from datetime import datetime, time
 from django.utils.timezone import utc
 from pytz import timezone
 import pytz
-
 from django.http import HttpResponse
 from twilio.rest import TwilioRestClient
 from twilio.twiml import Response
 from django_twilio.decorators import twilio_view
-
 from quests.sms_handling import game_logic
 
-'''
+
 import logging
 logger = logging.getLogger(__name__)
-'''
+
 
 # Returns Home Page from url /quests/
 def index(request):
@@ -36,34 +34,24 @@ TWILIO_AUTH_TOKEN = 'be50c089508b4af31a136bdf6a662f7c'
 def detail(request, competition_id):
     competition = get_object_or_404(Competition, pk=competition_id)
     form_t = TeamForm(request.POST or None)
-
     if form_t.is_valid():
- 
         save_team = form_t.save(commit=False)
         save_team.save()
-
         competition = Competition.objects.get(id=competition_id)
         competition.createGameInstance(save_team.id)
         competition.save()
-
         team = Team.objects.get(id=save_team.id)
         game = team.gameinstance
         question = game.current_question
-
         sms_text = competition.getQSPairTextByQNum(question)
-
         game.createGameStage()
-
-        sms_text = sms_text.replace("<TEAM>", save_team.name)
-        sms_text = sms_text.replace("<CAPTAIN>", save_team.captain_name)        
-
+        sms_text = sms_text.replace("<team>", save_team.name)
+        sms_text = sms_text.replace("<captain>", save_team.captain_name)        
         client = TwilioRestClient(TWILIO_ACCOUNT_SID,
                                   TWILIO_AUTH_TOKEN)
-
         message = client.messages.create(body=sms_text,
             to=save_team.phone_number,
             from_="+14385001559")
-
     return render_to_response('quests/detail.html', locals(), context_instance=RequestContext(request)) 
  
 def leaderboards(request):
@@ -76,7 +64,6 @@ class LeaderboardData:
         self.position = position_
         self.name = name_
         self.time = time_
-
 
 def leaderboard_detail(request, competition_id):
     competition = get_object_or_404(Competition, pk=competition_id)
@@ -100,17 +87,13 @@ def leaderboard_detail(request, competition_id):
     return render_to_response('quests/leaderboard_detail.html', locals(), context_instance=RequestContext(request)) 
 
 def registered(request, team_id):
-
     team = Team.objects.get(id=team_id)
     players = team.getPlayers()
-
     client = TwilioRestClient(TWILIO_ACCOUNT_SID,
                               TWILIO_AUTH_TOKEN)
-
     message = client.messages.create(body="Welcome" + players[0].first_name + "!, to begin reply to this number with, start",
         to=players[0].phone_number,
         from_="+14385001559")
-
     return render_to_response('quests/detail.html', locals(), context_instance=RequestContext(request)) 
 
 # When the user replies to a question the response is checked here
