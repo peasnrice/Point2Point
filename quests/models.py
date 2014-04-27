@@ -7,7 +7,7 @@ from django.db.models import Count
 from pytz import timezone
 import pytz
 from django.db import models
-import timedelta
+import timedelta, datetime
 
 class Competition(models.Model):
     name = models.CharField(max_length=32)
@@ -33,8 +33,6 @@ class Competition(models.Model):
         question = questions.get(question_number=question_number_)
         return Solution.objects.filter(questions_solution_pair=question.id)
     def createGameInstance(self, team_id_):
-        montreal = timezone('America/Montreal')
-        current_date = datetime.utcnow().replace(tzinfo=montreal)
         new_game_instance = GameInstance(competition = self, current_question = 0, 
                      started = False, ended = False) 
         new_game_instance.save()
@@ -49,29 +47,39 @@ class GameInstance(models.Model):
     competition = models.ForeignKey('Competition')
     total_time = timedelta.fields.TimedeltaField(blank=True, null=True)
     game_time = timedelta.fields.TimedeltaField(blank=True, null=True)
+    penalty_time = timedelta.fields.TimedeltaField(blank=True, null=True)
     current_question = models.IntegerField()
     started = models.BooleanField(default=False)
     ended = models.BooleanField(default=False)
     __pauseStartTime = datetime
     #returns time from start to finish, including break/pause time
     def getTotalTime(self):
-        start_time = GameStage.objects.filter(gameinstance=self.id).earliest("id").start_time
-        end_time = GameStage.objects.filter(gameinstance=self.id).latest("id").start_time
+        start_time = GameStage.objects.filter(gameinstance=self.id).earliest("id").time_stamp
         game_stages = GameStage.objects.filter(gameinstance=self.id).order_by("id")
-        time_delta = game_stages[0].start_time - game_stages[0].start_time
+        time_delta = game_stages[0].time_stamp - game_stages[0].time_stamp
         for i in range(len(game_stages)-1):
-            time_delta += game_stages[i+1].start_time - game_stages[i].start_time
+            time_delta += game_stages[i+1].time_stamp - game_stages[i].time_stamp
         return time_delta
     #returns time excluding break/pause time
     def getGameTime(self):
-        start_time = GameStage.objects.filter(gameinstance=self.id).earliest("id").start_time
-        end_time = GameStage.objects.filter(gameinstance=self.id).latest("id").start_time
+        start_time = GameStage.objects.filter(gameinstance=self.id).earliest("id").time_stamp
         game_stages = GameStage.objects.filter(gameinstance=self.id).order_by("id")
-        time_delta = game_stages[0].start_time - game_stages[0].start_time
+        time_delta = game_stages[0].time_stamp - game_stages[0].time_stamp
+        penalties = timedelta
         for i in range(len(game_stages)-1):
             if game_stages[i].is_pause == False:
-                time_delta += game_stages[i+1].start_time - game_stages[i].start_time
-        return time_delta
+                time_delta += game_stages[i+1].time_stamp - game_stages[i].time_stamp
+        return time_delta     
+    def getPenaltyTime(self):
+        game_stages = GameStage.objects.filter(gameinstance=self.id).order_by("id")
+        time_delta = datetime.timedelta(0)
+        for i in range(len(game_stages)-1):
+            time_delta += datetime.timedelta(seconds=game_stages[i].penalty*60)
+        return time_delta    
+    def addPenalty(self,mins):
+        game_stage = GameStage.objects.filter(gameinstance=self.id).get(stage=self.current_question)
+        game_stage.penalty += mins
+        game_stage.save()
     def getTeam(self):
         return Team.objects.filter(gameinstance=self.id)[0]
     def createGameStage(self):
@@ -90,11 +98,11 @@ class GameInstance(models.Model):
 class GameStage(models.Model):
     gameinstance = models.ForeignKey('GameInstance')
     stage = models.IntegerField()
-    start_time = models.DateTimeField(auto_now_add=True)
-    Penalty = models.IntegerField(default=0)
+    time_stamp = models.DateTimeField(auto_now_add=True)
+    penalty = models.IntegerField(default=0)
     is_pause = models.BooleanField(default=False)
     def __unicode__(self):
-        return "COMP: " + str(self.gameinstance.competition.name) + "- GAME INST: " + str(self.gameinstance.id) + " - STAGE: " + str(self.stage) + " - TIME STAMP: " + str(self.start_time)
+        return "COMP: " + str(self.gameinstance.competition.name) + "- GAME INST: " + str(self.gameinstance.id) + " - STAGE: " + str(self.stage) + " - TIME STAMP: " + str(self.time_stamp)
 
 class Team(models.Model):
     gameinstance = models.ForeignKey('GameInstance', blank=True, null=True)

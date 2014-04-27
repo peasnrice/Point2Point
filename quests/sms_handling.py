@@ -1,4 +1,4 @@
-from quests.models import Competition, Team, GameInstance
+from quests.models import Competition, Team, GameInstance, GameStage
 
 def game_logic(from_number, from_text):
     teams = Team.objects.filter(phone_number=from_number)
@@ -38,13 +38,19 @@ def game_logic(from_number, from_text):
                         return_message = game.competition.congratulation
                         game.total_time = game.getTotalTime()
                         game.game_time = game.getGameTime()
+                        game.penalty_time = game.getPenaltyTime()
                         game.save()
                     else:
                         return_message = game.competition.getQuestion(game.current_question)
                     sln_found = True
                     break
             if sln_found == False:
-                return_message = "try again"
+                game_stage = GameStage.objects.filter(gameinstance=game.id).get(stage=game.current_question)
+                if game_stage.is_pause == False:
+                    game.addPenalty(5)
+                    return_message = "try again, a penalty of 5 minutes has been added!"
+                else:
+                    return_message = "Sorry we didn't understand"
         # they exist but uhoh they don't have a game. let them know
         else:
             return_message = "Sorry, you don't appear to be participating in an active game"
