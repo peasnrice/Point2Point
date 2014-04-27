@@ -15,7 +15,6 @@ from twilio.twiml import Response
 from django_twilio.decorators import twilio_view
 from quests.sms_handling import game_logic
 
-
 import logging
 logger = logging.getLogger(__name__)
 

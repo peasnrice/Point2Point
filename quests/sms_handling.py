@@ -35,11 +35,40 @@ def game_logic(from_number, from_text):
                         game.save()
                     game.createGameStage()
                     if game.ended == True:
-                        return_message = game.competition.congratulation
                         game.total_time = game.getTotalTime()
                         game.game_time = game.getGameTime()
                         game.penalty_time = game.getPenaltyTime()
                         game.save()
+
+                        s = game.total_time.seconds
+                        hours, remainder = divmod(s, 3600)
+                        minutes, seconds = divmod(remainder, 60)
+                        total_time = '%s:%s:%s' % (hours, minutes, seconds)
+
+                        s = game.total_time.seconds
+                        hours, remainder = divmod(s, 3600)
+                        minutes, seconds = divmod(remainder, 60)
+                        game_time = '%s:%s:%s' % (hours, minutes, seconds)
+
+                        s = game.penalty_time.seconds
+                        hours, remainder = divmod(s, 3600)
+                        minutes, seconds = divmod(remainder, 60)
+                        penalty_time = '%s:%s:%s' % (hours, minutes, seconds)
+
+                        s = game.total_time.seconds + game.penalty_time.seconds
+                        hours, remainder = divmod(s, 3600)
+                        minutes, seconds = divmod(remainder, 60)
+                        overall_time = '%s:%s:%s' % (hours, minutes, seconds)
+
+                        return_message = "Congratulations! Your total time (including breaks) was " + total_time + "."
+                        if game.penalty_time.seconds == 0:
+                            return_message += ". Your overall time, with no penalties, was " + overall_time + "."
+                        else:
+                            return_message += ". Your game time could have been " + game_time
+                            return_message += " but sadly you picked up " + penalty_time + " in penalties"
+                            return_message += " bringing your overall time to " + overall_time +"."
+                        return_message += " Thank you for playing! Please give use feedback, good or bad, at feedback@Point2Point.com!"
+                        return_message += " We hope to see you again soon, happy questing!"
                     else:
                         return_message = game.competition.getQuestion(game.current_question)
                     sln_found = True
