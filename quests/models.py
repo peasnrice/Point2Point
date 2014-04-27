@@ -52,6 +52,7 @@ class GameInstance(models.Model):
     current_question = models.IntegerField()
     started = models.BooleanField(default=False)
     ended = models.BooleanField(default=False)
+    dnf = models.BooleanField(default=False)
     __pauseStartTime = datetime
     #returns time excluding break/pause time
     def getGameTime(self):
@@ -80,7 +81,7 @@ class GameInstance(models.Model):
         if questions == 0:
             time_delta = 0
         else:
-            time_delta = self.getGameTime()/questions
+            time_delta = (self.getGameTime()+self.getPenaltyTime())/questions
         return time_delta         
     def addPenalty(self,mins):
         game_stage = GameStage.objects.filter(gameinstance=self.id).get(stage=self.current_question)
@@ -97,7 +98,7 @@ class GameInstance(models.Model):
         else:
             new_game_stage_instance = GameStage(gameinstance = self, stage = self.current_question, is_pause = True)
         new_game_stage_instance.save()
-        self.gamestage_set.add(GameStage.objects.get(id=new_game_stage_instance.id))      
+        self.gamestage_set.add(GameStage.objects.get(id=new_game_stage_instance.id))
     def __unicode__(self):
         return "COMP: " + str(self.competition.name) + " - ID: " + str(self.id)
 

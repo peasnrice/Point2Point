@@ -66,40 +66,54 @@
     </div>
 
     <div class="container">
-      <!-- Example row of columns -->
-      <div class="row">
-        <div class="col-md-4">
-          <h2>Live Scoring!</h2>
-          <p>Have a break? see how well you and your friends are doing LIVE!</p>
-          <p><a class="btn btn-default" href="% url 'leaderboard_detail' competition.id %" role="button">View Live Scores &raquo;</a></p>
+      {% for competition in competition_list %}
+        <div class="well well-lg">
+          <div class="row">
+            <h2>{{ competition }}</h2>
+            <div class = "table-responsive">
+              <table class="table">
+                <tr>
+                  <th>#</th>
+                  <th>Team Name</th>
+                  <th>Time Before Penalties</th>
+                  <th>Time After Penalties</th>
+                  <th>Average Solve Time</th>
+                </tr>
+                {% for ended_game in ended_game_list %}
+                  {% if ended_game.competition == forloop.parentloop.counter0 %}
+                    <tr>
+                      <td>{{ ended_game.position }}</td>
+                      <td>{{ ended_game.name }}</td>
+                      <td>{{ ended_game.time_bp }}</td>
+                      <td>{{ ended_game.time_ap }}</td>
+                      <td>{{ ended_game.average_time }}</td>
+                    </tr>
+                  {% endif %}
+                {% endfor %}
+                {% for ongoing_game in ongoing_game_list %}
+                  {% if ongoing_game.competition == forloop.parentloop.counter0 %}
+                    <tr>
+                      <td>{{ ongoing_game.position }}</td>
+                      <td>{{ ongoing_game.name }}</td>
+                      <td>{{ ongoing_game.time_bp }}</td>
+                    </tr>
+                  {% endif %}
+                {% endfor %}
+                {% for dnf_game in dnf_game_list %}
+                  {% if dnf_game.competition == forloop.parentloop.counter0 %}
+                    <tr>
+                      <td>{{ dnf_game.position }}</td>
+                      <td>{{ dnf_game.name }}</td>
+                      <td>{{ dnf_game.time_bp }}</td>
+                    </tr>
+                  {% endif %}
+                {% endfor %}
+              </table> 
+            </div>
+          </div>
         </div>
-        <div class="col-md-4">
-          <h2>Todays Best Times</h2>
-          <p>See who is dominating today, note: there are daily prizes for the quickest teams of the day.</p>
-          <p><a class="btn btn-default" href="% url 'leaderboard_detail' competition.id %" role="button">Daily Leaderboard &raquo;</a></p>
-       </div>
-        <div class="col-md-4">
-          <h2>Grand Leaderboard</h2>
-          <p>See how you stand against the best adventurers of all time.</p>
-          <p><a class="btn btn-default" href="% url 'leaderboard_detail' competition.id %" role="button">All Time Leaderboards &raquo;</a></p>
-        </div>
-      </div>
-
-      <div class="well well-sm">
-        {% if competition_list %}
-        <ul>
-          {% for competition in competition_list %}
-              <li><a href="{% url 'leaderboard_detail' competition.id %}">{{ competition.name }}</a></li>
-          {% endfor %}
-        </ul>
-        {% else %}
-          <p>No quests are available.</p>
-        {% endif %}
-      </div>
-
-    </div> <!-- /container -->
-
-
+      {% endfor %}
+    </div>
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->

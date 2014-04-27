@@ -25,7 +25,7 @@ def game_logic(from_number, from_text):
                 return_message += "'game quit' - WARNING! Quits the game, you can't get it back!\n"
             elif from_text =="repeat":
                 return_message = game.competition.getQuestion(game.current_question)
-            elif from_text == "information":
+            elif from_text == "game info":
                 return_message = "Stage no. " + str(game.current_question) + "/" + str(game.competition.getQuestLength()) + "\n"
                 
                 if game.current_question != 0:
@@ -34,7 +34,7 @@ def game_logic(from_number, from_text):
                     minutes, seconds = divmod(remainder, 60)
                     average_time = '%s:%s:%s' % (hours, minutes, seconds)
 
-                    s = game.total_time.seconds
+                    s = game.game_time.seconds
                     hours, remainder = divmod(s, 3600)
                     minutes, seconds = divmod(remainder, 60)
                     game_time = '%s:%s:%s' % (hours, minutes, seconds)
@@ -52,8 +52,11 @@ def game_logic(from_number, from_text):
                 return_message += "avg solve time: " + average_time + "\n"
                 return_message += "game time: " + game_time + "\n"
                 return_message += "penalty time: " + penalty_time + "\n"
-            elif from_text == "quit game":
+            elif from_text == "game quit":
                 return_message += "you have left the game! =( if this was in error contact support @XXX-XXX-XXXX"
+                game.dnf = True
+                game.ended = True
+                game.save()
             else:
                 solutions = game.competition.getSolutions(game.current_question)
                 sln_found = False
@@ -83,7 +86,7 @@ def game_logic(from_number, from_text):
                             minutes, seconds = divmod(remainder, 60)
                             total_time = '%s:%s:%s' % (hours, minutes, seconds)
 
-                            s = game.total_time.seconds
+                            s = game.game_time.seconds
                             hours, remainder = divmod(s, 3600)
                             minutes, seconds = divmod(remainder, 60)
                             game_time = '%s:%s:%s' % (hours, minutes, seconds)
@@ -93,7 +96,7 @@ def game_logic(from_number, from_text):
                             minutes, seconds = divmod(remainder, 60)
                             penalty_time = '%s:%s:%s' % (hours, minutes, seconds)
 
-                            s = game.total_time.seconds + game.penalty_time.seconds
+                            s = game.total_time.seconds
                             hours, remainder = divmod(s, 3600)
                             minutes, seconds = divmod(remainder, 60)
                             overall_time = '%s:%s:%s' % (hours, minutes, seconds)
