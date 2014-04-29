@@ -65,46 +65,37 @@
       </div>
     </header>
 
-    <div class="container theme-showcase" role="main">
-    <!-- Main jumbotron for a primary marketing message or call to action -->
-    <div class="jumbotron">
-      <h1>Quest List!</h1>
-      <p>This is where the adventure begins!</p>
-        <p>We have a variety of quests for you to choose from and they vary by theme, duration and difficulty. 
-          We are certain you will find something you will enjoy!</p>
-          <p>We are constantly adding more quests to this list to ensure that you always have a new and exciting P2P adventure
-            to go on!</p>
+    <div class="container">
+      <!-- Main jumbotron for a primary marketing message or call to action -->
+      <div class="jumbotron">
+        <h1>Quest List!</h1>
+        <p>This is where the adventure begins!</p>
+          <p>We have a variety of quests for you to choose from and they vary by theme, duration and difficulty. 
+            We are certain you will find something you will enjoy!</p>
+            <p>We are constantly adding more quests to this list to ensure that you always have a new and exciting P2P adventure
+              to go on!</p>
+      </div>
     </div>
-
     <div class="container">
       {% if competition_list %}
         <ul>
           {% for competition in competition_list %}
-            <div class="well well-lg">
-              <a href="{% url 'detail' competition.id %}">{{ competition.name }}</a>
-
-            <hr class="featurette-divider">
-
-              <div class="row featurette">
-                <div class="col-md-7">
-                  <h2 class="featurette-heading">{{ competition.name }} <span class="text-muted"></span></h2>
-                  <p class="lead">{{ competition.description }}</p>
+            <div class="featurette">
+                <div class="row featurette">
+                  <div class="col-md-7">
+                    <h2 class="featurette-heading">{{ competition.name }} <span class="text-muted"></span></h2>
+                    <p class="lead">{{ competition.description }}</p>
+                  </div>
+                  <div class="col-md-5">
+                    <a class="btn btn-warning" href="{% url 'detail' competition.id %}" role="button">Sign Up! &raquo;</a>
+                  </div>
                 </div>
-                <div class="col-md-5">
-                  <img class="featurette-image img-responsive" data-src="holder.js/500x500/auto" alt="Generic placeholder image">
-                  <button href="{% url 'detail' competition.id %}" type="button" class="btn btn-warning">Sign Up!</button>
-                </div>
-              </div>
-
-              <hr class="featurette-divider">
             </div>
           {% endfor %}
         </ul>
         {% else %}
           <p>No quests are available.</p>
         {% endif %}
-      </div>
-
     </div> <!-- /container -->
 
 
