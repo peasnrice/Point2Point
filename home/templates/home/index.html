@@ -35,71 +35,64 @@
 
   <body role="document">
 
-    <!-- Fixed navbar -->
-    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <header class="navbar navbar-static-top" id="top" role="banner">
       <div class="container">
         <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+          <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
             <span class="sr-only">Toggle navigation</span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">Point to Point!</a>
+          <a href="/" class="navbar-brand">Point 2 Point</a>
         </div>
-        <div class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            <li class="active"><a href="/quests/">Home</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#contact">Contact</a></li>
+        <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a href="/quests">Choose a Quest</a>
+            </li>
+            <li>
+              <a href="/leaderboards">Leaderboards</a>
+            </li>
+            <li>
+              <a href="/about">About Us</a>
+            </li>
+            <li>
+              <a href="/contact">Contact Us</a>
+            </li>
           </ul>
-        </div><!--/.nav-collapse -->
+        </nav>
       </div>
-    </div>
+    </header>
 
     <div class="container theme-showcase" role="main">
     <!-- Main jumbotron for a primary marketing message or call to action -->
     <div class="jumbotron">
-      <h1>Welcome to Point to Point!</h1>
-      <p>This is a template for a simple marketing or informational website. It includes a large callout called a jumbotron and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
-      <p><a href="#" class="btn btn-primary btn-lg" role="button">Learn more &raquo;</a></p>
+      <h1>Welcome to Point2Point!</h1>
+      <p>Welcome to Point2Point! The new way to discover exciting things about your city or someone elses!</p>
+      <p>The objective of Point2Point is to get you exploring, whether you arrived in a place this morning or were born there, Point2Point will have you discovering new exciting things throughout the city.</p>
+      <p>Team up with your friends or pit yourself against them as you run around following riddles and answering questions</p>
+      <p><a href="/quests" class="btn btn-primary btn-lg" role="button">Choose a Quest &raquo;</a></p>
     </div>
 
     <div class="container">
       <!-- Example row of columns -->
       <div class="row">
         <div class="col-md-4">
-          <h2>Exploration</h2>
-          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+          <h2>Explore & Discover</h2>
+          <p>We will be sending you on a quest around town and aim to keep you entertained for 2 to 3 hours</p>
         </div>
         <div class="col-md-4">
-          <h2>Discovery</h2>
-          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
+          <h2>Locals or just visiting</h2>
+          <p>Whether you are new to a city or have been living there your whole life, we aim to provide you with a fun experience for you and your friends</p>
        </div>
         <div class="col-md-4">
-          <h2>Competition!</h2>
-          <p>See how you are doing in the grand scheme of things. Kick your friends off their high horse and destroy them in a friendly competitive way.</p>
-          <p><a class="btn btn-default" href="{% url 'leaderboards' %}" role="button">View Leaderboards! &raquo;</a></p>
+          <h2>LeaderBoards</h2>
+          <p>Compete against your friends or try to get the fastest time on the leaderboard! We offer monthly prizes to the top teams!</p>
         </div>
-      </div>
-
-        {% if competition_list %}
-        <ul>
-          {% for competition in competition_list %}
-              <div class="well well-lg">
-                <a href="{% url 'detail' competition.id %}">{{ competition.name }}</a>
-              </div>
-          {% endfor %}
-        </ul>
-        {% else %}
-          <p>No quests are available.</p>
-        {% endif %}
       </div>
 
     </div> <!-- /container -->
-
 
     <!-- Bootstrap core JavaScript
     ================================================== -->

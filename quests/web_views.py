@@ -20,10 +20,10 @@ logger = logging.getLogger(__name__)
 
 
 # Returns Home Page from url /quests/
-def index(request):
+def quests(request):
     competition_list = Competition.objects.all()
     context = {'competition_list': competition_list}
-    return render(request, 'quests/index.html', context)
+    return render(request, 'quests/quests.html', context)
 
 # Twilio authentication details
 TWILIO_ACCOUNT_SID = 'AC2b2b2a49dce0a86ed02c04e65e7dbe4e'
@@ -109,39 +109,6 @@ def leaderboards(request):
         competition_number += 1
     context = {'competition_list': competition_list}
     return render_to_response('quests/leaderboards.html', locals(), context_instance=RequestContext(request)) 
-
-'''
-def leaderboard_detail(request, competition_id):
-    competition = get_object_or_404(Competition, pk=competition_id)
-    competition = Competition.objects.get(id=competition_id)
-    games = competition.getGameInstances()
-    position = 1
-    not_started = []
-    in_progress = []
-    ended = []
-    for game in games:
-        if game.started == True and game.ended == True:
-            l = LeaderboardData(position, game.getTeam().name, game.time_taken)
-            ended.append(l)
-            position += 1
-        elif game.started == True:
-            l = LeaderboardData(999, game.getTeam().name, game.time_taken)
-            in_progress.append(l)
-        else:
-            l = LeaderboardData(999, game.getTeam().name, game.time_taken)
-            not_started.append(l)           
-    return render_to_response('quests/leaderboard_detail.html', locals(), context_instance=RequestContext(request)) 
-'''
-
-def registered(request, team_id):
-    team = Team.objects.get(id=team_id)
-    players = team.getPlayers()
-    client = TwilioRestClient(TWILIO_ACCOUNT_SID,
-                              TWILIO_AUTH_TOKEN)
-    message = client.messages.create(body="Welcome" + players[0].first_name + "!, to begin reply to this number with, start",
-        to=players[0].phone_number,
-        from_="+14385001559")
-    return render_to_response('quests/detail.html', locals(), context_instance=RequestContext(request)) 
 
 # When the user replies to a question the response is checked here
 @twilio_view

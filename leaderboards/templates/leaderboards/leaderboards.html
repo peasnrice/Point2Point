@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load staticfiles %}
+{% load bootstrap3 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% bootstrap_messages %}
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+
+    <title>Point to Point!</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap theme -->
+    <link href="/static/css/bootstrap-theme.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="theme.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body role="document">
+
+    <header class="navbar navbar-static-top" id="top" role="banner">
+      <div class="container">
+        <div class="navbar-header">
+          <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a href="/" class="navbar-brand">Point 2 Point</a>
+        </div>
+        <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a href="/quests">Choose a Quest</a>
+            </li>
+            <li>
+              <a href="/leaderboards">Leaderboards</a>
+            </li>
+            <li>
+              <a href="/about">About Us</a>
+            </li>
+            <li>
+              <a href="/contact">Contact Us</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <div class="container theme-showcase" role="main">
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="jumbotron">
+      <h1>Welcome to the Leaderboards!</h1>
+      <p>See how you fair against your competitors</p>
+      <p><a href="#" class="btn btn-primary btn-lg" role="button">Learn more &raquo;</a></p>
+    </div>
+
+    <div class="container">
+      {% if competition_list %}
+        {% for competition in competition_list %}
+          <div class="well well-lg">
+            <div class="row">
+              <h2>{{ competition }}</h2>
+              {% if ended_game_list %}
+                <div class = "table-responsive">
+                  <table class="table">
+                    <tr>
+                      <th>#</th>
+                      <th>Team Name</th>
+                      <th>Time Before Penalties</th>
+                      <th>Time After Penalties</th>
+                      <th>Average Solve Time</th>
+                    </tr>
+                    {% for ended_game in ended_game_list %}
+                      {% if ended_game.competition == forloop.parentloop.counter0 %}
+                        <tr>
+                          <td>{{ ended_game.position }}</td>
+                          <td>{{ ended_game.name }}</td>
+                          <td>{{ ended_game.time_bp }}</td>
+                          <td>{{ ended_game.time_ap }}</td>
+                          <td>{{ ended_game.average_time }}</td>
+                        </tr>
+                      {% endif %}
+                    {% endfor %}
+                    {% for ongoing_game in ongoing_game_list %}
+                      {% if ongoing_game.competition == forloop.parentloop.counter0 %}
+                        <tr>
+                          <td>{{ ongoing_game.position }}</td>
+                          <td>{{ ongoing_game.name }}</td>
+                          <td>{{ ongoing_game.time_bp }}</td>
+                        </tr>
+                      {% endif %}
+                    {% endfor %}
+                    {% for dnf_game in dnf_game_list %}
+                      {% if dnf_game.competition == forloop.parentloop.counter0 %}
+                        <tr>
+                          <td>{{ dnf_game.position }}</td>
+                          <td>{{ dnf_game.name }}</td>
+                          <td>{{ dnf_game.time_bp }}</td>
+                        </tr>
+                      {% endif %}
+                    {% endfor %}
+                  </table> 
+                </div>
+              {% else %}
+                <p>Nobody has clocked a time yet. be the first, sign up now!</p>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p>No quests are available.</p>
+      {% endif %}
+    </div>
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+  </body>
+</html>
