@@ -23,7 +23,7 @@ def leaderboards(request):
     ended_game_list = []
     ongoing_game_list = []
     dnf_game_list = []
-    competitions_list = Competition.objects.all()
+    competitions_list = Competition.objects.all().order_by("name")
     number_of_competitions = len(competition_list)
     competition_number = 0
     for competition in competitions_list:

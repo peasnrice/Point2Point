@@ -7,8 +7,6 @@ from django.forms.models import modelformset_factory
 from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime, time
 from django.utils.timezone import utc
-from pytz import timezone
-import pytz
 from django.http import HttpResponse
 from twilio.rest import TwilioRestClient
 from twilio.twiml import Response

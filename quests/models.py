@@ -4,8 +4,6 @@ from datetime import datetime, time
 from django.utils.timezone import utc
 from django.forms import ModelForm
 from django.db.models import Count
-from pytz import timezone
-import pytz
 from django.db import models
 import timedelta, datetime
 
