@@ -2,7 +2,7 @@ from quests.models import Competition, Team, GameInstance, GameStage
 
 def game_logic(from_number, from_text):
     teams = Team.objects.filter(phone_number=from_number)
-    
+
     return_message = ""
     if not teams:
         return_message = "Sorry, you aren't registered in an active Quest, register at www.Point2Point.com"
@@ -29,29 +29,16 @@ def game_logic(from_number, from_text):
                 return_message = "Stage no. " + str(game.current_question) + "/" + str(game.competition.getQuestLength()) + "\n"
                 
                 if game.current_question != 0:
-                    s = game.average_time.seconds
-                    hours, remainder = divmod(s, 3600)
-                    minutes, seconds = divmod(remainder, 60)
-                    average_time = '%s:%s:%s' % (hours, minutes, seconds)
-
-                    s = game.game_time.seconds
-                    hours, remainder = divmod(s, 3600)
-                    minutes, seconds = divmod(remainder, 60)
-                    game_time = '%s:%s:%s' % (hours, minutes, seconds)
-
-                    s = game.penalty_time.seconds
-                    hours, remainder = divmod(s, 3600)
-                    minutes, seconds = divmod(remainder, 60)
-                    penalty_time = '%s:%s:%s' % (hours, minutes, seconds)
+                    time = game.getTimeAsText()
                 
                 else:
-                    average_time = "00:00:00"
-                    game_time = "00:00:00"
-                    penalty_time = "00:00:00"
+                    time[0] = "00:00:00"
+                    time[1] = "00:00:00"
+                    time[2] = "00:00:00"
 
-                return_message += "avg solve time: " + average_time + "\n"
-                return_message += "game time: " + game_time + "\n"
-                return_message += "penalty time: " + penalty_time + "\n"
+                return_message += "avg solve time: " + time[0] + "\n"
+                return_message += "game time: " + time[1] + "\n"
+                return_message += "penalty time: " + time[2] + "\n"
             elif from_text == "game quit":
                 return_message += "you have left the game! =( if this was in error contact support @XXX-XXX-XXXX"
                 game.dnf = True
@@ -74,10 +61,7 @@ def game_logic(from_number, from_text):
                             game.current_question += 1
                             game.save()
                         game.createGameStage()
-                        game.total_time = game.getTotalTime()
-                        game.game_time = game.getGameTime()
-                        game.penalty_time = game.getPenaltyTime()
-                        game.average_time = game.getAverageTime()
+                        game.updateGameTime()
                         game.save()
 
                         if game.ended == True:

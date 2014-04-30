@@ -36,7 +36,6 @@ def detail(request, competition_id):
     if form_t.is_valid():
         save_team = form_t.save(commit=False)
         save_team.save()
-        competition = Competition.objects.get(id=competition_id)
         competition.createGameInstance(save_team.id)
         competition.save()
         team = Team.objects.get(id=save_team.id)

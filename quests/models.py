@@ -10,11 +10,11 @@ from django.db import models
 import timedelta, datetime
 
 class Competition(models.Model):
-    name = models.CharField(max_length=32)
-    start_destination = models.CharField(max_length=140)
+    name = models.CharField(max_length=512)
+    start_destination = models.CharField(max_length=512)
     description = models.CharField(max_length=512)
-    greeting = models.CharField(max_length=140)
-    congratulation = models.CharField(max_length=140)
+    greeting = models.CharField(max_length=512)
+    congratulation = models.CharField(max_length=512)
     estimated_duration = models.IntegerField()
     team_size_limit = models.IntegerField()
     creators_name = models.CharField(max_length=32)
@@ -83,6 +83,31 @@ class GameInstance(models.Model):
         else:
             time_delta = (self.getGameTime()+self.getPenaltyTime())/questions
         return time_delta         
+    def updateGameTime(self):
+        self.game_time = self.getGameTime()
+        self.penalty_time = self.getPenaltyTime()
+        self.total_time = self.getTotalTime()
+        self.average_time = self.getAverageTime()
+        self.save()
+    def getTimeAsText(self):
+        s = self.average_time.seconds
+        hours, remainder = divmod(s, 3600)
+        minutes, seconds = divmod(remainder, 60)
+        average_time = '%s:%s:%s' % (hours, minutes, seconds)
+
+        s = self.game_time.seconds
+        hours, remainder = divmod(s, 3600)
+        minutes, seconds = divmod(remainder, 60)
+        game_time = '%s:%s:%s' % (hours, minutes, seconds)
+
+        s = self.penalty_time.seconds
+        hours, remainder = divmod(s, 3600)
+        minutes, seconds = divmod(remainder, 60)
+        penalty_time = '%s:%s:%s' % (hours, minutes, seconds)
+
+        return average_time, game_time, penalty_time
+
+
     def addPenalty(self,mins):
         game_stage = GameStage.objects.filter(gameinstance=self.id).get(stage=self.current_question)
         game_stage.penalty += mins
