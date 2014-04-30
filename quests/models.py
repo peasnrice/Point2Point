@@ -43,6 +43,12 @@ class Competition(models.Model):
     def __unicode__(self):
         return self.name
 
+def strfdelta(tdelta, fmt):
+    d = {"days": tdelta.days}
+    d["hours"], rem = divmod(tdelta.seconds, 3600)
+    d["minutes"], d["seconds"] = divmod(rem, 60)
+    return fmt.format(**d)
+
 class GameInstance(models.Model):
     competition = models.ForeignKey('Competition')
     total_time = timedelta.fields.TimedeltaField(blank=True, null=True)
@@ -90,20 +96,9 @@ class GameInstance(models.Model):
         self.average_time = self.getAverageTime()
         self.save()
     def getTimeAsText(self):
-        s = self.average_time.seconds
-        hours, remainder = divmod(s, 3600)
-        minutes, seconds = divmod(remainder, 60)
-        average_time = '%s:%s:%s' % (hours, minutes, seconds)
-
-        s = self.game_time.seconds
-        hours, remainder = divmod(s, 3600)
-        minutes, seconds = divmod(remainder, 60)
-        game_time = '%s:%s:%s' % (hours, minutes, seconds)
-
-        s = self.penalty_time.seconds
-        hours, remainder = divmod(s, 3600)
-        minutes, seconds = divmod(remainder, 60)
-        penalty_time = '%s:%s:%s' % (hours, minutes, seconds)
+        average_time = strfdelta(self.average_time, "{hours}h {minutes}m {seconds}s")
+        game_time = strfdelta(self.game_time, "{hours}h {minutes}m {seconds}s")
+        penalty_time = strfdelta(self.penalty_time, "{hours}h {minutes}m {seconds}s")
 
         return average_time, game_time, penalty_time
 

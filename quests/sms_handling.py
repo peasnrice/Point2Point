@@ -1,5 +1,11 @@
 from quests.models import Competition, Team, GameInstance, GameStage
 
+def strfdelta(tdelta, fmt):
+    d = {"days": tdelta.days}
+    d["hours"], rem = divmod(tdelta.seconds, 3600)
+    d["minutes"], d["seconds"] = divmod(rem, 60)
+    return fmt.format(**d)
+
 def game_logic(from_number, from_text):
     teams = Team.objects.filter(phone_number=from_number)
 
@@ -28,13 +34,10 @@ def game_logic(from_number, from_text):
             elif from_text == "game info":
                 return_message = "Stage no. " + str(game.current_question) + "/" + str(game.competition.getQuestLength()) + "\n"
                 
+                time = ["0h 0m 0s", "0h 0m 0s", "0h 0m 0s"]
+
                 if game.current_question != 0:
                     time = game.getTimeAsText()
-                
-                else:
-                    time[0] = "00:00:00"
-                    time[1] = "00:00:00"
-                    time[2] = "00:00:00"
 
                 return_message += "avg solve time: " + time[0] + "\n"
                 return_message += "game time: " + time[1] + "\n"
@@ -65,38 +68,18 @@ def game_logic(from_number, from_text):
                         game.save()
 
                         if game.ended == True:
-                            s = game.total_time.seconds
-                            hours, remainder = divmod(s, 3600)
-                            minutes, seconds = divmod(remainder, 60)
-                            total_time = '%s:%s:%s' % (hours, minutes, seconds)
-
-                            s = game.game_time.seconds
-                            hours, remainder = divmod(s, 3600)
-                            minutes, seconds = divmod(remainder, 60)
-                            game_time = '%s:%s:%s' % (hours, minutes, seconds)
-
-                            s = game.penalty_time.seconds
-                            hours, remainder = divmod(s, 3600)
-                            minutes, seconds = divmod(remainder, 60)
-                            penalty_time = '%s:%s:%s' % (hours, minutes, seconds)
-
-                            s = game.total_time.seconds
-                            hours, remainder = divmod(s, 3600)
-                            minutes, seconds = divmod(remainder, 60)
-                            overall_time = '%s:%s:%s' % (hours, minutes, seconds)
-
-                            s = game.average_time.seconds
-                            hours, remainder = divmod(s, 3600)
-                            minutes, seconds = divmod(remainder, 60)
-                            average_time = '%s:%s:%s' % (hours, minutes, seconds)
+                            total_time = strfdelta(game.total_time, "{hours}h {minutes}m {seconds}s")
+                            game_time = strfdelta(game.game_time, "{hours}h {minutes}m {seconds}s")
+                            penalty_time = strfdelta(game.penalty_time, "{hours}h {minutes}m {seconds}s")
+                            average_time = strfdelta(game.average_time, "{hours}h {minutes}m {seconds}s")
 
                             return_message = "Congratulations!"
                             if game.penalty_time.seconds == 0:
-                                return_message += " Your overall time, with no penalties, was " + overall_time + "."
+                                return_message += " Your overall time, with no penalties, was " + total_time + "."
                             else:
                                 return_message += " Your game time could have been " + game_time
                                 return_message += " but sadly you picked up " + penalty_time + " in penalties"
-                                return_message += " bringing your overall time to " + overall_time +".\n"
+                                return_message += " bringing your overall time to " + total_time +".\n"
                             return_message += "Thank you for playing! Please give use feedback, good or bad, at feedback@Point2Point.com!\n"
                             return_message += "We hope to see you again soon, happy questing!"
                         else:
