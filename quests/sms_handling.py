@@ -104,7 +104,7 @@ def skip(game):
     current_question = QuestionsSolutionPair.objects.filter(competition=game.competition).get(question_number=game.current_question)
     skip_text = ""
     if current_question.is_pause == True:
-        skip_text = "Sorry, you can't skip a break like this, please reply with 'repeat' to see what word to use D= ???"
+        return "%s.\n\n%s" %("Sorry, you can't skip a break like this.", current_question.question_text)
     elif game.current_question < game.competition.getQuestLength():
         game.current_question += 1
         game.penalty_time += timedelta(minutes=30)
