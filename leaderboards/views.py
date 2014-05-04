@@ -30,7 +30,7 @@ def leaderboards(request):
         position = 0
         competition_list.append(competition.name)
         
-        game_instances = GameInstance.objects.filter(competition=competition.id).order_by("game_time")
+        game_instances = GameInstance.objects.filter(competition=competition.id).order_by("total_time")
         ended_games = game_instances.filter(ended=True).filter(dnf=False)
         ongoing_games = game_instances.filter(ended=False)
         dnf_games = game_instances.filter(dnf=True)
@@ -51,7 +51,7 @@ def leaderboards(request):
             time_ap = strfdelta(ongoing_game.total_time, "{hours}h {minutes}m {seconds}s")
             average_time = strfdelta(ongoing_game.average_time, "{hours}h {minutes}m {seconds}s")
             l = LeaderboardGameData(competition_number, position, team_name, time_bp, time_ap, average_time)
-            ongoing_game_list.append(l)  
+            ongoing_game_list.append(l)
 
         for dnf_game in dnf_games:
             position = "dnf"

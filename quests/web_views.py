@@ -40,9 +40,7 @@ def detail(request, competition_id):
         game = team.gameinstance
         question = game.current_question
         sms_text = competition.getQSPairTextByQNum(question)
-        game.createGameStage()
-        sms_text = sms_text.replace("<team>", save_team.name)
-        sms_text = sms_text.replace("<captain>", save_team.captain_name)        
+        game.createGameStage()      
         client = TwilioRestClient(TWILIO_ACCOUNT_SID,
                                   TWILIO_AUTH_TOKEN)
         message = client.messages.create(body=sms_text,
