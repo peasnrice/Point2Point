@@ -10,6 +10,5 @@ urlpatterns = patterns('',
     url(r'^leaderboards/', include('leaderboards.urls')),
     url(r'^about/', include('about.urls')),
     url(r'^contact/', include('contact.urls')),
-   	url(r'^events/', include('eventhandler.urls')),
    	url(r'^admin/', include(admin.site.urls)),
 )
