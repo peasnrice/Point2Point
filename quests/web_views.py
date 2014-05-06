@@ -55,7 +55,7 @@ class LeaderboardGameData:
         self.name = name_
         self.time_bp = time_bp_
         self.time_ap = time_ap_
-        self.average_time = average_time_        
+        self.average_time = average_time_  
 
 def leaderboards(request):
     competition_list = []
@@ -103,7 +103,8 @@ def leaderboards(request):
             
         competition_number += 1
     context = {'competition_list': competition_list}
-    return render_to_response('quests/leaderboards.html', locals(), context_instance=RequestContext(request)) 
+    return render_to_response('quests/leaderboards.html', locals(), context_instance=RequestContext(request))   
+
 
 # When the user replies to a question the response is checked here
 @twilio_view

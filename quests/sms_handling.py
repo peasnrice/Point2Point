@@ -1,5 +1,62 @@
 from quests.models import Competition, Team, GameInstance, GameStage, QuestionsSolutionPair, Solution
 from datetime import datetime, time, timedelta
+from eventhandler.tasks import resumeGame
+
+def game_logic(from_number, from_text):
+    teams = Team.objects.filter(phone_number=from_number)
+
+    return_message = ""
+    if not teams:
+        return_message = "Sorry, you aren't registered in an active Quest, register at www.Point2Point.com"
+    # otherwise let's see if they are already playing
+    else:
+        has_active_game = False
+        active_team = Team()
+        for team in teams:
+            if team.gameinstance.ended == False:
+                has_active_game = True
+                active_team = team
+                break
+        # active game detected! start verifying the message
+        if has_active_game == True:
+            game = active_team.gameinstance
+            from_text = from_text.lower()
+            
+            if from_text == "game help":
+                return_message = help(game)
+
+            elif from_text =="repeat":
+                return_message = repeat(game)
+            
+            elif from_text == "game info":
+                return_message = gameInfo(game)
+            
+            elif from_text == "game quit":
+                return_message = quit(game)
+
+            elif from_text == "clue hint":
+                return_message = clueHint(game)
+            
+            elif from_text == "location hint":
+                return_message = locationHint(game)
+
+            elif from_text == "skip":
+                return_message = skip(game)
+
+            else:
+                solutions = game.competition.getSolutions(game.current_question)
+                sln_found = False
+                for solution in solutions:
+                    if from_text == solution.solution_text.lower():
+                        return_message = correctAnswer(game)
+                        sln_found = True
+                        break
+                if sln_found == False:
+                    return_message = incorrectAnswer(game)
+        # they exist but uhoh they don't have a game. let them know
+        else:
+            return_message = "Sorry, you don't appear to be participating in an active game"
+    return return_message
 
 def correctAnswer(game):
     if game.current_question == 0:
@@ -20,6 +77,9 @@ def correctAnswer(game):
     game.location_hint_used = False
     game.save()
 
+    qs = QuestionsSolutionPair.objects.filter(competition=game.competition)
+    q = qs.filter(question_number=game.current_question)
+
     if game.ended == True:
         total_time = strfdelta(game.total_time, "{hours}h {minutes}m {seconds}s")
         game_time = strfdelta(game.game_time, "{hours}h {minutes}m {seconds}s")
@@ -35,8 +95,18 @@ def correctAnswer(game):
             return_message += " bringing your overall time to " + total_time +".\n"
         return_message += "Thank you for playing! Please give use feedback, good or bad, at feedback@Point2Point.com!\n"
         return_message += "We hope to see you again soon, happy questing!"
+    elif game.current_question != 0:
+        if q:
+            if q[0].is_pause == True:
+                team = Team.objects.get(gameinstance=game)
+                resumeGame.apply_async([game.pk,team.pk,game.current_question],countdown=q[0].pause_duration.seconds)
+                return "Correct! Take a %s break! %s" %(strfdelta(q[0].pause_duration,"{minutes} minute"), game.competition.getQuestion(game.current_question))
+            else:
+                return game.competition.getQuestion(game.current_question) 
+        else:
+            return game.competition.getQuestion(game.current_question) 
     else:
-        return_message = game.competition.getQuestion(game.current_question)
+        return game.competition.getQuestion(game.current_question) 
     return return_message
 
 def incorrectAnswer(game):
@@ -158,59 +228,3 @@ def strfdelta(tdelta, fmt):
     d["hours"], rem = divmod(tdelta.seconds, 3600)
     d["minutes"], d["seconds"] = divmod(rem, 60)
     return fmt.format(**d)
-
-def game_logic(from_number, from_text):
-    teams = Team.objects.filter(phone_number=from_number)
-
-    return_message = ""
-    if not teams:
-        return_message = "Sorry, you aren't registered in an active Quest, register at www.Point2Point.com"
-    # otherwise let's see if they are already playing
-    else:
-        has_active_game = False
-        active_team = Team()
-        for team in teams:
-            if team.gameinstance.ended == False:
-                has_active_game = True
-                active_team = team
-                break
-        # active game detected! start verifying the message
-        if has_active_game == True:
-            game = active_team.gameinstance
-            from_text = from_text.lower()
-            
-            if from_text == "game help":
-                return_message = help(game)
-
-            elif from_text =="repeat":
-                return_message = repeat(game)
-            
-            elif from_text == "game info":
-                return_message = gameInfo(game)
-            
-            elif from_text == "game quit":
-                return_message = quit(game)
-
-            elif from_text == "clue hint":
-                return_message = clueHint(game)
-            
-            elif from_text == "location hint":
-                return_message = locationHint(game)
-
-            elif from_text == "skip":
-                return_message = skip(game)
-
-            else:
-                solutions = game.competition.getSolutions(game.current_question)
-                sln_found = False
-                for solution in solutions:
-                    if from_text == solution.solution_text.lower():
-                        return_message = correctAnswer(game)
-                        sln_found = True
-                        break
-                if sln_found == False:
-                    return_message = incorrectAnswer(game)
-        # they exist but uhoh they don't have a game. let them know
-        else:
-            return_message = "Sorry, you don't appear to be participating in an active game"
-    return return_message

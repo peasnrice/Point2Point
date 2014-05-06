@@ -132,6 +132,7 @@ class GameInstance(models.Model):
                                                 location_hint_used = self.location_hint_used)
         new_game_stage_instance.save()
         self.gamestage_set.add(GameStage.objects.get(id=new_game_stage_instance.id))
+
     def __unicode__(self):
         return "COMP: " + str(self.competition.name) + " - ID: " + str(self.id)
 
@@ -177,6 +178,7 @@ class QuestionsSolutionPair(models.Model):
     clue_hint_text = models.CharField(max_length=512)
     location_hint_text = models.CharField(max_length=512)
     is_pause = models.BooleanField(default=False)
+    pause_duration = timedelta.fields.TimedeltaField(blank=True, null=True)
     def __unicode__(self):
         return "COMP: " + str(self.competition.name) + " - Q#: " + str(self.question_number)
 
