@@ -84,6 +84,7 @@
                     <tr>
                       <th>#</th>
                       <th>Team Name</th>
+                      <th>Penalties Incurred</th>
                       <th>Time Before Penalties</th>
                       <th>Time After Penalties</th>
                       <th>Average Solve Time</th>
@@ -93,6 +94,7 @@
                         <tr>
                           <td>{{ ended_game.position }}</td>
                           <td>{{ ended_game.name }}</td>
+                          <td>{{ ended_game.penalties }}</td>
                           <td>{{ ended_game.time_bp }}</td>
                           <td>{{ ended_game.time_ap }}</td>
                           <td>{{ ended_game.average_time }}</td>
@@ -104,6 +106,7 @@
                         <tr>
                           <td>{{ ongoing_game.position }}</td>
                           <td>{{ ongoing_game.name }}</td>
+                          <td>{{ ongoing_game.penalties }}</td>
                           <td>{{ ongoing_game.time_bp }}</td>
                         </tr>
                       {% endif %}
@@ -113,6 +116,7 @@
                         <tr>
                           <td>{{ dnf_game.position }}</td>
                           <td>{{ dnf_game.name }}</td>
+                          <td>{{ dnf_game.penalties }}</td>
                           <td>{{ dnf_game.time_bp }}</td>
                         </tr>
                       {% endif %}

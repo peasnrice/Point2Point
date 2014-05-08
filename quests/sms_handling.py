@@ -81,10 +81,10 @@ def correctAnswer(game):
     q = qs.filter(question_number=game.current_question)
 
     if game.ended == True:
-        total_time = strfdelta(game.total_time, "{hours}h {minutes}m {seconds}s")
-        game_time = strfdelta(game.game_time, "{hours}h {minutes}m {seconds}s")
-        penalty_time = strfdelta(game.penalty_time, "{hours}h {minutes}m {seconds}s")
-        average_time = strfdelta(game.average_time, "{hours}h {minutes}m {seconds}s")
+        total_time = strfdelta(game.total_time, "{hours}:{minutes}:{seconds}")
+        game_time = strfdelta(game.game_time, "{hours}:{minutes}:{seconds}")
+        penalty_time = strfdelta(game.penalty_time, "{minutes}")
+        average_time = strfdelta(game.average_time, "{hours}:{minutes}:{seconds}")
 
         return_message = "Congratulations!"
         if game.penalty_time.seconds == 0:
@@ -227,4 +227,7 @@ def strfdelta(tdelta, fmt):
     d = {"days": tdelta.days}
     d["hours"], rem = divmod(tdelta.seconds, 3600)
     d["minutes"], d["seconds"] = divmod(rem, 60)
+    d["hours"] = "%02d" % (d["hours"],)
+    d["minutes"] = "%02d" % (d["minutes"],)
+    d["seconds"] = "%02d" % (d["seconds"],)  
     return fmt.format(**d)

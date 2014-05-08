@@ -3,18 +3,24 @@ from quests.models import Competition, GameInstance
 from time import strftime
 
 class LeaderboardGameData:
-    def __init__(self, competition_number_, position_, name_, time_bp_, time_ap_, average_time_):
+    def __init__(self, competition_number_, position_, name_, time_bp_, time_ap_, 
+                 average_time_, penalties_):
         self.competition = competition_number_
         self.position = str(position_)
         self.name = name_
         self.time_bp = time_bp_
         self.time_ap = time_ap_
-        self.average_time = average_time_  
+        self.average_time = average_time_ 
+        self.penalties = penalties_
+
 
 def strfdelta(tdelta, fmt):
     d = {"days": tdelta.days}
     d["hours"], rem = divmod(tdelta.seconds, 3600)
     d["minutes"], d["seconds"] = divmod(rem, 60)
+    d["hours"] = "%02d" % (d["hours"],)
+    d["minutes"] = "%02d" % (d["minutes"],)
+    d["seconds"] = "%02d" % (d["seconds"],)    
     return fmt.format(**d)
 
 # Returns Home Page from url /
@@ -38,28 +44,31 @@ def leaderboards(request):
         for ended_game in ended_games:
             position += 1
             team_name = ended_game.getTeamName()
-            time_bp = strfdelta(ended_game.game_time, "{hours}h {minutes}m {seconds}s")
-            time_ap = strfdelta(ended_game.total_time, "{hours}h {minutes}m {seconds}s")
-            average_time = strfdelta(ended_game.average_time, "{hours}h {minutes}m {seconds}s")
-            l = LeaderboardGameData(competition_number, position, team_name, time_bp, time_ap, average_time)
+            time_bp = strfdelta(ended_game.game_time, "{hours}:{minutes}:{seconds}")
+            time_ap = strfdelta(ended_game.total_time, "{hours}:{minutes}:{seconds}")
+            average_time = strfdelta(ended_game.average_time, "{hours}:{minutes}:{seconds}")
+            penalties = ended_game.incorrect_answers + ended_game.location_hints_used + ended_game.clue_hints_used
+            l = LeaderboardGameData(competition_number, position, team_name, time_bp, time_ap, average_time, penalties)
             ended_game_list.append(l)
 
         for ongoing_game in ongoing_games:
             position = "in progress"
             team_name = ongoing_game.getTeamName()
-            time_bp = strfdelta(ongoing_game.game_time, "{hours}h {minutes}m {seconds}s")
-            time_ap = strfdelta(ongoing_game.total_time, "{hours}h {minutes}m {seconds}s")
-            average_time = strfdelta(ongoing_game.average_time, "{hours}h {minutes}m {seconds}s")
-            l = LeaderboardGameData(competition_number, position, team_name, time_bp, time_ap, average_time)
+            time_bp = strfdelta(ongoing_game.game_time, "{hours}:{minutes}:{seconds}")
+            time_ap = strfdelta(ongoing_game.total_time, "{hours}:{minutes}:{seconds}")
+            average_time = strfdelta(ongoing_game.average_time, "{hours}:{minutes}:{seconds}")
+            penalties = ongoing_game.incorrect_answers + ongoing_game.location_hints_used + ongoing_game.clue_hints_used
+            l = LeaderboardGameData(competition_number, position, team_name, time_bp, time_ap, average_time, penalties)
             ongoing_game_list.append(l)
 
         for dnf_game in dnf_games:
             position = "dnf"
             team_name = dnf_game.getTeamName()
-            time_bp = strfdelta(dnf_game.game_time, "{hours}h {minutes}m {seconds}s")
-            time_ap = strfdelta(dnf_game.total_time, "{hours}h {minutes}m {seconds}s")
-            average_time = strfdelta(dnf_game.average_time, "{hours}h {minutes}m {seconds}s")
-            l = LeaderboardGameData(competition_number, position, team_name, time_bp, time_ap, average_time)
+            time_bp = strfdelta(dnf_game.game_time, "{hours}:{minutes}:{seconds}")
+            time_ap = strfdelta(dnf_game.total_time, "{hours}:{minutes}:{seconds}")
+            average_time = strfdelta(dnf_game.average_time, "{hours}:{minutes}:{seconds}")
+            penalties = dnf_game.incorrect_answers + dnf_game.location_hints_used + dnf_game.clue_hints_used
+            l = LeaderboardGameData(competition_number, position, team_name, time_bp, time_ap, average_time, penalties)
             dnf_game_list.append(l)     
             
         competition_number += 1
