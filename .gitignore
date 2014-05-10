@@ -49,6 +49,6 @@ coverage.xml
 # Sphinx documentation
 docs/_build/
 
-settings.py
-
 db.sqlite3
+
+local_settings.py
