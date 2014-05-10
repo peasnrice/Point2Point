@@ -1,5 +1,5 @@
 from Point2Point import settings
-from django.shortcuts import render, get_object_or_404, render_to_response, render, RequestContext
+from django.shortcuts import render, get_object_or_404, render_to_response, render, RequestContext, HttpResponseRedirect
 from quests.models import Competition, Team, Player, GameInstance
 #from quests.utils import *
 from quests.forms import PlayerForm, TeamForm
@@ -46,6 +46,7 @@ def detail(request, competition_id):
         message = client.messages.create(body=sms_text,
             to=save_team.phone_number,
             from_="+14385001559")
+        return HttpResponseRedirect('/')
     return render_to_response('quests/detail.html', locals(), context_instance=RequestContext(request)) 
  
 class LeaderboardGameData:

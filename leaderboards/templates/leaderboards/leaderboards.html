@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 <html lang="en">
 {% load staticfiles %}
 {% load bootstrap3 %}
@@ -15,13 +16,9 @@
 
     <title>Point2Point!</title>
 
-    <!-- Bootstrap core CSS -->
-    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap theme -->
-    <link href="/static/css/bootstrap-theme.min.css" rel="stylesheet">
-
     <!-- Custom styles for this template -->
-    <link href="theme.css" rel="stylesheet">
+    <link href="{% static "dist/css/jumbotron.css" %}" rel="stylesheet">
+    <link href="{% static "dist/css/navbar.css" %}" rel="stylesheet">
 
     <!-- Just for debugging purposes. Don't actually copy this line! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
@@ -33,20 +30,21 @@
     <![endif]-->
   </head>
 
-  <body role="document">
-
-    <header class="navbar navbar-default" id="top" role="banner">
+  <body>
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
       <div class="container">
-        <div class="navbar-header">
-          <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a href="/" class="navbar-brand">Point2Point</a>
+        <div class="container">
+          <a class="navbar-brand" href="/"> <img src="{% static "assets/images/P2P_brand.png" %}"></a>
         </div>
-        <nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          </button>
+        </div>
+        <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
             <li>
               <a href="/quests">Choose a Quest</a>
@@ -61,82 +59,79 @@
               <a href="/contact">Contact Us</a>
             </li>
           </ul>
-        </nav>
+        </div>
       </div>
-    </header>
+    </div>
+
+    <div class="jumbotron">
+      <div class="well">
+        <h1>Welcome to the Leaderboards!</h1>
+        <p>See how you fair against your competitors</p>
+      </div>
+    </div>
 
     <div class="container theme-showcase" role="main">
-    <!-- Main jumbotron for a primary marketing message or call to action -->
-    <div class="jumbotron">
-      <h1>Welcome to the Leaderboards!</h1>
-      <p>See how you fair against your competitors</p>
-    </div>
-
-    <div class="container">
-      {% if competition_list %}
-        {% for competition in competition_list %}
-          <div class="well well-lg">
-            <div class="row">
-              <h2>{{ competition }}</h2>
-              {% if ended_game_list %}
-                <div class = "table-responsive">
-                  <table class="table">
-                    <tr>
-                      <th>#</th>
-                      <th>Team Name</th>
-                      <th>Penalties Incurred</th>
-                      <th>Time Before Penalties</th>
-                      <th>Time After Penalties</th>
-                      <th>Average Solve Time</th>
-                    </tr>
-                    {% for ended_game in ended_game_list %}
-                      {% if ended_game.competition == forloop.parentloop.counter0 %}
-                        <tr>
-                          <td>{{ ended_game.position }}</td>
-                          <td>{{ ended_game.name }}</td>
-                          <td>{{ ended_game.penalties }}</td>
-                          <td>{{ ended_game.time_bp }}</td>
-                          <td>{{ ended_game.time_ap }}</td>
-                          <td>{{ ended_game.average_time }}</td>
-                        </tr>
-                      {% endif %}
-                    {% endfor %}
-                    {% for ongoing_game in ongoing_game_list %}
-                      {% if ongoing_game.competition == forloop.parentloop.counter0 %}
-                        <tr>
-                          <td>{{ ongoing_game.position }}</td>
-                          <td>{{ ongoing_game.name }}</td>
-                          <td>{{ ongoing_game.penalties }}</td>
-                          <td>{{ ongoing_game.time_bp }}</td>
-                        </tr>
-                      {% endif %}
-                    {% endfor %}
-                    {% for dnf_game in dnf_game_list %}
-                      {% if dnf_game.competition == forloop.parentloop.counter0 %}
-                        <tr>
-                          <td>{{ dnf_game.position }}</td>
-                          <td>{{ dnf_game.name }}</td>
-                          <td>{{ dnf_game.penalties }}</td>
-                          <td>{{ dnf_game.time_bp }}</td>
-                        </tr>
-                      {% endif %}
-                    {% endfor %}
-                  </table> 
-                </div>
-              {% else %}
-                <p>Nobody has clocked a time yet. be the first, sign up now!</p>
-              {% endif %}
+      <div class="container">
+        {% if competition_list %}
+          {% for competition in competition_list %}
+            <div class="featurette">
+              <div class="row">
+                <h2>{{ competition }}</h2>
+                {% if ended_game_list %}
+                  <div class = "table-responsive">
+                    <table class="table">
+                      <tr>
+                        <th>#</th>
+                        <th>Team Name</th>
+                        <th>Penalties Incurred</th>
+                        <th>Time Before Penalties</th>
+                        <th>Time After Penalties</th>
+                        <th>Average Solve Time</th>
+                      </tr>
+                      {% for ended_game in ended_game_list %}
+                        {% if ended_game.competition == forloop.parentloop.counter0 %}
+                          <tr>
+                            <td>{{ ended_game.position }}</td>
+                            <td>{{ ended_game.name }}</td>
+                            <td>{{ ended_game.penalties }}</td>
+                            <td>{{ ended_game.time_bp }}</td>
+                            <td>{{ ended_game.time_ap }}</td>
+                            <td>{{ ended_game.average_time }}</td>
+                          </tr>
+                        {% endif %}
+                      {% endfor %}
+                      {% for ongoing_game in ongoing_game_list %}
+                        {% if ongoing_game.competition == forloop.parentloop.counter0 %}
+                          <tr>
+                            <td>{{ ongoing_game.position }}</td>
+                            <td>{{ ongoing_game.name }}</td>
+                            <td>{{ ongoing_game.penalties }}</td>
+                            <td>{{ ongoing_game.time_bp }}</td>
+                          </tr>
+                        {% endif %}
+                      {% endfor %}
+                      {% for dnf_game in dnf_game_list %}
+                        {% if dnf_game.competition == forloop.parentloop.counter0 %}
+                          <tr>
+                            <td>{{ dnf_game.position }}</td>
+                            <td>{{ dnf_game.name }}</td>
+                            <td>{{ dnf_game.penalties }}</td>
+                            <td>{{ dnf_game.time_bp }}</td>
+                          </tr>
+                        {% endif %}
+                      {% endfor %}
+                    </table> 
+                  </div>
+                {% else %}
+                  <p>Nobody has clocked a time yet. be the first, sign up now!</p>
+                {% endif %}
+              </div>
             </div>
-          </div>
-        {% endfor %}
-      {% else %}
-        <p>No quests are available.</p>
-      {% endif %}
+          {% endfor %}
+        {% else %}
+          <p>No quests are available.</p>
+        {% endif %}
+      </div>
     </div>
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <script src="/static/js/bootstrap.min.js"></script>
   </body>
 </html>
