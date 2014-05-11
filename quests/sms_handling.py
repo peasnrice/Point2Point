@@ -1,6 +1,14 @@
 from quests.models import Competition, Team, GameInstance, GameStage, QuestionsSolutionPair, Solution
 from datetime import datetime, time, timedelta
 from eventhandler.tasks import resumeGame
+from twilio.rest import TwilioRestClient
+
+def send_msg(to_number, text):
+    client = TwilioRestClient(TWILIO_ACCOUNT_SID,
+                              TWILIO_AUTH_TOKEN)
+ 
+    message = client.messages.create(to=to_number, from_="+14385001559",
+                                     body=text)
 
 def game_logic(from_number, from_text):
     teams = Team.objects.filter(phone_number=from_number)
@@ -58,6 +66,7 @@ def game_logic(from_number, from_text):
             return_message = "Sorry, you don't appear to be participating in an active game"
     return return_message
 
+#if a correct answer is found we check to see if the user has finished
 def correctAnswer(game):
     if game.current_question == 0:
         game.started = True
@@ -171,7 +180,8 @@ def locationHint(game):
     return "%s %s" %(hint_text, current_question.location_hint_text)
 
 def skip(game):
-    current_question = QuestionsSolutionPair.objects.filter(competition=game.competition).get(question_number=game.current_question)
+    q_set = QuestionsSolutionPair.objects.filter(competition=game.competition)
+    current_question = q_set.get(question_number=game.current_question)
     skip_text = ""
     if current_question.is_pause == True:
         return "%s.\n\n%s" %("Sorry, you can't skip a break like this.", current_question.question_text)
@@ -179,17 +189,34 @@ def skip(game):
         game.current_question += 1
         game.penalty_time += timedelta(minutes=30)
         game.save()
+        current_question = q_set.get(question_number=game.current_question)
+        skip_text = "%s.\n\n%s" %("You skipped the question but at a price of 30 minutes.", current_question.question_text)
     else:
         game.ended = True
+        game.penalty_time += timedelta(minutes=30)
+        game.updateGameTime()
         game.current_question += 1
         game.save()
+        total_time = strfdelta(game.total_time, "{hours}:{minutes}:{seconds}")
+        game_time = strfdelta(game.game_time, "{hours}:{minutes}:{seconds}")
+        penalty_time = strfdelta(game.penalty_time, "{hours}:{minutes}")
+        average_time = strfdelta(game.average_time, "{hours}:{minutes}:{seconds}")
+
+        skip_text = "Aww you skipped the final question and picked up a 30 minute penalty =(\n\n"
+        if game.penalty_time.seconds == 0:
+            skip_text += " Your overall time, with no penalties, was " + total_time + "."
+        else:
+            skip_text += "Your game time could have been " + game_time
+            skip_text += " but sadly you picked up " + penalty_time + " in penalties"
+            skip_text += " bringing your overall time to " + total_time +".\n"
+        skip_text += "Thank you for playing! Please give use feedback, good or bad, at feedback@Point2Point.com!\n"
+        skip_text += "We hope to see you again soon, happy questing!"
     game.createGameStage()
     game.updateGameTime()
     game.answered_incorrectly = False
     game.clue_hint_used = False
     game.location_hint_used = False
     game.save()
-    skip_text = "%s.\n\n%s" %("You skipped the question but at a price of 30 minutes.", current_question.question_text)
     return skip_text
 
 def addNumber(game):

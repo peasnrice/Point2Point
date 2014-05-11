@@ -27,7 +27,8 @@ def quests(request):
 TWILIO_ACCOUNT_SID = 'AC2b2b2a49dce0a86ed02c04e65e7dbe4e'
 TWILIO_AUTH_TOKEN = 'be50c089508b4af31a136bdf6a662f7c'
 
-#Returns signup page and handles sending welcome text message
+# Displays form page that allows teams to sign up
+# upon signing up twilio sends the user an sms message
 def detail(request, competition_id):
     competition = get_object_or_404(Competition, pk=competition_id)
     form_t = TeamForm(request.POST or None)
@@ -49,6 +50,7 @@ def detail(request, competition_id):
         return HttpResponseRedirect('/')
     return render_to_response('quests/detail.html', locals(), context_instance=RequestContext(request)) 
  
+ # simple class for storing data that is sent to html to be read by rails
 class LeaderboardGameData:
     def __init__(self, competition_number_, position_, name_, time_bp_, time_ap_, average_time_):
         self.competition = competition_number_
@@ -58,6 +60,7 @@ class LeaderboardGameData:
         self.time_ap = time_ap_
         self.average_time = average_time_  
 
+# returns a list of leaderboardgamedata objects and displays the leaderboard page
 def leaderboards(request):
     competition_list = []
     ended_game_list = []

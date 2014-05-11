@@ -31,6 +31,7 @@ INSTALLED_APPS = (
     'django_twilio',
     'bootstrap3',
     'djcelery',
+    'pytz',
 )
 
 MIDDLEWARE_CLASSES = (
