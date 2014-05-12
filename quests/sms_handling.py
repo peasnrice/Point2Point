@@ -197,10 +197,10 @@ def skip(game):
         game.penalty_time += timedelta(minutes=30)
         game.save()
         current_question = q_set.get(question_number=game.current_question)
-        if current_question.is_pause:
+        if current_question.is_pause == True:
             game.paused = True
             game.save()
-            skip_text = "%s.\n\n%s" %("You skipped the question but at a price of 30 minutes.", current_question.question_text)
+            skip_text = "%s.\n\nTake a %s break! %s" %("You skipped the question but at a price of 30 minutes.", strfdelta(current_question.pause_duration,"{minutes} minute"), current_question.question_text)
         else:
             game.paused = False
             game.save()
