@@ -1,6 +1,8 @@
 from django.shortcuts import render, get_object_or_404, render_to_response, render, RequestContext
-from quests.models import Competition, GameInstance
+from quests.models import Competition, GameInstance, GameStage
 from time import strftime
+import datetime, timedelta
+from django.utils.timezone import utc
 
 class LeaderboardGameData:
     def __init__(self, competition_number_, position_, name_, time_bp_, time_ap_, 
@@ -54,7 +56,15 @@ def leaderboards(request):
         for ongoing_game in ongoing_games:
             position = "in progress"
             team_name = ongoing_game.getTeamName()
-            time_bp = strfdelta(ongoing_game.game_time, "{hours}:{minutes}:{seconds}")
+
+            time_delta = datetime.timedelta(0)
+            if ongoing_game.started == True and ongoing_game.ended == False and ongoing_game.paused == False:
+                gs = GameStage.objects.filter(gameinstance=ongoing_game.id).latest('time_stamp')
+                time_delta = (datetime.datetime.utcnow().replace(tzinfo=utc) - gs.time_stamp) + ongoing_game.game_time
+            else:
+                time_delta = ongoing_game.game_time
+
+            time_bp = strfdelta(time_delta, "{hours}:{minutes}:{seconds}")
             time_ap = strfdelta(ongoing_game.total_time, "{hours}:{minutes}:{seconds}")
             average_time = strfdelta(ongoing_game.average_time, "{hours}:{minutes}:{seconds}")
             penalties = ongoing_game.incorrect_answers + ongoing_game.location_hints_used + ongoing_game.clue_hints_used
