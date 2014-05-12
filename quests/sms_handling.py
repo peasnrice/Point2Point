@@ -107,10 +107,14 @@ def correctAnswer(game):
     elif game.current_question != 0:
         if q:
             if q[0].is_pause == True:
+                game.paused = True
+                game.save()
                 team = Team.objects.get(gameinstance=game)
                 resumeGame.apply_async([game.pk,team.pk,game.current_question],countdown=q[0].pause_duration.seconds)
                 return "Correct! Take a %s break! %s" %(strfdelta(q[0].pause_duration,"{minutes} minute"), game.competition.getQuestion(game.current_question))
             else:
+                game.paused = False
+                game.save()                
                 return game.competition.getQuestion(game.current_question) 
         else:
             return game.competition.getQuestion(game.current_question) 
@@ -126,7 +130,7 @@ def incorrectAnswer(game):
         if solution:
             return "%s \'%s\' %s" %("Sorry we didn't catch that, reply with", solution[0].solution_text, "to continue")
         else:
-            return "%s %s" %("Sorry we didn't catch that, please reply with 'repeat' to repeat instructions")
+            return "%s" %("Sorry we didn't catch that, please reply with 'repeat' to repeat instructions")
     else:          
         if game.answered_incorrectly:
             game.penalty_time += timedelta(minutes=10)
@@ -184,8 +188,11 @@ def skip(game):
     current_question = q_set.get(question_number=game.current_question)
     skip_text = ""
     if current_question.is_pause == True:
+        game.paused = True
+        game.save()
         return "%s.\n\n%s" %("Sorry, you can't skip a break like this.", current_question.question_text)
     elif game.current_question < game.competition.getQuestLength():
+        game.paused = False
         game.current_question += 1
         game.penalty_time += timedelta(minutes=30)
         game.save()

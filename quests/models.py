@@ -1,11 +1,11 @@
 from Point2Point import settings
 from django.db import models
-from datetime import datetime, time
 from django.utils.timezone import utc
 from django.forms import ModelForm
 from django.db.models import Count
 from django.db import models
 import timedelta, datetime
+from django.utils.timezone import utc
 
 class Competition(models.Model):
     name = models.CharField(max_length=512)
@@ -32,7 +32,7 @@ class Competition(models.Model):
         return Solution.objects.filter(questions_solution_pair=question.id)
     def createGameInstance(self, team_id_):
         new_game_instance = GameInstance(competition = self, current_question = 0, 
-                     started = False, ended = False, total_time=datetime.timedelta(seconds=0),
+                     started = False, ended = False, paused = True, total_time=datetime.timedelta(seconds=0),
                         average_time=datetime.timedelta(seconds=0),penalty_time=datetime.timedelta(seconds=0),
                             game_time=datetime.timedelta(seconds=0)) 
         new_game_instance.save()
@@ -52,10 +52,10 @@ def strfdelta(tdelta, fmt):
 
 class GameInstance(models.Model):
     competition = models.ForeignKey('Competition')
-    total_time = timedelta.fields.TimedeltaField(blank=True, null=True)
-    game_time = timedelta.fields.TimedeltaField(blank=True, null=True)
-    penalty_time = timedelta.fields.TimedeltaField(blank=True, null=True)
-    average_time = timedelta.fields.TimedeltaField(blank=True, null=True)
+    total_time = timedelta.fields.TimedeltaField()
+    game_time = timedelta.fields.TimedeltaField()
+    penalty_time = timedelta.fields.TimedeltaField()
+    average_time = timedelta.fields.TimedeltaField()
     current_question = models.IntegerField()
 
     # keeps ongoing record of life lines and incorrect answers
@@ -73,8 +73,10 @@ class GameInstance(models.Model):
     #keeps track of game state
     started = models.BooleanField(default=False)
     ended = models.BooleanField(default=False)
+    paused = models.BooleanField(default=False)
     dnf = models.BooleanField(default=False)
-    __pauseStartTime = datetime
+
+
 
     #returns time excluding break/pause time
     def getGameTime(self):
@@ -105,8 +107,17 @@ class GameInstance(models.Model):
         self.average_time = self.getAverageTime()
         self.save()
     def getTimeAsText(self):
+        
+        time_delta = datetime.timedelta(0)
+        if self.started == True and self.ended == False and self.paused == False:
+            gs = GameStage.objects.filter(gameinstance=self.id).latest('time_stamp')
+            time_delta = (datetime.datetime.utcnow().replace(tzinfo=utc) - gs.time_stamp) + self.game_time
+        else:
+            time_delta = self.game_time
+
+
         average_time = strfdelta(self.average_time, "{hours}h {minutes}m {seconds}s")
-        game_time = strfdelta(self.game_time, "{hours}h {minutes}m {seconds}s")
+        game_time = strfdelta(time_delta, "{hours}h {minutes}m {seconds}s")
         penalty_time = strfdelta(self.penalty_time, "{hours}h {minutes}m {seconds}s")
 
         return average_time, game_time, penalty_time
