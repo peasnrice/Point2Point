@@ -1,7 +1,8 @@
 from quests.models import Competition, Team, GameInstance, GameStage, QuestionsSolutionPair, Solution
-from datetime import datetime, time, timedelta
 from eventhandler.tasks import resumeGame
 from twilio.rest import TwilioRestClient
+import datetime
+from django.utils.timezone import utc
 
 def send_msg(to_number, text):
     client = TwilioRestClient(TWILIO_ACCOUNT_SID,
@@ -69,9 +70,13 @@ def game_logic(from_number, from_text):
 #if a correct answer is found we check to see if the user has finished
 def correctAnswer(game):
     if game.current_question == 0:
-        game.started = True
-        game.current_question += 1
-        game.save()
+        check_time_message = checkTime(game)
+        if check_time_message:
+            return check_time_message
+        else:
+            game.started = True
+            game.current_question += 1
+            game.save()
     elif game.current_question < game.competition.getQuestLength():
         game.current_question += 1
         game.save()
@@ -272,3 +277,39 @@ def strfdelta(tdelta, fmt):
     d["minutes"] = "%02d" % (d["minutes"],)
     d["seconds"] = "%02d" % (d["seconds"],)  
     return fmt.format(**d)
+
+def daysToInts(competition):
+    days = [0] *7
+    if competition.monday == True:
+        days[0] = 1
+    if competition.tuesday == True:
+        days[1] = 1
+    if competition.wednesday == True:
+        days[2] = 1
+    if competition.thursday == True:
+        days[3] = 1
+    if competition.friday == True:
+        days[4] = 1
+    if competition.saturday == True:
+        days[5] = 1
+    if competition.sunday == True:
+        days[6] = 1
+    return days
+
+def checkTime(game):
+    competition = game.competition
+    current_date = datetime.datetime.utcnow().replace(tzinfo=utc)
+    if current_date < competition.start_date or current_date > competition.end_date:
+        return "Sorry, this quest has expired, please contact support if this is a problem"   
+    else:
+        weekday = datetime.datetime.utcnow().replace(tzinfo=utc).weekday()
+        days_available = daysToInts(competition)
+        if days_available[weekday] != 1:
+            return "Sorry, we can't let you start today :(\n\nPlease check online to see when you can participate."
+        else:
+            if current_date.time() > competition.start_time:
+                return "Sorry, we can't let you start at this time as it may ruin your enjoyment. Please check online for available start times"
+
+
+
+

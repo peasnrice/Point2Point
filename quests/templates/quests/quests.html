@@ -84,9 +84,42 @@
                   <div class="col-md-7">
                     <h2 class="featurette-heading">{{ competition.name }} <span class="text-muted"></span></h2>
                     <p class="lead">{{ competition.description }}</p>
+                    <p class="small">Estimated Duration: <b>{{ competition.estimated_duration }} hours</b></p>
+                    <p class="small">Dates Available: <b>{{ competition.start_date|date }}</b> to <b>{{ competition.end_date|date }}</b></p>
+                    <p class="small">Days Available:
+                      {% if competition.saturday == True %}
+                        Saturday
+                      {% endif %}
+
+                      {% if competition.sunday == True %}
+                        Sunday
+                      {% endif %}
+
+                      {% if competition.monday == True %}
+                        Monday
+                      {% endif %}
+
+                      {% if competition.tuesday == True %}
+                        Tuesday
+                      {% endif %}
+
+                      {% if competition.wednesday == True %}
+                        Wednesday
+                      {% endif %}
+
+                      {% if competition.thursday == True %}
+                        Thursday
+                      {% endif %}
+
+                      {% if competition.friday == True %}
+                        Friday
+                      {% endif %}
+                    </p>
+                    <p class="small">Times Available: <b>Monday to Friday</b>, must start by <b>{{ competition.start_time }}</b></p>
+                    <p class="small">Notes: All teams must finish by <b>{{ competition.end_time }}</b></p>
                   </div>
                   <div class="col-md-5">
-                    <a class="btn btn-warning" href="{% url 'detail' competition.id %}" role="button">Sign Up! &raquo;</a>
+                    <a class="btn btn-warning" href="{% url 'detail' competition.id %}" role="button">Sign Up! ${{ competition.price }}</a>
                   </div>
                 </div>
             </div>

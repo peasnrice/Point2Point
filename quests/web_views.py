@@ -1,36 +1,41 @@
-from Point2Point import settings
+from Point2Point.settings import *
 from django.shortcuts import render, get_object_or_404, render_to_response, render, RequestContext, HttpResponseRedirect
+from django.http import Http404
 from quests.models import Competition, Team, Player, GameInstance
 #from quests.utils import *
 from quests.forms import PlayerForm, TeamForm
 from django.forms.models import modelformset_factory
 from django.views.decorators.csrf import csrf_exempt
-from datetime import datetime, time
-from django.utils.timezone import utc
 from django.http import HttpResponse
 from twilio.rest import TwilioRestClient
 from twilio.twiml import Response
 from django_twilio.decorators import twilio_view
 from quests.sms_handling import game_logic
+import datetime
+from django.utils.timezone import utc
 
 import logging
 logger = logging.getLogger(__name__)
 
-
 # Returns Home Page from url /quests/
 def quests(request):
-    competition_list = Competition.objects.all()
-    context = {'competition_list': competition_list}
-    return render(request, 'quests/quests.html', context)
+    competitions = Competition.objects.all()
+    competition_list = []
+    for competition in competitions:
+        current_date = datetime.datetime.utcnow().replace(tzinfo=utc)
+        if current_date > competition.start_date and current_date < competition.end_date:
+            competition_list.append(competition)
 
-# Twilio authentication details
-TWILIO_ACCOUNT_SID = 'AC2b2b2a49dce0a86ed02c04e65e7dbe4e'
-TWILIO_AUTH_TOKEN = 'be50c089508b4af31a136bdf6a662f7c'
+    return render_to_response('quests/quests.html', locals(), context_instance=RequestContext(request)) 
 
 # Displays form page that allows teams to sign up
 # upon signing up twilio sends the user an sms message
 def detail(request, competition_id):
     competition = get_object_or_404(Competition, pk=competition_id)
+    current_date = datetime.datetime.utcnow().replace(tzinfo=utc)
+    if current_date < competition.start_date or current_date > competition.end_date:
+        return render_to_response('quests/sorry.html', locals(), context_instance=RequestContext(request)) 
+
     form_t = TeamForm(request.POST or None)
     if form_t.is_valid():
         save_team = form_t.save(commit=False)

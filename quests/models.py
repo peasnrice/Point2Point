@@ -11,6 +11,7 @@ class Competition(models.Model):
     name = models.CharField(max_length=512)
     start_destination = models.CharField(max_length=512)
     description = models.CharField(max_length=512)
+    price = models.FloatField(default=0.00)
     greeting = models.CharField(max_length=512)
     congratulation = models.CharField(max_length=512)
     estimated_duration = models.IntegerField()
@@ -19,6 +20,15 @@ class Competition(models.Model):
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     date_created = models.DateTimeField(auto_now_add=True)
+    saturday = models.BooleanField(default=False)
+    sunday = models.BooleanField(default=False)
+    monday = models.BooleanField(default=False)
+    tuesday = models.BooleanField(default=False)
+    wednesday = models.BooleanField(default=False)
+    thursday = models.BooleanField(default=False)
+    friday = models.BooleanField(default=False)
+    start_time = models.TimeField()
+    end_time = models.TimeField()
     def getQSPairTextByQNum(self, question_number_):
         questions = QuestionsSolutionPair.objects.filter(competition=self.id)
         return questions.get(question_number=question_number_).question_text

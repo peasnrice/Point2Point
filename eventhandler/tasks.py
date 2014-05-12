@@ -1,3 +1,4 @@
+from Point2Point.settings import *
 from quests.models import GameInstance, Team, QuestionsSolutionPair
 from celery.decorators import task
 from twilio.rest import TwilioRestClient
@@ -10,10 +11,6 @@ def add_to_count():
         sc = SampleCount()
     sc.num = sc.num + 1
     sc.save()
-
-# Twilio authentication details
-TWILIO_ACCOUNT_SID = 'AC2b2b2a49dce0a86ed02c04e65e7dbe4e'
-TWILIO_AUTH_TOKEN = 'be50c089508b4af31a136bdf6a662f7c'
 
 def send_msg(to_number, text):
     client = TwilioRestClient(TWILIO_ACCOUNT_SID,
