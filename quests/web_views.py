@@ -21,10 +21,13 @@ logger = logging.getLogger(__name__)
 def quests(request):
     competitions = Competition.objects.all()
     competition_list = []
+    expired_list = []
     for competition in competitions:
         current_date = datetime.datetime.utcnow().replace(tzinfo=utc)
         if current_date > competition.start_date and current_date < competition.end_date:
             competition_list.append(competition)
+        else:
+            expired_list.append(competition)
 
     return render_to_response('quests/quests.html', locals(), context_instance=RequestContext(request)) 
 
