@@ -4,5 +4,6 @@ from leaderboards import views
 admin.autodiscover()
 
 urlpatterns = patterns('',
+    url(r'^(?P<competition_id>\d+)/$', views.leaderboard_detail, name='leaderboard_detail'),
 	url(r'^$', views.leaderboards, name='leaderboards'),
 )
