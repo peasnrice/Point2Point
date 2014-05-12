@@ -1,6 +1,7 @@
 from quests.models import Competition, Team, GameInstance, GameStage, QuestionsSolutionPair, Solution
 from eventhandler.tasks import resumeGame
 from twilio.rest import TwilioRestClient
+from datetime import timedelta
 import datetime
 from django.utils.timezone import utc
 
