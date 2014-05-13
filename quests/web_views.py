@@ -1,4 +1,4 @@
-from Point2Point.settings import *
+from Point2Point.settings import TWILIO_ACCOUNT_SID,TWILIO_AUTH_TOKEN,TWILIO_NUMBER
 from django.shortcuts import render, get_object_or_404, render_to_response, render, RequestContext, HttpResponseRedirect
 from django.http import Http404
 from quests.models import Competition, Team, Player, GameInstance
@@ -54,7 +54,7 @@ def detail(request, competition_id, slug):
                                   TWILIO_AUTH_TOKEN)
         message = client.messages.create(body=sms_text,
             to=save_team.phone_number,
-            from_="+14385001559")
+            from_=TWILIO_NUMBER)
         return HttpResponseRedirect('/')
     return render_to_response('quests/detail.html', locals(), context_instance=RequestContext(request)) 
 

@@ -1,4 +1,4 @@
-from Point2Point.settings import *
+from Point2Point.settings import TWILIO_ACCOUNT_SID,TWILIO_AUTH_TOKEN,TWILIO_NUMBER
 from quests.models import GameInstance, Team, QuestionsSolutionPair
 from celery.decorators import task
 from twilio.rest import TwilioRestClient
@@ -16,7 +16,7 @@ def send_msg(to_number, text):
     client = TwilioRestClient(TWILIO_ACCOUNT_SID,
                               TWILIO_AUTH_TOKEN)
  
-    message = client.messages.create(to=to_number, from_="+14385001559",
+    message = client.messages.create(to=to_number, from_=TWILIO_NUMBER,
                                      body=text)
 
 @task()
