@@ -31,19 +31,17 @@
   </head>
 
   <body>
-
+        <!-- Fixed navbar -->
     <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
       <div class="container">
-        <div class="container">
-          <a class="navbar-brand" href="/"> <img src="{% static "assets/images/P2P_brand.png" %}"></a>
-        </div>
         <div class="navbar-header">
           <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
           </button>
+          <a class="navbar-brand" href="/"> <img src="{% static "assets/images/p2p_narrow_brand.png" %}" height="30"></a>
         </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
@@ -60,7 +58,7 @@
               <a href="/contact">Contact Us</a>
             </li>
           </ul>
-        </div>
+        </div><!--/.nav-collapse -->
       </div>
     </div>
 
@@ -74,14 +72,14 @@
             <p><a href="/quests" class="btn btn-primary btn-lg" role="button">Choose a Quest &raquo;</a></p>
           </div>
         </div>
-        <div class=".col-md-6">
+        <div class="col-md-6 hidden-sm hidden-xs">
             <img src="{% static "assets/images/point_to_point_logo.png" %}" class="img-responsive inline-block" alt="p2p logo"/>
         </div>
       </div>
     </div>
 
     <div class="container">
-      <div class="row">
+      <div class="col-md-12">
         <div class="col-md-4">
           <h2>Explore & Discover</h2>
           <p>We will be sending you on a quest around town and aim to keep you entertained for 2 to 3 hours</p>
