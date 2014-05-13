@@ -31,7 +31,9 @@ INSTALLED_APPS = (
     'django_twilio',
     'bootstrap3',
     'djcelery',
+    'kombu.transport.django',
     'pytz',
+    'south',
 )
 
 MIDDLEWARE_CLASSES = (

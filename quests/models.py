@@ -4,11 +4,13 @@ from django.utils.timezone import utc
 from django.forms import ModelForm
 from django.db.models import Count
 from django.db import models
+from django.template.defaultfilters import slugify
 import timedelta, datetime
 from django.utils.timezone import utc
 
 class Competition(models.Model):
     name = models.CharField(max_length=512)
+    slug = models.SlugField(default="will-change-on-save")
     start_destination = models.CharField(max_length=512)
     description = models.CharField(max_length=512)
     price = models.FloatField(default=0.00)
@@ -51,6 +53,11 @@ class Competition(models.Model):
         return new_game_instance
     def getGameInstances(self):
         return GameInstance.objects.filter(competition=self.id)
+    def save(self, *args, **kwargs):
+        if not self.id:
+            # Newly created object, so set slug
+            self.slug = slugify(self.name)
+        super(Competition, self).save(*args, **kwargs)
     def __unicode__(self):
         return self.name
 

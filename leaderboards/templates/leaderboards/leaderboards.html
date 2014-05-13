@@ -129,7 +129,7 @@
                 {% endif %}
               </div>
               <div>
-                <a class="btn btn-warning" href="{% url 'leaderboard_detail' competition.id %}" role="button">View all times for this quest</a>
+                <a class="btn btn-warning" href="{% url 'leaderboard_detail' competition.id competition.slug %}" role="button">View all times for this quest</a>
               </div>
             </div>
           {% endfor %}

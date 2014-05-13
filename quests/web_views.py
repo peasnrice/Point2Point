@@ -33,7 +33,7 @@ def quests(request):
 
 # Displays form page that allows teams to sign up
 # upon signing up twilio sends the user an sms message
-def detail(request, competition_id):
+def detail(request, competition_id, slug):
     competition = get_object_or_404(Competition, pk=competition_id)
     current_date = datetime.datetime.utcnow().replace(tzinfo=utc)
     if current_date < competition.start_date or current_date > competition.end_date:
@@ -57,16 +57,6 @@ def detail(request, competition_id):
             from_="+14385001559")
         return HttpResponseRedirect('/')
     return render_to_response('quests/detail.html', locals(), context_instance=RequestContext(request)) 
- 
- # simple class for storing data that is sent to html to be read by rails
-class LeaderboardGameData:
-    def __init__(self, competition_number_, position_, name_, time_bp_, time_ap_, average_time_):
-        self.competition = competition_number_
-        self.position = str(position_)
-        self.name = name_
-        self.time_bp = time_bp_
-        self.time_ap = time_ap_
-        self.average_time = average_time_    
 
 
 # When the user replies to a question the response is checked here

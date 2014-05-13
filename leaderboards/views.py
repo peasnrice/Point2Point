@@ -95,7 +95,7 @@ def leaderboards(request):
         competition_number += 1
     return render_to_response('leaderboards/leaderboards.html', locals(), context_instance=RequestContext(request)) 
 
-def leaderboard_detail(request, competition_id):
+def leaderboard_detail(request, competition_id, slug):
     competition = get_object_or_404(Competition, pk=competition_id)
     competition_list = []
     ended_game_list = []
