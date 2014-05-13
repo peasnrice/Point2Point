@@ -65,70 +65,77 @@
     </div>
 
     <div class="jumbotron">
-      <div class="well">
-        <h1>Quest List!</h1>
-        <p>This is where the adventure begins!</p>
-          <p>We have a variety of quests for you to choose from and they vary by theme, duration and difficulty. 
-            We are certain you will find something you will enjoy!</p>
-            <p>We are constantly adding more quests to this list to ensure that you always have a new and exciting P2P adventure
-              to go on!</p>
+      <div class="container">
+        <div class="col-md-12">
+          <div class="well">
+            <h1>Quest List!</h1>
+            <p>This is where the adventure begins!</p>
+              <p>We have a variety of quests for you to choose from and they vary by theme, duration and difficulty. 
+                We are certain you will find something you will enjoy!</p>
+                <p>We are constantly adding more quests to this list to ensure that you always have a new and exciting P2P adventure
+                  to go on!</p>
+          </div>
+        </div>
       </div>
     </div>
 
     <div class="container">
-      <h1>Active Quests</h1>
-      {% if competition_list %}
-        <ul>
-          {% for competition in competition_list %}
-            <div class="featurette">
-                <div class="row featurette">
-                  <div class="col-md-7">
-                    <h2 class="featurette-heading">{{ competition.name }} <span class="text-muted"></span></h2>
-                    <p class="lead">{{ competition.description }}</p>
-                    <p class="small">Estimated Duration: <b>{{ competition.estimated_duration }} hours</b></p>
-                    <p class="small">Dates Available: <b>{{ competition.start_date|date }}</b> to <b>{{ competition.end_date|date }}</b></p>
-                    <p class="small">Days Available:
-                      {% if competition.saturday == True %}
-                        Saturday
-                      {% endif %}
+      <div class="col-md-12">
+        <h1>Active Quests</h1>
+        {% if competition_list %}
+          <ul>
+            {% for competition in competition_list %}
+              <div class="featurette">
+                  <div class="row featurette">
+                    <div class="col-md-7">
+                      <h2 class="featurette-heading">{{ competition.name }} <span class="text-muted"></span></h2>
+                      <p class="lead">{{ competition.description }}</p>
+                      <p class="small">Estimated Duration: <b>{{ competition.estimated_duration }} hours</b></p>
+                      <p class="small">Dates Available: <b>{{ competition.start_date|date }}</b> to <b>{{ competition.end_date|date }}</b></p>
+                      <p class="small">Days Available:<b>
+                        {% if competition.saturday == True %}
+                          Saturday
+                        {% endif %}
 
-                      {% if competition.sunday == True %}
-                        Sunday
-                      {% endif %}
+                        {% if competition.sunday == True %}
+                          Sunday
+                        {% endif %}
 
-                      {% if competition.monday == True %}
-                        Monday
-                      {% endif %}
+                        {% if competition.monday == True %}
+                          Monday
+                        {% endif %}
 
-                      {% if competition.tuesday == True %}
-                        Tuesday
-                      {% endif %}
+                        {% if competition.tuesday == True %}
+                          Tuesday
+                        {% endif %}
 
-                      {% if competition.wednesday == True %}
-                        Wednesday
-                      {% endif %}
+                        {% if competition.wednesday == True %}
+                          Wednesday
+                        {% endif %}
 
-                      {% if competition.thursday == True %}
-                        Thursday
-                      {% endif %}
+                        {% if competition.thursday == True %}
+                          Thursday
+                        {% endif %}
 
-                      {% if competition.friday == True %}
-                        Friday
-                      {% endif %}
-                    </p>
-                    <p class="small">Times Available: <b>Monday to Friday</b>, must start by <b>{{ competition.start_time }}</b></p>
-                    <p class="small">Notes: All teams must finish by <b>{{ competition.end_time }}</b></p>
+                        {% if competition.friday == True %}
+                          Friday
+                        {% endif %}
+                      </b>
+                      </p>
+                      <p class="small">Times Available: <b>Monday to Friday</b>, must start by <b>{{ competition.start_time }}</b></p>
+                      <p class="small">Notes: All teams must finish by <b>{{ competition.end_time }}</b></p>
+                    </div>
+                    <div class="col-md-5">
+                      <a class="btn btn-warning" href="{% url 'detail' competition.id competition.slug %}" role="button">Sign Up! ${{ competition.price }}</a>
+                    </div>
                   </div>
-                  <div class="col-md-5">
-                    <a class="btn btn-warning" href="{% url 'detail' competition.id competition.slug %}" role="button">Sign Up! ${{ competition.price }}</a>
-                  </div>
-                </div>
-            </div>
-          {% endfor %}
-        </ul>
-      {% else %}
-        <p>No quests are available.</p>
-      {% endif %}
+              </div>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p>No quests are available.</p>
+        {% endif %}
+      </div>
       
       {% if expired_list %}
         <h1>Expired Quests</h1>
