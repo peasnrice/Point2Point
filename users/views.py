@@ -13,7 +13,9 @@ def signup(request):
     if form_su.is_valid():
         save_user = form_su.save(commit=False)
         save_user.save()
-        return render_to_response('home/index.html', locals(), context_instance=RequestContext(request))
+        new_user = authenticate(username=request.POST['username'], password=request.POST['password1'])
+        auth_login(request, new_user)
+        return HttpResponseRedirect("/")
     return render_to_response('users/signup.html', locals(), context_instance=RequestContext(request))
 
 def login(request):
