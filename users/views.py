@@ -2,9 +2,9 @@ from django.shortcuts import render, get_object_or_404, render_to_response, rend
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.decorators import login_required
 from users.forms import UserCreateForm, UserLoginForm
 from django.http import HttpResponseRedirect, HttpResponse
-from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 
 def users(request):

@@ -1,7 +1,7 @@
-from settings import *
 from Point2Point.settings import TWILIO_ACCOUNT_SID,TWILIO_AUTH_TOKEN,TWILIO_NUMBER
 from django.shortcuts import render, get_object_or_404, render_to_response, render, RequestContext, HttpResponseRedirect
 from django.http import Http404
+from django.core.mail import send_mail
 from quests.models import Competition, Team, Player, GameInstance
 from quests.forms import PlayerForm, TeamForm
 from django.forms.models import modelformset_factory
@@ -11,9 +11,8 @@ from twilio.rest import TwilioRestClient
 from twilio.twiml import Response
 from django_twilio.decorators import twilio_view
 from quests.sms_handling import game_logic
-from django.core.mail import send_mail
-import datetime
 from django.utils.timezone import utc
+import datetime
 
 import logging
 logger = logging.getLogger(__name__)
