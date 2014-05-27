@@ -4,6 +4,8 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.forms import AuthenticationForm
 from users.forms import UserCreateForm, UserLoginForm
 from django.http import HttpResponseRedirect, HttpResponse
+from django.contrib.auth.decorators import login_required
+from django.core.mail import send_mail
 
 def users(request):
     return render_to_response('users/users.html', locals(), context_instance=RequestContext(request))
@@ -13,6 +15,16 @@ def signup(request):
     if form_su.is_valid():
         save_user = form_su.save(commit=False)
         save_user.save()
+
+        subject = "Point To Point Registration Complete!"
+        from_email = 'PointToPoint@pointtopoint.webfactional.com'
+        body = "Thanks for registering!\n\n"
+        body += "You may now login to Point To Point and access your quest history and other various settings\n\n"
+        body += "Gracias\n\n"
+        body += "~The Point To Point Team"
+        to_email = save_user.email
+        send_mail(subject, body, from_email,[to_email], fail_silently=False)
+
         new_user = authenticate(username=request.POST['username'], password=request.POST['password1'])
         auth_login(request, new_user)
         return HttpResponseRedirect("/")
@@ -35,6 +47,7 @@ def login(request):
     else:
         return render_to_response('users/login.html', locals(), context_instance=RequestContext(request))
 
+@login_required
 def logout(request):
     auth_logout(request)
     return HttpResponseRedirect('/')
