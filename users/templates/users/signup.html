@@ -77,19 +77,28 @@
       </div>
     </div>
 
-    <div class="container theme-showcase" role="main">
-
-      <!-- Main jumbotron for a primary marketing message or call to action -->
-      <div class="jumbotron">
-        <div class="container">
-          <div class="col-md-12">
-            <div class="well">
-              <h1>Sorry =(</h1>
-              <p>You aren't meant to be here, this quest has ended, please choose from a quest that is currently active.</p>
-            </div>
+    <div class="jumbotron">
+      <div class="container">
+        <div class="col-md-12">
+          <div class="well well-sm">
+            <h1>Sign Up!</h1>
+            <p>This isn't necasary but if you do sign up or login you will be able to view and keep track of your quest history.</p>
           </div>
         </div>
       </div>
-    </div> <!-- /container -->
+    </div>
+    <div class="container">
+      <div class="col-md-12">
+        <form method="post" action="">
+          {% csrf_token %}
+          {% bootstrap_form form_su %}
+          {% buttons %}
+            <button type="submit" class="btn btn-primary" value="Create User">
+              {% bootstrap_icon "star" %} Submit 
+            </button>
+          {% endbuttons %}
+        </form>
+      </div>
+    </div>
   </body>
 </html>

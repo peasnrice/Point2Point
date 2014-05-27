@@ -28,6 +28,7 @@ INSTALLED_APPS = (
     'quests',
     'eventhandler',
     'promotions',
+    'users',
     'django_twilio',
     'bootstrap3',
     'djcelery',

@@ -46,17 +46,32 @@
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
             <li>
-              <a href="/quests">Choose a Quest</a>
+              <a href="/quests">choose a quest</a>
             </li>
             <li>
-              <a href="/leaderboards">Leaderboards</a>
+              <a href="/leaderboards">leaderboards</a>
             </li>
             <li>
-              <a href="/about">About Us</a>
+              <a href="/about">about us</a>
             </li>
             <li>
-              <a href="/contact">Contact Us</a>
+              <a href="/contact">contact us</a>
             </li>
+            {% if user.is_authenticated %}
+              <li>
+                <a href="/users">{{ user.username }}</a>
+              </li>   
+              <li>
+                <a href="/users/logout">log out</a>
+              </li>   
+            {% else %}  
+              <li>
+                <a href="/users/signup">sign up</a>
+              </li>
+              <li>
+                <a href="/users/login">log in</a>
+              </li>       
+            {% endif %}
           </ul>
         </div><!--/.nav-collapse -->
       </div>
@@ -69,9 +84,6 @@
           <h1>What we are all about</h1>
           <p>Point2Point was created in the spring/autumn of 2014 by Andy while he was stuck in limbo waiting for his perminant residency application to come through.</p>
           <p>He feels for anybody else that may be in a similar situation, there is no other way to put it, it sucks, and that's that.</p>
-          <p>Andy went to London, England over the new year of 2013 for vacation and participated in something similar to what this is, HiddenCity.<br>
-          <p>The thing is, this didn't exist back home so he thought why not have a go at bringing back the idea and developing it.</p>
-          <p>So he did and he hopes that people enjoy it.</p>
         </div>
       </div>
     </div>

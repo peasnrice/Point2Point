@@ -46,17 +46,32 @@
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
             <li>
-              <a href="/quests">Choose a Quest</a>
+              <a href="/quests">choose a quest</a>
             </li>
             <li>
-              <a href="/leaderboards">Leaderboards</a>
+              <a href="/leaderboards">leaderboards</a>
             </li>
             <li>
-              <a href="/about">About Us</a>
+              <a href="/about">about us</a>
             </li>
             <li>
-              <a href="/contact">Contact Us</a>
+              <a href="/contact">contact us</a>
             </li>
+            {% if user.is_authenticated %}
+              <li>
+                <a href="/users">{{ user.username }}</a>
+              </li>   
+              <li>
+                <a href="/users/logout">log out</a>
+              </li>   
+            {% else %}  
+              <li>
+                <a href="/users/signup">sign up</a>
+              </li>
+              <li>
+                <a href="/users/login">log in</a>
+              </li>       
+            {% endif %}
           </ul>
         </div><!--/.nav-collapse -->
       </div>
@@ -69,7 +84,7 @@
             <h1>Contact us!</h1>
             <p>If you liked, disliked or found an error in any of our P2P quests please don't hesistate to tell us about it!</p>
             <p>We strive to make the best experience to the adventurers that come to P2P and we want to improve in every way we can possible.<br>
-            <p>Did something urk you? upset you? was something offensive? We really hope not! Let us know so we can fix it!
+            <p>Did something irk you? upset you? was something offensive? We really hope not! Let us know so we can fix it!
             <p>thanks for the feedback!</p>
           </div>
         </div>

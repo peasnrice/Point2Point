@@ -28,7 +28,6 @@ def quests(request):
             competition_list.append(competition)
         else:
             expired_list.append(competition)
-
     return render_to_response('quests/quests.html', locals(), context_instance=RequestContext(request)) 
 
 # Displays form page that allows teams to sign up
