@@ -13,7 +13,7 @@ class Competition(models.Model):
     slug = models.SlugField(default="will-change-on-save")
     start_destination = models.CharField(max_length=512)
     description = models.CharField(max_length=512)
-    price = models.FloatField(default=0.00)
+    price = models.DecimalField(default=0, max_digits=5, decimal_places=2)
     greeting = models.CharField(max_length=512)
     congratulation = models.CharField(max_length=512)
     estimated_duration = models.IntegerField()

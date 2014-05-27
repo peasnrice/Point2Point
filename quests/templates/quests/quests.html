@@ -137,9 +137,10 @@
                       </p>
                       <p class="small">Times Available: <b>Monday to Friday</b>, must start by <b>{{ competition.start_time }}</b></p>
                       <p class="small">Notes: All teams must finish by <b>{{ competition.end_time }}</b></p>
-                    </div>
-                    <div class="col-md-5">
-                      <a class="btn btn-warning" href="{% url 'detail' competition.id competition.slug %}" role="button">Sign Up! ${{ competition.price }}</a>
+                      <h3 class="featurette-heading">${{ competition.price|floatformat:2 }}<span class="text-muted"></span>
+                        <a class="btn btn-warning" href="{% url 'detail' competition.id competition.slug %}" role="button">Sign Up Your Team!</a></h3>
+                      </div>
+                      <div class="col-md-5">
                     </div>
                   </div>
               </div>
