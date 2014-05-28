@@ -1,195 +1,118 @@
-<!DOCTYPE html>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-<html lang="en">
-{% load staticfiles %}
-{% load bootstrap3 %}
-{% bootstrap_css %}
-{% bootstrap_javascript %}
-{% bootstrap_messages %}
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+{% extends "base.html" %}
 
-    <title>Point2Point!</title>
-
-    <!-- Custom styles for this template -->
-    <link href="{% static "dist/css/jumbotron.css" %}" rel="stylesheet">
-    <link href="{% static "dist/css/navbar.css" %}" rel="stylesheet">
-
-    <!-- Just for debugging purposes. Don't actually copy this line! -->
-    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-
-    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-  </head>
-
-  <body>
-    
-    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="/"> <img src="{% static "assets/images/p2p_narrow_brand.png" %}" height="30"></a>
-        </div>
-        <div class="navbar-collapse collapse">
-          <ul class="nav navbar-nav navbar-right">
-            <li>
-              <a href="/quests">choose a quest</a>
-            </li>
-            <li>
-              <a href="/leaderboards">leaderboards</a>
-            </li>
-            <li>
-              <a href="/about">about us</a>
-            </li>
-            <li>
-              <a href="/contact">contact us</a>
-            </li>
-            {% if user.is_authenticated %}
-              <li>
-                <a href="/users">{{ user.username }}</a>
-              </li>   
-              <li>
-                <a href="/users/logout">log out</a>
-              </li>   
-            {% else %}  
-              <li>
-                <a href="/users/signup">sign up</a>
-              </li>
-              <li>
-                <a href="/users/login">log in</a>
-              </li>       
-            {% endif %}
-          </ul>
-        </div><!--/.nav-collapse -->
+{% block content %}
+<div class="jumbotron">
+  <div class="container">
+    <div class="col-md-12">
+      <div class="well">
+        <h1>{{ competition }} Leaderboards</h1>
+        <p></p>
       </div>
     </div>
+  </div>
+</div>
 
-    <div class="jumbotron">
-      <div class="container">
-        <div class="col-md-12">
-          <div class="well">
-            <h1>{{ competition }} Leaderboards</h1>
-            <p></p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="container theme-showcase" role="main">
-      <div class="col-md-12">
-        <div class="container">
-          {% if competition_list %}
-            {% for competition in competition_list %}
-              <div class="featurette">
-                <div class="row">
-                  <h2>Ended</h2>
-                  {% if ended_game_list %}
-                    <div class = "table-responsive">
-                      <table class="table">
+<div class="container theme-showcase" role="main">
+  <div class="col-md-12">
+    <div class="container">
+      {% if competition_list %}
+        {% for competition in competition_list %}
+          <div class="featurette">
+            <div class="row">
+              <h2>Ended</h2>
+              {% if ended_game_list %}
+                <div class = "table-responsive">
+                  <table class="table">
+                    <tr>
+                      <th>#</th>
+                      <th>Team Name</th>
+                      <th>Penalties Incurred</th>
+                      <th>Time Before Penalties</th>
+                      <th>Time After Penalties</th>
+                      <th>Average Solve Time</th>
+                    </tr>
+                    {% for ended_game in ended_game_list %}
+                      {% if ended_game.competition == forloop.parentloop.counter0 %}
                         <tr>
-                          <th>#</th>
-                          <th>Team Name</th>
-                          <th>Penalties Incurred</th>
-                          <th>Time Before Penalties</th>
-                          <th>Time After Penalties</th>
-                          <th>Average Solve Time</th>
+                          <td>{{ ended_game.position }}</td>
+                          <td>{{ ended_game.name }}</td>
+                          <td>{{ ended_game.penalties }}</td>
+                          <td>{{ ended_game.time_bp }}</td>
+                          <td>{{ ended_game.time_ap }}</td>
+                          <td>{{ ended_game.average_time }}</td>
                         </tr>
-                        {% for ended_game in ended_game_list %}
-                          {% if ended_game.competition == forloop.parentloop.counter0 %}
-                            <tr>
-                              <td>{{ ended_game.position }}</td>
-                              <td>{{ ended_game.name }}</td>
-                              <td>{{ ended_game.penalties }}</td>
-                              <td>{{ ended_game.time_bp }}</td>
-                              <td>{{ ended_game.time_ap }}</td>
-                              <td>{{ ended_game.average_time }}</td>
-                            </tr>
-                          {% endif %}
-                        {% endfor %}
-                      </table>
-                    </div>
-                  {% else %}
-                    <p>Nobody has finished yet.</p>
-                  {% endif %}
-
-                  <h2>In Progress</h2>
-                  {% if ongoing_game_list %}
-                    <div class = "table-responsive">
-                      <table class="table">
-                        <tr>
-                          <th>#</th>
-                          <th>Team Name</th>
-                          <th>Penalties Incurred</th>
-                          <th>Time Before Penalties</th>
-                          <th>Time After Penalties</th>
-                          <th>Average Solve Time</th>
-                        </tr>
-                        {% for ongoing_game in ongoing_game_list %}
-                          {% if ongoing_game.competition == forloop.parentloop.counter0 %}
-                            <tr>
-                              <td>{{ ongoing_game.position }}</td>
-                              <td>{{ ongoing_game.name }}</td>
-                              <td>{{ ongoing_game.penalties }}</td>
-                              <td>{{ ongoing_game.time_bp }}</td>
-                              <td>"---"</td>
-                              <td>{{ ongoing_game.average_time }}</td>
-                            </tr>
-                          {% endif %}
-                        {% endfor %}
-                      </table>
-                    </div>
-                  {% else %}
-                    <p>Nobody is currently playing in this quest.</p>
-                  {% endif %}
-
-                  <h2>DNF</h2>
-                  {% if ongoing_game_list %}
-                    <div class = "table-responsive">
-                      <table class="table">
-                        <tr>
-                          <th>#</th>
-                          <th>Team Name</th>
-                          <th>Penalties Incurred</th>
-                          <th>Time Before Penalties</th>
-                          <th>Time After Penalties</th>
-                          <th>Average Solve Time</th>
-                        </tr>
-                        {% for dnf_game in dnf_game_list %}
-                          {% if dnf_game.competition == forloop.parentloop.counter0 %}
-                            <tr>
-                              <td>{{ dnf_game.position }}</td>
-                              <td>{{ dnf_game.name }}</td>
-                              <td>{{ dnf_game.penalties }}</td>
-                              <td>{{ dnf_game.time_bp }}</td>
-                            </tr>
-                          {% endif %}
-                        {% endfor %}
-                      </table>
-                    </div>
-                  {% else %}
-                    <p>Nobody hasn't finished, Hurray!.</p>
-                  {% endif %}
+                      {% endif %}
+                    {% endfor %}
+                  </table>
                 </div>
-              </div>
-            {% endfor %}
-          {% else %}
-            <p>No quests are available.</p>
-          {% endif %}
-        </div>
-      </div>
+              {% else %}
+                <p>Nobody has finished yet.</p>
+              {% endif %}
+
+              <h2>In Progress</h2>
+              {% if ongoing_game_list %}
+                <div class = "table-responsive">
+                  <table class="table">
+                    <tr>
+                      <th>#</th>
+                      <th>Team Name</th>
+                      <th>Penalties Incurred</th>
+                      <th>Time Before Penalties</th>
+                      <th>Time After Penalties</th>
+                      <th>Average Solve Time</th>
+                    </tr>
+                    {% for ongoing_game in ongoing_game_list %}
+                      {% if ongoing_game.competition == forloop.parentloop.counter0 %}
+                        <tr>
+                          <td>{{ ongoing_game.position }}</td>
+                          <td>{{ ongoing_game.name }}</td>
+                          <td>{{ ongoing_game.penalties }}</td>
+                          <td>{{ ongoing_game.time_bp }}</td>
+                          <td>"---"</td>
+                          <td>{{ ongoing_game.average_time }}</td>
+                        </tr>
+                      {% endif %}
+                    {% endfor %}
+                  </table>
+                </div>
+              {% else %}
+                <p>Nobody is currently playing in this quest.</p>
+              {% endif %}
+
+              <h2>DNF</h2>
+              {% if ongoing_game_list %}
+                <div class = "table-responsive">
+                  <table class="table">
+                    <tr>
+                      <th>#</th>
+                      <th>Team Name</th>
+                      <th>Penalties Incurred</th>
+                      <th>Time Before Penalties</th>
+                      <th>Time After Penalties</th>
+                      <th>Average Solve Time</th>
+                    </tr>
+                    {% for dnf_game in dnf_game_list %}
+                      {% if dnf_game.competition == forloop.parentloop.counter0 %}
+                        <tr>
+                          <td>{{ dnf_game.position }}</td>
+                          <td>{{ dnf_game.name }}</td>
+                          <td>{{ dnf_game.penalties }}</td>
+                          <td>{{ dnf_game.time_bp }}</td>
+                        </tr>
+                      {% endif %}
+                    {% endfor %}
+                  </table>
+                </div>
+              {% else %}
+                <p>Nobody hasn't finished, Hurray!.</p>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p>No quests are available.</p>
+      {% endif %}
     </div>
-  </body>
-</html>
+  </div>
+</div>
+{% endblock %}

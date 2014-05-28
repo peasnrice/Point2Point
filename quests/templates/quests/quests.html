@@ -1,206 +1,96 @@
-<!DOCTYPE html>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-<html lang="en">
-{% load staticfiles %}
-{% load bootstrap3 %}
-{% bootstrap_css %}
-{% bootstrap_javascript %}
-{% bootstrap_messages %}
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+{% extends "base.html" %}
 
-    <title>Point2Point!</title>
-
-    <!-- Custom styles for this template -->
-    <link href="{% static "dist/css/jumbotron.css" %}" rel="stylesheet">
-    <link href="{% static "dist/css/navbar.css" %}" rel="stylesheet">
-
-    <!-- Just for debugging purposes. Don't actually copy this line! -->
-    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-
-    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-  </head>
-
-  <body>
-    
-    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="/"> <img src="{% static "assets/images/p2p_narrow_brand.png" %}" height="30"></a>
-        </div>
-        <div class="navbar-collapse collapse">
-          <ul class="nav navbar-nav navbar-right">
-            <li>
-              <a href="/quests">choose a quest</a>
-            </li>
-            <li>
-              <a href="/leaderboards">leaderboards</a>
-            </li>
-            <li>
-              <a href="/about">about us</a>
-            </li>
-            <li>
-              <a href="/contact">contact us</a>
-            </li>
-            {% if user.is_authenticated %}
-              <li>
-                <a href="/users">{{ user.username }}</a>
-              </li>   
-              <li>
-                <a href="/users/logout">log out</a>
-              </li>   
-            {% else %}  
-              <li>
-                <a href="/users/signup">sign up</a>
-              </li>
-              <li>
-                <a href="/users/login">log in</a>
-              </li>       
-            {% endif %}
-          </ul>
-        </div><!--/.nav-collapse -->
+{% block content %}
+<div class="jumbotron">
+  <div class="container">
+    <div class="col-md-12">
+      <div class="well">
+        <h1>Quest List!</h1>
+        <p>This is where the adventure begins!</p>
+          <p>We have a variety of quests for you to choose from and they vary by theme, duration and difficulty. 
+            We are certain you will find something you will enjoy!</p>
+            <p>We are constantly adding more quests to this list to ensure that you always have a new and exciting P2P adventure
+              to go on!</p>
       </div>
     </div>
+  </div>
+</div>
 
-    <div class="jumbotron">
-      <div class="container">
-        <div class="col-md-12">
-          <div class="well">
-            <h1>Quest List!</h1>
-            <p>This is where the adventure begins!</p>
-              <p>We have a variety of quests for you to choose from and they vary by theme, duration and difficulty. 
-                We are certain you will find something you will enjoy!</p>
-                <p>We are constantly adding more quests to this list to ensure that you always have a new and exciting P2P adventure
-                  to go on!</p>
-          </div>
-        </div>
-      </div>
-    </div>
+<div class="container">
+  <div class="col-md-12">
+    <h1>Active Quests</h1>
+    {% if competition_list %}
+      <ul>
+        {% for competition in competition_list %}
+          <div class="featurette">
+              <div class="row featurette">
+                <div class="col-md-7">
+                  <h2 class="featurette-heading">{{ competition.name }} <span class="text-muted"></span></h2>
+                  <p class="lead">{{ competition.description }}</p>
+                  <p class="small">Estimated Duration: <b>{{ competition.estimated_duration }} hours</b></p>
+                  <p class="small">Dates Available: <b>{{ competition.start_date|date }}</b> to <b>{{ competition.end_date|date }}</b></p>
+                  <p class="small">Days Available:<b>
+                    {% if competition.saturday == True %}
+                      Saturday
+                    {% endif %}
 
-    <div class="container">
-      <div class="col-md-12">
-        <h1>Active Quests</h1>
-        {% if competition_list %}
-          <ul>
-            {% for competition in competition_list %}
-              <div class="featurette">
-                  <div class="row featurette">
-                    <div class="col-md-7">
-                      <h2 class="featurette-heading">{{ competition.name }} <span class="text-muted"></span></h2>
-                      <p class="lead">{{ competition.description }}</p>
-                      <p class="small">Estimated Duration: <b>{{ competition.estimated_duration }} hours</b></p>
-                      <p class="small">Dates Available: <b>{{ competition.start_date|date }}</b> to <b>{{ competition.end_date|date }}</b></p>
-                      <p class="small">Days Available:<b>
-                        {% if competition.saturday == True %}
-                          Saturday
-                        {% endif %}
+                    {% if competition.sunday == True %}
+                      Sunday
+                    {% endif %}
 
-                        {% if competition.sunday == True %}
-                          Sunday
-                        {% endif %}
+                    {% if competition.monday == True %}
+                      Monday
+                    {% endif %}
 
-                        {% if competition.monday == True %}
-                          Monday
-                        {% endif %}
+                    {% if competition.tuesday == True %}
+                      Tuesday
+                    {% endif %}
 
-                        {% if competition.tuesday == True %}
-                          Tuesday
-                        {% endif %}
+                    {% if competition.wednesday == True %}
+                      Wednesday
+                    {% endif %}
 
-                        {% if competition.wednesday == True %}
-                          Wednesday
-                        {% endif %}
+                    {% if competition.thursday == True %}
+                      Thursday
+                    {% endif %}
 
-                        {% if competition.thursday == True %}
-                          Thursday
-                        {% endif %}
-
-                        {% if competition.friday == True %}
-                          Friday
-                        {% endif %}
-                      </b>
-                      </p>
-                      <p class="small">Times Available: must start by <b>{{ competition.start_time }}</b></p>
-                      <p class="small">Notes: All teams must finish by <b>{{ competition.end_time }}</b></p>
-                      <h3 class="featurette-heading">${{ competition.price|floatformat:2 }}<span class="text-muted"></span>
-                        <a class="btn btn-warning" href="{% url 'detail' competition.id competition.slug %}" role="button">Register Your Team!</a></h3>
-                      </div>
-                      <div class="col-md-5">
-                    </div>
+                    {% if competition.friday == True %}
+                      Friday
+                    {% endif %}
+                  </b>
+                  </p>
+                  <p class="small">Times Available: must start by <b>{{ competition.start_time }}</b></p>
+                  <p class="small">Notes: All teams must finish by <b>{{ competition.end_time }}</b></p>
+                  <h3 class="featurette-heading">${{ competition.price|floatformat:2 }}<span class="text-muted"></span>
+                    <a class="btn btn-warning" href="{% url 'detail' competition.id competition.slug %}" role="button">Register Your Team!</a></h3>
                   </div>
-              </div>
-            {% endfor %}
-          </ul>
-        {% else %}
-          <p>No quests are available.</p>
-        {% endif %}
-      </div>
-      
-      {% if expired_list %}
-      <div class="col-md-12">
-        <h1>Expired Quests</h1>
-        <ul>
-          {% for competition in expired_list %}
-            <div class="featurette">
-                <div class="row featurette">
-                  <div class="col-md-7">
-                    <h2 class="featurette-heading">{{ competition.name }} <span class="text-muted"></span></h2>
-                    <p class="lead">{{ competition.description }}</p>
-                    <p class="small">Estimated Duration: <b>{{ competition.estimated_duration }} hours</b></p>
-                    <p class="small">Dates Available: <b>{{ competition.start_date|date }}</b> to <b>{{ competition.end_date|date }}</b></p>
-                    <p class="small">Days Available:
-                      {% if competition.saturday == True %}
-                        Saturday
-                      {% endif %}
-
-                      {% if competition.sunday == True %}
-                        Sunday
-                      {% endif %}
-
-                      {% if competition.monday == True %}
-                        Monday
-                      {% endif %}
-
-                      {% if competition.tuesday == True %}
-                        Tuesday
-                      {% endif %}
-
-                      {% if competition.wednesday == True %}
-                        Wednesday
-                      {% endif %}
-
-                      {% if competition.thursday == True %}
-                        Thursday
-                      {% endif %}
-
-                      {% if competition.friday == True %}
-                        Friday
-                      {% endif %}
-                    </p>
-                    <p class="small">Times Available: <b>Monday to Friday</b>, must start by <b>{{ competition.start_time }}</b></p>
-                    <p class="small">Notes: All teams must finish by <b>{{ competition.end_time }}</b></p>
-                  </div>
+                  <div class="col-md-5">
                 </div>
-            </div>  
-          {% endfor %}  
-        </ul>
-      </div>
-      {% endif %}    
-    </div> <!-- /container -->
-  </body>
-</html>
+              </div>
+          </div>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>No quests are available.</p>
+    {% endif %}
+  </div>
+  
+  {% if expired_list %}
+  <div class="col-md-12">
+    <h1>Expired Quests</h1>
+    <ul>
+      {% for competition in expired_list %}
+        <div class="featurette">
+          <div class="row featurette">
+            <div class="col-md-7">
+              <h2 class="featurette-heading">{{ competition.name }} <span class="text-muted"></span></h2>
+              <p class="lead">Quest ended {{ competition.end_date|date }}</p>
+            </div>
+          </div>
+        </div>  
+      {% endfor %}  
+    </ul>
+  </div>
+  {% endif %}    
+</div> <!-- /container -->
+{% endblock %}

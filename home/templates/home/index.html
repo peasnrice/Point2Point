@@ -1,113 +1,36 @@
-<!DOCTYPE html>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-<html lang="en">
-{% load staticfiles %}
-{% load bootstrap3 %}
-{% bootstrap_css %}
-{% bootstrap_javascript %}
-{% bootstrap_messages %}
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+{% extends "base.html" %}
 
-    <title>Point2Point!</title>
-
-    <!-- Custom styles for this template -->
-    <link href="{% static "dist/css/jumbotron.css" %}" rel="stylesheet">
-    <link href="{% static "dist/css/navbar.css" %}" rel="stylesheet">
-
-    <!-- Just for debugging purposes. Don't actually copy this line! -->
-    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
-
-    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-  </head>
-
-  <body>
-        <!-- Fixed navbar -->
-    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="/"> <img src="{% static "assets/images/p2p_narrow_brand.png" %}" height="30"></a>
-        </div>
-        <div class="navbar-collapse collapse">
-          <ul class="nav navbar-nav navbar-right">
-            <li>
-              <a href="/quests">choose a quest</a>
-            </li>
-            <li>
-              <a href="/leaderboards">leaderboards</a>
-            </li>
-            <li>
-              <a href="/about">about us</a>
-            </li>
-            <li>
-              <a href="/contact">contact us</a>
-            </li>
-            {% if user.is_authenticated %}
-              <li>
-                <a href="/users">{{ user.username }}</a>
-              </li>   
-              <li>
-                <a href="/users/logout">log out</a>
-              </li>   
-            {% else %}  
-              <li>
-                <a href="/users/signup">sign up</a>
-              </li>
-              <li>
-                <a href="/users/login">log in</a>
-              </li>       
-            {% endif %}
-          </ul>
-        </div><!--/.nav-collapse -->
+{% block content %}
+<div class="jumbotron">
+  <div class="container">
+    <div class="col-md-6">
+      <div class="well col-xs-12">
+        <h1>Welcome to Point to Point!</h1>
+        <p>Welcome to Point to Point! The new way to discover exciting things about your city or someone elses!</p>
+        <p>Simply choose a quest, sign up and begin an adventure on your own, or with a group of friends</p>
+        <p><a href="/quests" class="btn btn-primary btn-lg" role="button">Choose a Quest &raquo;</a></p>
       </div>
     </div>
-
-    <div class="jumbotron">
-      <div class="container">
-        <div class="col-md-6">
-          <div class="well col-xs-12">
-            <h1>Welcome to Point to Point!</h1>
-            <p>Welcome to Point to Point! The new way to discover exciting things about your city or someone elses!</p>
-            <p>Simply choose a quest, sign up and begin an adventure on your own, or with a group of friends</p>
-            <p><a href="/quests" class="btn btn-primary btn-lg" role="button">Choose a Quest &raquo;</a></p>
-          </div>
-        </div>
-        <div class="col-md-6 hidden-sm hidden-xs">
-            <img src="{% static "assets/images/point_to_point_logo.png" %}" class="img-responsive inline-block" alt="p2p logo"/>
-        </div>
-      </div>
+    <div class="col-md-6 hidden-sm hidden-xs">
+        <img src="{% static "assets/images/point_to_point_logo.png" %}" class="img-responsive inline-block" alt="p2p logo"/>
     </div>
+  </div>
+</div>
 
-    <div class="container">
-      <div class="col-md-12">
-        <div class="col-md-4">
-          <h2>Explore & Discover</h2>
-          <p>We will be sending you on a quest around town and aim to keep you entertained for 2 to 3 hours</p>
-        </div>
-        <div class="col-md-4">
-          <h2>Locals or just visiting</h2>
-          <p>Whether you are new to a city or have been living there your whole life, we aim to provide you with a fun experience for you and your friends</p>
-       </div>
-        <div class="col-md-4">
-          <h2>LeaderBoards</h2>
-          <p>Compete against your friends or try to get the fastest time on the leaderboard! We offer monthly prizes to the top teams!</p>
-        </div>
-      </div>
+<div class="container">
+  <div class="col-md-12">
+    <div class="col-md-4">
+      <h2>Explore & Discover</h2>
+      <p>We will be sending you on a quest around town and aim to keep you entertained for 2 to 3 hours</p>
     </div>
-  </body>
-</html>
+    <div class="col-md-4">
+      <h2>Locals or just visiting</h2>
+      <p>Whether you are new to a city or have been living there your whole life, we aim to provide you with a fun experience for you and your friends</p>
+   </div>
+    <div class="col-md-4">
+      <h2>LeaderBoards</h2>
+      <p>Compete against your friends or try to get the fastest time on the leaderboard! We offer monthly prizes to the top teams!</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

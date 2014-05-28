@@ -29,6 +29,7 @@ INSTALLED_APPS = (
     'eventhandler',
     'promotions',
     'users',
+    'userprofile',
     'django_twilio',
     'bootstrap3',
     'djcelery',
