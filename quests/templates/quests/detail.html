@@ -2,32 +2,28 @@
 
 {% load bootstrap3 %}
 
+{% block jumbotron %}
+<div class="well well-sm">
+  <h1>{{ competition.name }}</h1>
+  <p>{{ competition.description }}</p>
+</div>
+{% endblock %}
+
 {% block content %}
-    <div class="jumbotron">
-      <div class="container">
-        <div class="col-md-12">
-          <div class="well">
-            <h1>{{ competition.name }}</h1>
-            <p>{{ competition.description }}</p>
-          </div>
-        </div>
-      </div>
+<div class="container">
+  <div class="col-md-12">
+    <div class="page-header">
+      <h1>Register today, play when you want!</h1>
     </div>
-    
-    <div class="container">
-      <div class="col-md-12">
-        <div class="page-header">
-          <h1>Register today, play when you want!</h1>
-        </div>
-        <form method="post" action="">
-          {% csrf_token %}
-          {% bootstrap_form form_t %}
-          {% buttons %}
-            <button type="submit" class="btn btn-primary" value="Create Team">
-              {% bootstrap_icon "star" %} Submit 
-            </button>
-          {% endbuttons %}
-        </form>
-      </div>
-    </div>
+    <form method="post" action="">
+      {% csrf_token %}
+      {% bootstrap_form form_t %}
+      {% buttons %}
+        <button type="submit" class="btn btn-primary" value="Create Team">
+          {% bootstrap_icon "star" %} Submit 
+        </button>
+      {% endbuttons %}
+    </form>
+  </div>
+</div>
 {% endblock %}

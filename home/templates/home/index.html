@@ -2,23 +2,21 @@
 
 {% load static %}
 
-{% block content %}
-<div class="jumbotron">
-  <div class="container">
-    <div class="col-md-6">
-      <div class="well col-xs-12">
-        <h1>Welcome to Point to Point!</h1>
-        <p>Welcome to Point to Point! The new way to discover exciting things about your city or someone elses!</p>
-        <p>Simply choose a quest, sign up and begin an adventure on your own, or with a group of friends</p>
-        <p><a href="/quests" class="btn btn-primary btn-lg" role="button">Choose a Quest &raquo;</a></p>
-      </div>
-    </div>
-    <div class="col-md-6 hidden-sm hidden-xs">
-        <img src="{% static "assets/images/point_to_point_logo.png" %}" class="img-responsive inline-block" alt="p2p logo"/>
-    </div>
+{% block jumbotron %}
+<div class="col-md-6">
+  <div class="well col-xs-12">
+    <h1>Welcome to Point to Point!</h1>
+    <p>Welcome to Point to Point! The new way to discover exciting things about your city or someone elses!</p>
+    <p>Simply choose a quest, sign up and begin an adventure on your own, or with a group of friends</p>
+    <p><a href="/quests" class="btn btn-primary btn-lg" role="button">Choose a Quest &raquo;</a></p>
   </div>
 </div>
+<div class="col-md-6 hidden-sm hidden-xs">
+    <img src="{% static "assets/images/point_to_point_logo.png" %}" class="img-responsive inline-block" alt="p2p logo"/>
+</div>
+{% endblock %}
 
+{% block content %}
 <div class="container">
   <div class="col-md-12">
     <div class="col-md-4">

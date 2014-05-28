@@ -1,17 +1,13 @@
 {% extends "base.html" %}
 
-{% block content %}
-<div class="jumbotron">
-  <div class="container">
-    <div class="col-md-12">
-      <div class="well">
-        <h1>{{ competition }} Leaderboards</h1>
-        <p></p>
-      </div>
-    </div>
-  </div>
+{% block jumbotron %}
+<div class="well well-sm">
+  <h1>{{ competition }} Leaderboards</h1>
+  <p></p>
 </div>
+{% endblock %}
 
+{% block content %}
 <div class="container theme-showcase" role="main">
   <div class="col-md-12">
     <div class="container">

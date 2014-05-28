@@ -1,5 +1,28 @@
 {% extends "base.html" %}
 
-{% block content %}
+{% load bootstrap3 %}
 
+{% block jumbotron %}
+<div class="well well-sm">
+	<h1>{{ user.username }}'s Profile</h1>
+	<p>Here you can view and modify your profile as well as view your quest history</p>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="col-md-12">
+  	<h1>Your Info</h1>
+
+    <form method="post" action="">
+      {% csrf_token %}
+      {% bootstrap_form form %}
+      {% buttons %}
+        <button type="submit" class="btn btn-primary" value="Update Profile">
+          {% bootstrap_icon "star" %} Update 
+        </button>
+      {% endbuttons %}
+    </form>
+  </div>
+</div>
 {% endblock %}

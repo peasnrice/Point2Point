@@ -39,7 +39,7 @@ def login(request):
         if user is not None:
             if user.is_active:
                 auth_login(request, user)
-                return HttpResponseRedirect('/')
+                return HttpResponseRedirect('/users/profile')
             else:
                 return HttpResponse("Your Point2Point account is disabled")
         else:
