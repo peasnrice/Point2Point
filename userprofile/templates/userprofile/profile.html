@@ -11,18 +11,33 @@
 
 {% block content %}
 <div class="container">
-  <div class="col-md-12">
-  	<h1>Your Info</h1>
+  <div class="col-md-6">
+    {% if profile.game_instances.all %}
+      <h1>Completed Quests</h1>
+      {% for game_instance in profile.game_instances.all %}
+        <h2>{{ game_instance.competition }}</h2>
+        <p>{{ competition.description }}</p>
+        <a class="btn btn-warning" href="{% url 'leaderboard_detail' competition.id competition.slug %}" role="button">View the leaderboard for this quest</a>
+      {% endfor %}
+    {% else %}
+      <h1>Oops, You haven't completed any quests yet!</h1>
+      <p>Your completed quests will show up here once you finish them, we promise!</p>
+    {% endif %}
+    </div>
+    <div class="col-md-6">
 
-    <form method="post" action="">
-      {% csrf_token %}
-      {% bootstrap_form form %}
-      {% buttons %}
-        <button type="submit" class="btn btn-primary" value="Update Profile">
-          {% bootstrap_icon "star" %} Update 
-        </button>
-      {% endbuttons %}
-    </form>
+    	<h1>Your Info</h1>
+
+      <form method="post" action="">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        {% buttons %}
+          <button type="submit" class="btn btn-primary" value="Update Profile">
+            {% bootstrap_icon "star" %} Update 
+          </button>
+        {% endbuttons %}
+      </form>
+    </div>
   </div>
 </div>
 {% endblock %}

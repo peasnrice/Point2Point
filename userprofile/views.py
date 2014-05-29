@@ -6,11 +6,12 @@ from django.contrib.auth.decorators import login_required
 
 @login_required
 def user_profile(request):
+
     if request.method == 'POST':
         form = UserProfileForm(request.POST, instance=request.user.profile)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect('/profile')
+            return HttpResponseRedirect('/users/profile')
     else:
         user = request.user
         profile = user.profile

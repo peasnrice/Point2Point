@@ -54,3 +54,4 @@ docs/_build/
 local_settings.py
 
 */migrations/*
+userprofile/migrations/0001_initial.py
