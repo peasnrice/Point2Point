@@ -69,10 +69,10 @@ def strfdelta(tdelta, fmt):
 
 class GameInstance(models.Model):
     competition = models.ForeignKey('Competition')
-    total_time = timedelta.fields.TimedeltaField()
-    game_time = timedelta.fields.TimedeltaField()
-    penalty_time = timedelta.fields.TimedeltaField()
-    average_time = timedelta.fields.TimedeltaField()
+    total_time = timedelta.fields.TimedeltaField(blank=True)
+    game_time = timedelta.fields.TimedeltaField(blank=True)
+    penalty_time = timedelta.fields.TimedeltaField(blank=True)
+    average_time = timedelta.fields.TimedeltaField(blank=True)
     current_question = models.IntegerField()
 
     # keeps ongoing record of life lines and incorrect answers
