@@ -1,0 +1,24 @@
+{% extends "default_base.html" %}
+
+{% load bootstrap3 %}
+
+{% block jumbotron %}
+{% endblock %}
+
+{% load url from future %}
+
+{% if messages %}
+<div>
+  <strong>Messages:</strong>
+  <ul>
+   {% for message in messages %}
+     <li>{{message}}</li>
+   {% endfor %}
+  </ul>
+</div>
+{% endif %}
+
+{% block content %}
+{% endblock %}
+{% block extra_body %}
+{% endblock %}

@@ -58,17 +58,17 @@
             </li>
             {% if user.is_authenticated %}
               <li>
-                <a href="/users">{{ user.username }}</a>
+                <a href="/accounts/profile">{{ user.username }}</a>
               </li>   
               <li>
-                <a href="/users/logout">log out</a>
+                <a href="/accounts/logout">log out</a>
               </li>   
             {% else %}  
               <li>
-                <a href="/users/signup">sign up</a>
+                <a href="/accounts/signup">sign up</a>
               </li>
               <li>
-                <a href="/users/login">log in</a>
+                <a href="/accounts/login">log in</a>
               </li>       
             {% endif %}
           </ul>
@@ -88,7 +88,11 @@
   </div>
 
   <div id="content">
-    {% block content %} content area {% endblock %}
+    {% block content %}{% endblock %}
+  </div>
+
+  <div id="extra_body">
+    {% block extra_body %}{% endblock %}
   </div>
 
 </body>
