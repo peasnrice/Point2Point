@@ -4,4 +4,4 @@ from models import UserProfile
 class UserProfileForm(forms.ModelForm):
 	class Meta:
 		model = UserProfile
-		fields = ('email_alerts',)
+		fields = ('phone_number','email_alerts',)

@@ -1,5 +1,7 @@
 {% extends "account/base.html" %}
 
+{% load bootstrap3 %}
+
 {% load url from future %}
 {% load i18n %}
 {% load account %}
@@ -27,7 +29,11 @@
 
 		<form method="post" action="{% url 'account_confirm_email' confirmation.key %}">
 		{% csrf_token %}
-		    <button type="submit">{% trans 'Confirm' %}</button>
+	      {% buttons %}
+	        <button type="submit" class="btn btn-primary">
+	          {% trans "Confirm" %} &raquo;
+	        </button>
+	      {% endbuttons %}
 		</form>
 
 		{% else %}

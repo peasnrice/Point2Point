@@ -2,8 +2,12 @@ from django.forms import ModelForm
 from django import forms
 from quests.models import Team, Player, GameInstance
 from promotions.models import PromoCode
+from django.contrib.auth.models import User
 
 class TeamForm(ModelForm):
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super(TeamForm, self).__init__(*args, **kwargs)
     #beta_access_code = forms.CharField()
     class Meta:
         model = Team
