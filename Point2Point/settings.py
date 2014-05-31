@@ -28,7 +28,6 @@ INSTALLED_APPS = (
     'quests',
     'eventhandler',
     'promotions',
-    #'users',
     'userprofile',
     'django_twilio',
     'bootstrap3',
