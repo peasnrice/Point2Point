@@ -16,8 +16,8 @@
       <h1>Completed Quests</h1>
       {% for game_instance in profile.game_instances.all %}
         <h2>{{ game_instance.competition }}</h2>
-        <p>{{ competition.description }}</p>
-        <a class="btn btn-warning" href="{% url 'leaderboard_detail' competition.id competition.slug %}" role="button">View the leaderboard for this quest</a>
+        <p>{{ game_instance.competition.description }}</p>
+        <a class="btn btn-warning" href="{% url 'leaderboard_detail' game_instance.competition.id game_instance.competition.slug %}" role="button">View the leaderboard for {{ game_instance.competition }}</a>
       {% endfor %}
     {% else %}
       <h1>Oops, You haven't completed any quests yet!</h1>
@@ -27,13 +27,21 @@
     <div class="col-md-6">
 
     	<h1>Your Info</h1>
-
+      {% if user.profile.phone_number_verified %}
+        Verified
+        {% for numbers in verified_number_list %}
+          numbers
+        {% endfor %}
+      <a class="btn btn-warning" href="/profile/getpin" role="button">Verify another phone number</a>    
+      {% else %}
+        <a class="btn btn-warning" href="/profile/getpin" role="button">Verify your phone number</a>  
+      {% endif %}     
       <form method="post" action="">
         {% csrf_token %}
         {% bootstrap_form form %}
         {% buttons %}
           <button type="submit" class="btn btn-primary" value="Update Profile">
-            {% bootstrap_icon "star" %} Update 
+            Update 
           </button>
         {% endbuttons %}
       </form>

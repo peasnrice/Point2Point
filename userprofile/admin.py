@@ -1,5 +1,5 @@
 from django.contrib import admin
-from userprofile.models import UserProfile
+from userprofile.models import UserProfile, ProfilePhoneNumber
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin as AuthUserAdmin
 
@@ -17,3 +17,4 @@ admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 
 admin.site.register(UserProfile)
+admin.site.register(ProfilePhoneNumber)

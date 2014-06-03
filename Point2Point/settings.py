@@ -21,6 +21,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'home',
     'about',
     'contact',
@@ -35,6 +36,12 @@ INSTALLED_APPS = (
     'kombu.transport.django',
     'pytz',
     'south',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    # ... include the providers you want to enable:
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.facebook',    
 )
 
 MIDDLEWARE_CLASSES = (

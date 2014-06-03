@@ -11,6 +11,6 @@ urlpatterns = patterns('',
     url(r'^about/', include('about.urls')),
     url(r'^contact/', include('contact.urls')),
    	url(r'^admin/', include(admin.site.urls)),
-   	url(r'^accounts/', include('allauth.urls')),
+   	url(r'^accounts/', include('allauth.urls')),    
     url(r'^profile/', include('userprofile.urls')),
 )
