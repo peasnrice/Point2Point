@@ -36,6 +36,7 @@ INSTALLED_APPS = (
     'kombu.transport.django',
     'pytz',
     'south',
+    "payments",
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
