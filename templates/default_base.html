@@ -80,9 +80,7 @@
   <div id="jumbotron">
     <div class="jumbotron">
       <div class="container">
-        <div class="col-md-12">
-            {% block jumbotron %}{% endblock %}
-        </div>
+          {% block jumbotron %}{% endblock %}
       </div>
     </div>
   </div>
@@ -99,7 +97,25 @@
 
 <footer>
   <div id="footer">
-    {% block footer %}{% endblock %}
+    <div class="container">
+      <div class="row">
+        <div class="col-md-3">
+          <h3>Contact</h3>
+          <li><a href="#">Email Us</a></li>
+          <li><a href="#">Call Us</a></li>
+          <li><a href="#">Customized Quests</a></li>
+        </div>
+        <div class="col-md-3">
+          <h3>Social</h3>
+          <li><a href="#">facebook</a></li>
+          <li><a href="#">twitter</a></li>
+          <li><a href="#">linkedin???</a></li>
+        </div>
+        <div class="col-md-3">
+          <h3></h3>
+        </div>
+      </div>
+    </div>
   </div>
 </footer>
 

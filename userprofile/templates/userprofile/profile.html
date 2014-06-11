@@ -3,39 +3,68 @@
 {% load bootstrap3 %}
 
 {% block jumbotron %}
-<div class="well well-sm">
-	<h1>{{ user.username }}'s Profile</h1>
-	<p>Here you can view and modify your profile as well as view your quest history</p>
+<div class="row">
+  <div class="col-md-12">
+    <div class="well well-sm">
+    	<h1>{{ user.username }}'s Profile</h1>
+    	<p>Here you can view and modify your profile as well as view your quest history</p>
+    </div>
+  </div>
 </div>
 {% endblock %}
+
+
+completed_list.append(game)
+in_progress_list.append(game)
 
 {% block content %}
 <div class="container">
   <div class="col-md-6">
-    {% if profile.game_instances.all %}
-      <h1>Completed Quests</h1>
-      {% for game_instance in profile.game_instances.all %}
-        <h2>{{ game_instance.competition }}</h2>
-        <p>{{ game_instance.competition.description }}</p>
-        <a class="btn btn-warning" href="{% url 'leaderboard_detail' game_instance.competition.id game_instance.competition.slug %}" role="button">View the leaderboard for {{ game_instance.competition }}</a>
-      {% endfor %}
+    {% if in_progress_list or completed_list %}
+      {% if in_progress_list %}
+        <h1>Quests In Progress</h1>
+        {% for game_instance in in_progress_list %}
+          <h2>{{ game_instance.competition }}</h2>
+          {% if game_instance.started %}
+            <h3>Started on {{ game_instance.date_started|date }}</h3>
+            <p>You are currently participating in this quest! What are you waiting for, get to it!</p>
+          {% else %}
+            <h3>Registered on {{ game_instance.date_created|date }}</h3>
+            <p>You have registered but have not begun this quest. Please follow the instructions within the sms message you received upon registration, if you have lost this message please refer to your registration confirmation email for further instructions. If all else fails, please contact support at support@point2poiintquests.com</p>
+          {% endif %}
+          <a class="btn btn-warning" href="{% url 'leaderboard_detail' game_instance.competition.id game_instance.competition.slug %}" role="button">View the leaderboard for {{ game_instance.competition }}</a>
+        {% endfor %}
+      {% endif %}
+      {% if completed_list %}    
+        <h1>Completed Quests</h1>
+        {% for game_instance in completed_list %}
+          <h2>{{ game_instance.competition }}</h2>
+          <h3>Started on {{ game_instance.date_started|date }}</h3>
+          <a class="btn btn-warning" href="{% url 'leaderboard_detail' game_instance.competition.id game_instance.competition.slug %}" role="button">View the leaderboard for {{ game_instance.competition }}</a>
+        {% endfor %}
+      {% endif %}
     {% else %}
-      <h1>Oops, You haven't completed any quests yet!</h1>
+      <h1>You haven't completed any quests yet!</h1>
       <p>Your completed quests will show up here once you finish them, we promise!</p>
     {% endif %}
     </div>
     <div class="col-md-6">
 
     	<h1>Your Info</h1>
+      <h2>Verified Numbers</h2>
+      <p>Verifying a phone number lets us display your previous quests on your profile page. We promise that we will only ever
+          contact you using your verified numbers with your permission and we will most certainly not sell your information.</p>
       {% if user.profile.phone_number_verified %}
-        Verified
-        {% for numbers in verified_number_list %}
-          numbers
+      <h3>Your Numbers</h3>
+        {% for number in verified_number_list %}
+          <p>{{ number }}</p>
         {% endfor %}
       <a class="btn btn-warning" href="/profile/getpin" role="button">Verify another phone number</a>    
       {% else %}
         <a class="btn btn-warning" href="/profile/getpin" role="button">Verify your phone number</a>  
-      {% endif %}     
+      {% endif %} 
+      <h2>Other things</h2> 
+      <a class="btn btn-warning" href="/accounts/password/change/" role="button">Change Your Password</a>   
       <form method="post" action="">
         {% csrf_token %}
         {% bootstrap_form form %}

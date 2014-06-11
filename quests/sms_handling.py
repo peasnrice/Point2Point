@@ -77,6 +77,7 @@ def correctAnswer(game):
             return check_time_message
         else:
             game.started = True
+            game.date_started = datetime.datetime.utcnow().replace(tzinfo=utc)
             game.current_question += 1
             game.save()
     elif game.current_question < game.competition.getQuestLength():
@@ -301,17 +302,20 @@ def daysToInts(competition):
 def checkTime(game):
     competition = game.competition
     current_date = datetime.datetime.utcnow().replace(tzinfo=utc)
-    if current_date < competition.start_date or current_date > competition.end_date:
-        return "Sorry, this quest has expired, please contact support if this is a problem"   
-    else:
-        weekday = datetime.datetime.utcnow().replace(tzinfo=utc).weekday()
-        days_available = daysToInts(competition)
-        if days_available[weekday] != 1:
-            return "Sorry, we can't let you start today :(\n\nPlease check online to see when you can participate."
-        else:
-            if current_date.time() > competition.start_time:
-                return "Sorry, we can't let you start at this time as it may ruin your enjoyment. Please check online for available start times"
 
+    if current_date < competition.start_date:
+        return "Sorry, this quest starts on " + str(competition.start_date) + ", please contact support if there is a problem"   
+    if current_date > competition.end_date:
+        return "Sorry, this quest ended on " + str(competition.end_date) + ", please contact support if this is a problem"   
 
+    weekday = datetime.datetime.utcnow().replace(tzinfo=utc).weekday()
+    days_available = daysToInts(competition)
+    if days_available[weekday] != 1:
+        return "Sorry, we can't let you start today :(\n\nPlease check online to see when you can participate."
+
+    if current_date.time() > competition.start_time_latest:
+        return "Sorry, the latest time you can start this quest is at " + str(competition.start_time_latest) +" as it may ruin your enjoyment. Please come back on another valid day during the valid time period. You may check quest availability on our website"
+    if current_date.time() < competition.start_time_earliest:
+        return "Sorry, the earliest time you can start this quest is at " + str(competition.start_time_earliest) +" as it may ruin your enjoyment. Please come back at the start time or on another valid day during the valid time period. You may check quest availability on our website"
 
 

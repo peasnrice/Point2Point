@@ -3,9 +3,13 @@
 {% load bootstrap3 %}
 
 {% block jumbotron %}
-<div class="well well-sm">
-  <h1>{{ competition.name }}</h1>
-  <p>{{ competition.description }}</p>
+<div class="row">
+  <div class="col-md-12">
+    <div class="well well-sm">
+      <h1>{{ competition.name }}</h1>
+      <p>{{ competition.description }}</p>
+    </div>
+  </div>
 </div>
 {% endblock %}
 
@@ -15,15 +19,23 @@
     <div class="page-header">
       <h1>Register today, play when you want!</h1>
     </div>
-    <form method="post" action="">
+    <form action="" method="POST">
       {% csrf_token %}
       {% bootstrap_form form_t %}
       {% buttons %}
-        <button type="submit" class="btn btn-primary" value="Create Team">
-          {% bootstrap_icon "star" %} Submit 
-        </button>
+      <button type="submit" class="btn btn-primary" value="Create Team">
+        {% bootstrap_icon "star" %} Submit 
+      </button>
       {% endbuttons %}
     </form>
+      <script
+        src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+        data-key="pk_test_R96N2i8ggtgiRoOgiZLk8AmR"
+        data-amount="2000"
+        data-name="{{ competition.name }} ($20.00)"
+        data-description="{{ competition.description }}"
+        data-image="/128x128.png">
+      </script>
   </div>
 </div>
 {% endblock %}

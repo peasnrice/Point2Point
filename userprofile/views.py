@@ -1,16 +1,39 @@
 from Point2Point.settings import TWILIO_ACCOUNT_SID,TWILIO_AUTH_TOKEN,TWILIO_NUMBER
-from django.shortcuts import render_to_response, RequestContext
+from django.shortcuts import render_to_response, RequestContext, HttpResponse
 from django.http import HttpResponseRedirect
 from django.core.context_processors import csrf
 from twilio.rest import TwilioRestClient
 from forms import UserProfileForm, GetPinForm, VerifyPinForm
 from django.contrib.auth.decorators import login_required
 from phonenumber_field.modelfields import PhoneNumberField
-from quests.models import Team
+from quests.models import Team, GameInstance
 from models import ProfilePhoneNumber
 import phonenumbers
 import string
 import random
+import json
+from django.utils import simplejson
+from django.core import serializers
+
+@login_required
+def ajax(request):
+
+    name = request.GET['name']
+    user = request.user
+    profile = user.profile
+
+    #data = serializers.serialize("json", ProfilePhoneNumber.objects.all())
+
+    data = serializers.serialize('json', [ user, ])
+
+    return_dict = {
+        'name': name,
+        'user': data
+    }
+    json = simplejson.dumps(return_dict)
+    return HttpResponse(json, mimetype="application/x-javascript")
+
+    #return render_to_response('userprofile/ajax.html', locals(), context_instance=RequestContext(request))
 
 @login_required
 def user_profile(request):
@@ -23,6 +46,15 @@ def user_profile(request):
     else:
         user = request.user
         profile = user.profile
+
+        in_progress_list = []
+        completed_list = []
+        games = profile.game_instances.all()
+        for game in games:
+            if game.ended:
+                completed_list.append(game)
+            else:
+                in_progress_list.append(game)
         verified_numbers = ProfilePhoneNumber.objects.filter(user_profile=profile)
         verified_number_list = []
         for number in verified_numbers:

@@ -1,9 +1,13 @@
 {% extends "default_base.html" %}
 
 {% block jumbotron %}
-<div class="well well-sm">
-  <h1>{{ competition }} Leaderboards</h1>
-  <p></p>
+<div class="row">
+  <div class="col-md-12">
+    <div class="well well-sm">
+      <h1>{{ competition }} Leaderboards</h1>
+      <p></p>
+    </div>
+  </div>
 </div>
 {% endblock %}
 
@@ -64,8 +68,9 @@
                           <td>{{ ongoing_game.name }}</td>
                           <td>{{ ongoing_game.penalties }}</td>
                           <td>{{ ongoing_game.time_bp }}</td>
-                          <td>"---"</td>
+                          <td>    ---    </td>
                           <td>{{ ongoing_game.average_time }}</td>
+
                         </tr>
                       {% endif %}
                     {% endfor %}

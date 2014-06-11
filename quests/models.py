@@ -29,7 +29,8 @@ class Competition(models.Model):
     wednesday = models.BooleanField(default=False)
     thursday = models.BooleanField(default=False)
     friday = models.BooleanField(default=False)
-    start_time = models.TimeField()
+    start_time_latest = models.TimeField()
+    start_time_earliest = models.TimeField()
     end_time = models.TimeField()
     def getQSPairTextByQNum(self, question_number_):
         questions = QuestionsSolutionPair.objects.filter(competition=self.id)
@@ -69,6 +70,9 @@ def strfdelta(tdelta, fmt):
 
 class GameInstance(models.Model):
     competition = models.ForeignKey('Competition')
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_started = models.DateTimeField(default=datetime.datetime.utcnow().replace(tzinfo=utc), blank=True)
+
     total_time = timedelta.fields.TimedeltaField(blank=True)
     game_time = timedelta.fields.TimedeltaField(blank=True)
     penalty_time = timedelta.fields.TimedeltaField(blank=True)

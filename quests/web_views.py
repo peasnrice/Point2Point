@@ -3,6 +3,7 @@ from django.shortcuts import render, get_object_or_404, render_to_response, rend
 from django.http import Http404
 from django.core.mail import send_mail
 from quests.models import Competition, Team, Player, GameInstance
+from userprofile.models import ProfilePhoneNumber
 from quests.forms import PlayerForm, TeamForm
 from django.forms.models import modelformset_factory
 from django.views.decorators.csrf import csrf_exempt
@@ -49,12 +50,17 @@ def detail(request, competition_id, slug):
             game = team.gameinstance
             question = game.current_question
             sms_text = competition.getQSPairTextByQNum(question)
-            game.createGameStage()      
+            game.createGameStage()    
             client = TwilioRestClient(TWILIO_ACCOUNT_SID,
                                       TWILIO_AUTH_TOKEN)
             message = client.messages.create(body=sms_text,
                 to=save_team.phone_number,
                 from_=TWILIO_NUMBER)
+
+            known_user_numbers = ProfilePhoneNumber.objects.filter(phone_number=save_team.phone_number)
+            for known_user in known_user_numbers:
+                known_user.user_profile.game_instances.add(game)
+                known_user.user_profile.save()
 
             subject = competition.name
             from_email = 'PointToPoint@pointtopoint.webfactional.com'

@@ -51,6 +51,7 @@ class TeamForm(ModelForm):
             else:
                 raise forms.ValidationError("Sorry you can't use this code at this time")
 
+
 class LoggedInTeamForm(ModelForm):
     class Meta:
         model = Team
