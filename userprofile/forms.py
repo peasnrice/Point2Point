@@ -1,17 +1,44 @@
 from django import forms
 from models import UserProfile, ProfilePhoneNumber
+from phonenumber_field.modelfields import PhoneNumberField
+
 
 class UserProfileForm(forms.ModelForm):
-	class Meta:
-		model = UserProfile
-		fields = ['email_alerts',]
-		labels = {'email_alerts': ('I want to receive email alerts'),}
+    class Meta:
+        model = UserProfile
+        fields = ['email_alerts',]
+        labels = {'email_alerts': ('I want to receive email alerts'),}
 
+
+'''
 class GetPinForm(forms.ModelForm):
-	class Meta:
-		model = ProfilePhoneNumber
-		fields = ['phone_number',]
-		labels = {'phone_number': ('Phone Number'),}
+    def __init__(self, user, *args, **kwargs):
+        super(GetPinForm, self).__init__(*args, **kwargs)
+        self._user = user
+    class Meta:
+        model = ProfilePhoneNumber
+       	fields = ['phone_number',]
+        labels = {'phone_number': ('Phone Number'),}
+    def clean_phone_number(self):
+        phone_number = self.cleaned_data['phone_number']
+        if self._user:
+            phone_numbers = ProfilePhoneNumber.objects.filter(user_profile=self._user.profile).filter(phone_number=phone_number)
+            if phone_numbers:
+                raise forms.ValidationError('You have already registered this number')
+        else:
+            raise forms.ValidationError('Not sure how you managed this, but you aren\'t logged in. Please log in')
 
 class VerifyPinForm(forms.Form):
-	pin = forms.CharField(max_length=10)
+    pin = forms.CharField(max_length=10)
+'''
+
+class GetPinForm(forms.ModelForm):
+    class Meta:
+        model = ProfilePhoneNumber
+        fields = ['phone_number',]
+        labels = {'phone_number': ('Phone Number'),}
+
+class VerifyPinForm(forms.Form):
+    pin = forms.CharField(max_length=10)
+
+

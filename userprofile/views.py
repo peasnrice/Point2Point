@@ -1,7 +1,8 @@
 from Point2Point.settings import TWILIO_ACCOUNT_SID,TWILIO_AUTH_TOKEN,TWILIO_NUMBER
-from django.shortcuts import render_to_response, RequestContext, HttpResponse
-from django.http import HttpResponseRedirect
+from django.shortcuts import render_to_response, RequestContext, HttpResponse, render
+from django.http import HttpResponseRedirect, HttpResponseBadRequest
 from django.core.context_processors import csrf
+from django.views.decorators.csrf import csrf_protect
 from twilio.rest import TwilioRestClient
 from forms import UserProfileForm, GetPinForm, VerifyPinForm
 from django.contrib.auth.decorators import login_required
@@ -37,12 +38,56 @@ def ajax(request):
 
 @login_required
 def user_profile(request):
+    if request.method == 'POST':
+        form = GetPinForm(request.POST)
+        if form.is_valid():
+            if request.is_ajax():
+                errors_dict = {}
+                if form.errors:
+                    for error in form.errors:
+                        e = form.errors[error]
+                        errors_dict[error] = unicode(e)
+                return HttpResponseBadRequest(json.dumps(errors_dict))
+            else:
+                pass
+    else:
+        form = GetPinForm()
+    return render(request, 'userprofile/profile.html', {'form':form})
 
+'''
     if request.method == 'POST':
         form = UserProfileForm(request.POST, instance=request.user.profile)
+        get_pin_form = GetPinForm(user=request.user, data=request.POST)
+        verify_pin_form = VerifyPinForm(request.POST or None)
         if form.is_valid():
             form.save()
             return HttpResponseRedirect('/accounts/login')
+        elif get_pin_form.is_valid():
+            pin = pin_generator()
+            number = get_pin_form.cleaned_data['phone_number']
+            phone_number = "+" + str(number.country_code) + str(number.national_number)
+            send_msg(phone_number,pin)
+            request.session['pin'] = pin
+            request.session['phone_number'] = phone_number
+            #return HttpResponseRedirect('#')
+        elif verify_pin_form.is_valid():
+            pin = request.session['pin']
+            if pin == verify_pin_form.cleaned_data['pin']:
+                user = request.user
+                profile = user.profile
+
+                phone_number = request.session['phone_number']
+                new_verified_phone_number = ProfilePhoneNumber(user_profile=profile,phone_number=phone_number)
+                new_verified_phone_number.save()
+
+                profile.phone_number_verified = True
+                profile.save()
+
+                teams = Team.objects.filter(phone_number=phone_number)
+                for team in teams:
+                    profile.game_instances.add(team.gameinstance)
+                    profile.save()
+                #return HttpResponseRedirect('#')
     else:
         user = request.user
         profile = user.profile
@@ -61,7 +106,10 @@ def user_profile(request):
             num = "+" + str(number.phone_number.country_code) + str(number.phone_number.national_number)
             verified_number_list.append(num)
         form = UserProfileForm(instance=profile)
+        get_pin_form = GetPinForm(user=request.user)
+        verify_pin_form = VerifyPinForm()
     return render_to_response('userprofile/profile.html', locals(), context_instance=RequestContext(request))
+'''
 
 def pin_generator(size=10, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
@@ -75,15 +123,18 @@ def send_msg(to_number, text):
 
 @login_required
 def get_pin(request):
-    get_pin_form = GetPinForm(request.POST or None)
-    if get_pin_form.is_valid():
-        pin = pin_generator()
-        number = get_pin_form.cleaned_data['phone_number']
-        phone_number = "+" + str(number.country_code) + str(number.national_number)
-        send_msg(phone_number,pin)
-        request.session['pin'] = pin
-        request.session['phone_number'] = phone_number
-        return HttpResponseRedirect('/profile/verifypin')
+    if request.method == 'POST':
+        get_pin_form = GetPinForm(user=request.user, data=request.POST)
+        if get_pin_form.is_valid():
+            pin = pin_generator()
+            number = get_pin_form.cleaned_data['phone_number']
+            phone_number = "+" + str(number.country_code) + str(number.national_number)
+            send_msg(phone_number,pin)
+            request.session['pin'] = pin
+            request.session['phone_number'] = phone_number
+            return HttpResponseRedirect('/profile/verifypin')
+    else:
+        get_pin_form = GetPinForm(user=request.user)
     return render_to_response('userprofile/get_pin.html', locals(), context_instance=RequestContext(request))
 
 @login_required
@@ -116,27 +167,27 @@ def _get_pin(length=5):
     return random.sample(range(10**(length-1), 10**length), 1)[0]
 
 
-def _verify_pin(mobile_number, pin):
+def _verify_pin(phone_number, pin):
     """ Verify a PIN is correct """
-    return pin == cache.get(mobile_number)
+    return pin == cache.get(phone_number)
 
-
+@csrf_protect
 def ajax_send_pin(request):
     """ Sends SMS PIN to the specified number """
-    mobile_number = request.POST.get('mobile_number', "")
-    if not mobile_number:
+    phone_number = request.POST.get('phone_number', "")
+    if not phone_number:
         return HttpResponse("No mobile number", mimetype='text/plain', status=403)
 
     pin = _get_pin()
 
     # store the PIN in the cache for later verification.
-    cache.set(mobile_number, pin, 24*3600) # valid for 24 hrs
+    cache.set(phone_number, pin, 24*3600) # valid for 24 hrs
 
     client = TwilioRestClient(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
     message = client.messages.create(
                         body="%s" % pin,
-                        to=mobile_number,
-                        from_=settings.TWILIO_FROM_NUMBER,
+                        to=phone_number,
+                        from_=TWILIO_NUMBER,
                     )
     return HttpResponse("Message %s sent" % message.sid, mimetype='text/plain', status=200)
 
@@ -146,9 +197,9 @@ def process_order(request):
 
     if form.is_valid():
         pin = int(request.POST.get("pin", "0"))
-        mobile_number = request.POST.get("mobile_number", "")
+        phone_number = request.POST.get("phone_number", "")
 
-        if _verify_pin(mobile_number, pin):
+        if _verify_pin(phone_number, pin):
             form.save()
             return redirect('transaction_complete')
         else:

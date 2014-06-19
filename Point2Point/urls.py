@@ -15,4 +15,5 @@ urlpatterns = patterns('',
      {'next_page': '/'}),
    	url(r'^accounts/', include('allauth.urls')),    
     url(r'^profile/', include('userprofile.urls')),
+    url(r'^howtoplay/', include('howtoplay.urls')),    
 )

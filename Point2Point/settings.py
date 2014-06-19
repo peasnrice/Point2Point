@@ -30,6 +30,7 @@ INSTALLED_APPS = (
     'eventhandler',
     'promotions',
     'userprofile',
+    'howtoplay',
     'django_twilio',
     'bootstrap3',
     'djcelery',

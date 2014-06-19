@@ -19,7 +19,8 @@
   <!-- Custom styles for this template -->
   <link href="{% static "dist/css/jumbotron.css" %}" rel="stylesheet">
   <link href="{% static "dist/css/navbar.css" %}" rel="stylesheet">
-
+  <link href="{% static "dist/css/footer.css" %}" rel="stylesheet">
+  <link href="{% static "dist/css/custom.css" %}" rel="stylesheet">
   <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
@@ -27,95 +28,100 @@
   <![endif]-->
 </head>
 
-<body>
+<body bgcolor="#E6E6FA">
   <div id="page">
-
-  <div id="navbar">
-    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="/"> <img src="{% static "assets/images/p2p_narrow_brand.png" %}" height="30"></a>
-        </div>
-        <div class="navbar-collapse collapse">
-          <ul class="nav navbar-nav navbar-right">
-            <li>
-              <a href="/quests">choose a quest</a>
-            </li>
-            <li>
-              <a href="/leaderboards">leaderboards</a>
-            </li>
-            <li>
-              <a href="/about">about us</a>
-            </li>
-            <li>
-              <a href="/contact">contact us</a>
-            </li>
-            {% if user.is_authenticated %}
+    <div id="navbar">
+      <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/"> <img src="{% static "assets/images/p2p_narrow_brand.png" %}" height="30"></a>
+          </div>
+          <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
               <li>
-                <a href="/profile">{{ user.username }}</a>
-              </li>   
-              <li>
-                <a href="/accounts/logout">log out</a>
-              </li>   
-            {% else %}  
-              <li>
-                <a href="/accounts/signup">sign up</a>
+                <a href="/quests">choose a quest</a>
               </li>
               <li>
-                <a href="/accounts/login">log in</a>
-              </li>       
-            {% endif %}
-          </ul>
-        </div><!--/.nav-collapse -->
-      </div>
-    </div>  
-  </div>
-
-  <div id="jumbotron">
-    <div class="jumbotron">
-      <div class="container">
-          {% block jumbotron %}{% endblock %}
-      </div>
+                <a href="/howtoplay">how to play</a>
+              </li>
+              <li>
+                <a href="/leaderboards">leaderboards</a>
+              </li>
+              <li>
+                <a href="/about">about us</a>
+              </li>
+              <li>
+                <a href="/contact">contact us</a>
+              </li>
+              {% if user.is_authenticated %}
+                <li>
+                  <a href="/profile">{{ user.username }}</a>
+                </li>   
+                <li>
+                  <a href="/accounts/logout">log out</a>
+                </li>   
+              {% else %}  
+                <li>
+                  <a href="/accounts/signup">sign up</a>
+                </li>
+                <li>
+                  <a href="/accounts/login">log in</a>
+                </li>       
+              {% endif %}
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>  
     </div>
   </div>
 
-  <div id="content">
-    {% block content %}{% endblock %}
-  </div>
 
-  <div id="extra_body">
-    {% block extra_body %}{% endblock %}
+<div id="jumbotron">
+  <div class="jumbotron">
+    <div class="container">
+      {% block jumbotron %}{% endblock %}
+    </div>
   </div>
+</div>
 
-</body>
+<div id="content">
+  {% block content %}{% endblock %}
+</div>
+
+<div class="row-fluid">
+  <img src="{% static "assets/images/p2p_footer_transform.svg" %}" max-width="100%" width="100%" height="100%" class="img-responsive inline-block" alt="p2p footer transition"/>
+</div>
 
 <footer>
   <div id="footer">
-    <div class="container">
-      <div class="row">
-        <div class="col-md-3">
-          <h3>Contact</h3>
-          <li><a href="#">Email Us</a></li>
-          <li><a href="#">Call Us</a></li>
-          <li><a href="#">Customized Quests</a></li>
-        </div>
-        <div class="col-md-3">
-          <h3>Social</h3>
-          <li><a href="#">facebook</a></li>
-          <li><a href="#">twitter</a></li>
-          <li><a href="#">linkedin???</a></li>
-        </div>
-        <div class="col-md-3">
-          <h3></h3>
+    <div class="footer">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-3">
+            <h3>Contact</h3>
+            <li><a href="#">Email Us</a></li>
+            <li><a href="#">Call Us</a></li>
+            <li><a href="#">Customized Quests</a></li>
+          </div>
+          <div class="col-md-3">
+            <h3>Social</h3>
+            <li><a href="#">facebook</a></li>
+            <li><a href="#">twitter</a></li>
+            <li><a href="#">linkedin???</a></li>
+          </div>
+          <div class="col-md-3">
+            <h3></h3>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </footer>
-
+</body>
+</html

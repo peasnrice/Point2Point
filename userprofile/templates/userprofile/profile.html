@@ -55,11 +55,11 @@ in_progress_list.append(game)
       <p>Verifying a phone number lets us display your previous quests on your profile page. We promise that we will only ever
           contact you using your verified numbers with your permission and we will most certainly not sell your information.</p>
       {% if user.profile.phone_number_verified %}
-      <h3>Your Numbers</h3>
-        {% for number in verified_number_list %}
-          <p>{{ number }}</p>
-        {% endfor %}
-      <a class="btn btn-warning" href="/profile/getpin" role="button">Verify another phone number</a>    
+        <h3>Your Numbers</h3>
+          {% for number in verified_number_list %}
+            <p>{{ number }}</p>
+          {% endfor %}
+        <a class="btn btn-warning" href="/profile/getpin" role="button">Verify another phone number</a>
       {% else %}
         <a class="btn btn-warning" href="/profile/getpin" role="button">Verify your phone number</a>  
       {% endif %} 
@@ -74,7 +74,35 @@ in_progress_list.append(game)
           </button>
         {% endbuttons %}
       </form>
+
+      <!-- Button trigger modal -->
+      <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+        Verify a Number
+      </button>
+
+      <!-- Modal -->
+      <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+              <h4 class="modal-title" id="myModalLabel">Verify a Number</h4>
+            </div>
+            <div class="modal-body">
+              <form method="post" action="">
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                {% buttons %}
+                <p id="sendwrapper"><input type="submit" value="Send" id="sendbutton"/></p>
+                {% endbuttons %}
+              </form>    
+
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
+
 {% endblock %}
