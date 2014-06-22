@@ -28,14 +28,15 @@
       </button>
       {% endbuttons %}
     </form>
-      <script
-        src="https://checkout.stripe.com/checkout.js" class="stripe-button"
-        data-key="pk_test_R96N2i8ggtgiRoOgiZLk8AmR"
-        data-amount="2000"
-        data-name="{{ competition.name }} ($20.00)"
-        data-description="{{ competition.description }}"
-        data-image="/128x128.png">
-      </script>
+    <a class="coinbase-button" data-code="5cd802d623c74a73ff60b224800f6220" data-button-style="custom_small" href="https://coinbase.com/checkouts/5cd802d623c74a73ff60b224800f6220">Pay With Bitcoin</a><script src="https://coinbase.com/assets/button.js" type="text/javascript"></script>
+    <script
+      src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+      data-key="pk_test_R96N2i8ggtgiRoOgiZLk8AmR"
+      data-amount="2000"
+      data-name="{{ competition.name }} ($20.00)"
+      data-description="{{ competition.description }}"
+      data-image="/128x128.png">
+    </script>
   </div>
 </div>
 {% endblock %}

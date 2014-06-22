@@ -6,8 +6,11 @@
 <div class="row">
   <div class="well col-lg-6 col-md-6 col-sm-5 col-xs-12">
     <h1>Welcome to Point to Point Quests!</h1>
-    <p>Team up as we send you on a cryptic quest around town via text message</p>
-    <p><a href="/quests" class="btn btn-primary btn-lg" role="button">Choose a Quest &raquo;</a></p>
+    <p>We send you riddles & clues on your phone.</p>
+    <p>You & your team discover a city whilst playing a game.</p>
+    <p>Choose the way you want to discover a city.</p>
+    <p>Fantastic for exploring the city you are visiting or living in.</p>
+    <p>Terrific for team building.</p>
   </div>
   <div class="col-lg-1 visible-lg"></div>
   <div class="col-lg-5 col-md-6 col-sm-7 hidden-xs">
@@ -16,72 +19,49 @@
 </div>
 {% endblock %}
 
+casual quest
+more informative 
+
 {% block content %}
 <div class="container">
   <div class="row">
-    <div class="col-md-4">
-      <h2>Explore & Discover</h2>
-      <p>We will be sending you on a quest around town and aim to keep you entertained for 2 to 3 hours</p>
+    <div class="col-lg-4">
+      <h1>Want to learn more about the city you are in?</h1>
+      <li>Go on a walking tour with your phone as the guide.</li>
+      <li>Terrific for toursists wanting to explore a new city.</li>
+      <li>Let your phone guide you while you soak up the scenes.</li>
+      <a href="/quests/casual" class="btn btn-primary btn-lg" role="button">Casual Quests</a>
     </div>
-    <div class="col-md-4">
-      <h2>Locals or just visiting</h2>
-      <p>Whether you are new to a city or have been living there your whole life, we aim to provide you with a fun experience for you and your friends</p>
-   </div>
-    <div class="col-md-4">
-      <h2>LeaderBoards</h2>
-      <p>Compete against your friends or try to get the fastest time on the leaderboard! We offer monthly prizes to the top teams!</p>
+    <div class="col-lg-4">
+      <h1>Looking for an adventure?</h1>
+      <li>We send you riddles & clues on your phone.</li>
+      <li>You & your team discover a city whilst playing a game.</li>
+      <li>Compete against friends or strangers!</li>
+      <a href="/quests/adventure" class="btn btn-primary btn-lg" role="button">Adventure Quests</a>
     </div>
-
-    <!--
-    <div class="DELETE ME LATER ajaxTesting col-xs-12 col-sm-12 col-md-12 col-lg-12">
-      <div class="button">AJAX CALL</div>
-      <style>
-        .ajaxTesting {
-          text-align: center;
-        }
-
-        .ajaxTesting .button {
-          display:inline-block;
-          height:40px;
-          width:200px;
-          background-color:#ddd;
-          padding:10px 30px;
-          border:solid 1px #000;
-          cursor:pointer;
-        }
-      </style>
-      <script type="text/javascript">
-        $(function() {
-
-          $(".ajaxTesting .button").click(function() {
-
-            $.ajax({
-                url: "/profile/ajax/",
-                dataType: "json",
-                type: "GET",
-                data: {
-                  "name": "Andy"
-                }
-            })
-              .done(function(data) {
-                //console.log(data);
-
-                var user = JSON.parse(data.user)[0];
-                //console.log(user);
-
-                $(".ajaxTesting .button").text(data.name + " " + user.fields.username);
-              })
-              .fail(function(data) {
-                alert( "error" );
-              })
-              .always(function(data){});
-
-          });
-
-        });
-      </script>
+    <div class="col-lg-4">
+      <h1>Wanting a fun night out?</h1>
+      <li>Explore what the city has to offer, off the beaten path.</li>
+      <li>Discover new restaurants, bars and other late night food joints.</li>
+      <li>Receive discounts in the places we send you.</li>
+      <a href="/quests/evening" class="btn btn-primary btn-lg" role="button">Evening Quests</a>
     </div>
-    -->
+  </div>
+</div>
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <h1>App experiences coming soon!</h1>
+      <p>We are working our socks off to bring the Point to Point Quest experience to all of your handheld devices.</p>
+      <p>Soon you will be able to use your iOS, Android or Windows device to experience all our quests without needing a cell phone plan.</p>
+      <p>We will be building on top of the current functionality but adding heaps of new content to make each quest more interesting.</p>
+    </div>
+  </div>
+</div>
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+    </div>
   </div>
 </div>
 {% endblock %}
