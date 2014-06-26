@@ -1,30 +1,21 @@
 {% extends "default_base.html" %}
 
-{% load static %}
-
 {% block jumbotron %}
 <div class="row">
-  <div class="well col-lg-6 col-md-6 col-sm-5 col-xs-12">
-    <h1>Welcome to Point to Point Quests!</h1>
-    <p>We send you riddles & clues on your phone.</p>
-    <p>You & your team discover a city whilst playing a game.</p>
-    <p>Choose the way you want to discover a city.</p>
-    <p>Fantastic for exploring the city you are visiting or living in.</p>
-    <p>Terrific for team building.</p>
-  </div>
-  <div class="col-lg-1 visible-lg"></div>
-  <div class="col-lg-5 col-md-6 col-sm-7 hidden-xs">
-    <img src="{% static "assets/images/point_to_point_logo.png" %}" class="img-responsive inline-block" alt="p2p logo"/>
+  <div class="col-md-12">
+    <div class="well well-sm">
+      <h1>Quest List!</h1>
+      <p>This is where the adventure begins!</p>
+        <p>We have a variety of quests for you to choose from and they vary by theme, duration and difficulty. 
+          We are certain you will find something you will enjoy!</p>
+        <p>We are constantly adding more quests to this list to ensure that you always have a new and exciting Point to Point Quest to embark on!</p>
+    </div>
   </div>
 </div>
 {% endblock %}
 
-casual quest
-more informative 
-
 {% block content %}
 <div class="container">
-  <div class="row">
     <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
       <div class="centered">
         <h1>Interested about the city you are in?</h1>
@@ -51,24 +42,6 @@ more informative
         <p>Receive discounts in the places we send you.</p>
         <a href="/quests/evening" class="btn btn-primary btn-lg" role="button">Evening Quests</a>
       </div>
-    </div>
-  </div>
-</div>
-<div class="container">
-  <div class="row">
-    <div class="col-md-12">
-      <div class="centered">
-        <h1>App experience coming soon!</h1>
-        <p>We are working our socks off to bring the Point to Point Quest experience to all of your handheld devices.</p>
-        <p>Soon you will be able to use your iOS, Android or Windows device to experience all our quests without needing a cell phone plan.</p>
-        <p>We will be building on top of the current functionality but adding heaps of new content to make each quest experience more interesting.</p>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="container">
-  <div class="row">
-    <div class="col-md-12">
     </div>
   </div>
 </div>
