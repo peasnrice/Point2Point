@@ -7,6 +7,5 @@ South==0.8.4
 django-allauth==0.17.0
 django-phonenumber-field==0.5
 gunicorn==19.0.0
-python-dev
-setproctitle
-psycopg2
+psycopg2==2.5.3
+setproctitle==1.1.8
