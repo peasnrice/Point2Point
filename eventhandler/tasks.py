@@ -2,8 +2,19 @@ from Point2Point.settings import TWILIO_ACCOUNT_SID,TWILIO_AUTH_TOKEN,TWILIO_NUM
 from quests.models import GameInstance, Team, QuestionsSolutionPair
 from celery.decorators import task
 from twilio.rest import TwilioRestClient
+from celery import Celery
 
-@task()
+app = Celery('tasks', broker='amqp://guest:guest@localhost:5672//')
+
+app.conf.update(
+    CELERY_TASK_SERIALIZER='json',
+    CELERY_ACCEPT_CONTENT=['json'],  # Ignore other content
+    CELERY_RESULT_SERIALIZER='json',
+    CELERY_ENABLE_UTC=True,
+    CELERY_ALWAYS_EAGER = False
+)
+
+@app.task
 def add_to_count():
     try:
         sc = SampleCount.objects.get(pk=1)
@@ -19,7 +30,7 @@ def send_msg(to_number, text):
     message = client.messages.create(to=to_number, from_=TWILIO_NUMBER,
                                      body=text)
 
-@task()
+@app.task
 def resumeGame(game_pk, team_pk, question_when_called):
     game = GameInstance.objects.get(pk=game_pk)
     if question_when_called == game.current_question:

@@ -5,6 +5,7 @@ from twilio.rest import TwilioRestClient
 from datetime import timedelta
 import datetime
 from django.utils.timezone import utc
+from eventhandler.tasks import add_to_count, send_msg, resumeGame
 
 def send_msg(to_number, text):
     client = TwilioRestClient(TWILIO_ACCOUNT_SID,

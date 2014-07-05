@@ -14,3 +14,4 @@ dj-static==0.0.5
 twilio==3.6.5
 Celery==3.1.11
 stripe==1.16.0
+librabbitmq==1.5.2
