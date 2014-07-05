@@ -124,7 +124,7 @@ def send_msg(to_number, text):
 @login_required
 def get_pin(request):
     if request.method == 'POST':
-        get_pin_form = GetPinForm(user=request.user, data=request.POST)
+        get_pin_form = GetPinForm(data=request.POST)
         if get_pin_form.is_valid():
             pin = pin_generator()
             number = get_pin_form.cleaned_data['phone_number']
@@ -134,7 +134,7 @@ def get_pin(request):
             request.session['phone_number'] = phone_number
             return HttpResponseRedirect('/profile/verifypin')
     else:
-        get_pin_form = GetPinForm(user=request.user)
+        get_pin_form = GetPinForm()
     return render_to_response('userprofile/get_pin.html', locals(), context_instance=RequestContext(request))
 
 @login_required
