@@ -51,8 +51,24 @@ def user_profile(request):
             else:
                 pass
     else:
+        user = request.user
+        profile = user.profile
+
+        in_progress_list = []
+        completed_list = []
+        games = profile.game_instances.all()
+        for game in games:
+            if game.ended:
+                completed_list.append(game)
+            else:
+                in_progress_list.append(game)
+        verified_numbers = ProfilePhoneNumber.objects.filter(user_profile=profile)
+        verified_number_list = []
+        for number in verified_numbers:
+            num = "+" + str(number.phone_number.country_code) + str(number.phone_number.national_number)
+            verified_number_list.append(num)
         form = GetPinForm()
-    return render(request, 'userprofile/profile.html', {'form':form})
+    return render_to_response('userprofile/profile.html', locals(), context_instance=RequestContext(request))
 
 '''
     if request.method == 'POST':
