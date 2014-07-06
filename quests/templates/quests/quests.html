@@ -16,33 +16,18 @@
 
 {% block content %}
 <div class="container">
-    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
-      <div class="centered">
-        <h1>Interested about the city you are in?</h1>
-        <p>Go on a walking tour with your phone as the guide.</p>
-        <p>Terrific for toursists wanting to explore a new city.</p>
-        <p>Let your phone guide you while you soak up the scenes.</p>
-        <a href="/quests/casual" class="btn btn-primary btn-lg" role="button">Casual Quests</a>
-      </div>
-    </div>
-    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
-      <div class="centered">
-        <h1>Looking for an adventure?</h1>
-        <p>We send you riddles & clues on your phone.</p>
-        <p>You & your team discover a city whilst playing a game.</p>
-        <p>Compete against friends or strangers!</p>
-        <a href="/quests/adventure" class="btn btn-primary btn-lg" role="button">Adventure Quests</a>
-      </div>
-    </div>
-    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
-      <div class="centered">
-        <h1>Wanting a fun night out?</h1>
-        <p>Explore what the city has to offer, off the beaten path.</p>
-        <p>Discover new restaurants, bars and other late night food joints.</p>
-        <p>Receive discounts in the places we send you.</p>
-        <a href="/quests/evening" class="btn btn-primary btn-lg" role="button">Evening Quests</a>
-      </div>
-    </div>
+  <div class="row">
+    {% if quest_types %}
+      {% for quest_type in quest_types %}
+        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+          <div class="centered">
+            <h1>{{ quest_type.caption }}</h1>
+            <p>{{ quest_type.description|linebreaks }}</p>
+            <a class="btn btn-primary btn-lg" href="{% url 'quest_type' quest_type.id quest_type.short_name %}" role="button">{{ quest_type.name }}s</a>
+          </div>
+        </div>
+      {% endfor %}
+    {% endif %}
   </div>
 </div>
 {% endblock %}

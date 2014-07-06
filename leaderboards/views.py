@@ -93,17 +93,21 @@ def leaderboards(request):
             team_number += 1 
             
         competition_number += 1
-    return render_to_response('leaderboards/leaderboards.html', locals(), context_instance=RequestContext(request)) 
+
+    args = {}
+    args['competition_list'] = competition_list
+    args['ended_game_list'] = ended_game_list
+    args['ongoing_game_list'] = ongoing_game_list
+    args['dnf_game_list'] = dnf_game_list
+    return render_to_response('leaderboards/leaderboards.html', args, context_instance=RequestContext(request)) 
 
 def leaderboard_detail(request, competition_id, slug):
     competition = get_object_or_404(Competition, pk=competition_id)
-    competition_list = []
     ended_game_list = []
     ongoing_game_list = []
     dnf_game_list = []
     competition_number = 0
     position = 0
-    competition_list.append(competition)
     
     game_instances = GameInstance.objects.filter(competition=competition.id).order_by("total_time")
     ended_games = game_instances.filter(ended=True).filter(dnf=False)
@@ -147,5 +151,9 @@ def leaderboard_detail(request, competition_id, slug):
         penalties = dnf_game.incorrect_answers + dnf_game.location_hints_used + dnf_game.clue_hints_used
         l = LeaderboardGameData(competition_number, position, team_name, time_bp, time_ap, average_time, penalties)
         dnf_game_list.append(l)  
-
+    args = {}
+    args['competition'] = competition
+    args['ended_game_list'] = ended_game_list
+    args['ongoing_game_list'] = ongoing_game_list
+    args['dnf_game_list'] = dnf_game_list
     return render_to_response('leaderboards/leaderboarddetail.html', locals(), context_instance=RequestContext(request)) 

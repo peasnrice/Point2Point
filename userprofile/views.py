@@ -68,7 +68,17 @@ def user_profile(request):
             num = "+" + str(number.phone_number.country_code) + str(number.phone_number.national_number)
             verified_number_list.append(num)
         form = GetPinForm()
-    return render_to_response('userprofile/profile.html', locals(), context_instance=RequestContext(request))
+
+    args = {}
+    args['in_progress_list'] = in_progress_list
+    args['completed_list'] = completed_list
+    args['verified_number_list'] = verified_number_list
+    args['form'] = form
+    args['username'] = user.username
+    args['phone_number_verified'] = user.profile.phone_number_verified
+    args['verified_number_list'] = verified_number_list
+
+    return render_to_response('userprofile/profile.html', args, context_instance=RequestContext(request))
 
 '''
     if request.method == 'POST':
@@ -151,7 +161,10 @@ def get_pin(request):
             return HttpResponseRedirect('/profile/verifypin')
     else:
         get_pin_form = GetPinForm()
-    return render_to_response('userprofile/get_pin.html', locals(), context_instance=RequestContext(request))
+
+    args = {}
+    args['get_pin_form'] = get_pin_form
+    return render_to_response('userprofile/get_pin.html', args, context_instance=RequestContext(request))
 
 @login_required
 def verify_pin(request):
@@ -176,7 +189,9 @@ def verify_pin(request):
             return HttpResponseRedirect('/profile')
         else:
             return HttpResponseRedirect('/profile/verifypin')
-    return render_to_response('userprofile/verify_pin.html', locals(), context_instance=RequestContext(request))
+    args = {}
+    args['verify_pin_form'] = verify_pin_form
+    return render_to_response('userprofile/verify_pin.html', args, context_instance=RequestContext(request))
 
 def _get_pin(length=5):
     """ Return a numeric PIN with length digits """

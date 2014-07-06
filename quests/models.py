@@ -9,6 +9,7 @@ import timedelta, datetime
 from django.utils.timezone import utc
 
 class Competition(models.Model):
+    quest_type = models.ForeignKey('QuestType')
     name = models.CharField(max_length=512)
     slug = models.SlugField(default="will-change-on-save")
     start_destination = models.CharField(max_length=512)
@@ -186,6 +187,7 @@ class Team(models.Model):
     captain_name = models.CharField(max_length=32)
     phone_number = models.CharField(max_length=12)
     email = models.EmailField(null=True, blank=True)
+    has_paid = models.BooleanField(default=False)
     def addPlayer(self, phone_number_, name_, email_):
         plyr = Player(first_name = name_, phone_number = phone_number_, email = email_)
         plyr.save()
@@ -219,3 +221,14 @@ class Solution(models.Model):
     solution_text = models.CharField(max_length=64)
     def __unicode__(self):
         return self.solution_text
+
+class QuestType(models.Model):
+    name = models.CharField(max_length=64)
+    short_name = models.CharField(max_length=32)
+    caption = models.CharField(max_length=64)
+    description = models.CharField(max_length=512)
+    front_page = models.BooleanField(default=True)
+    priority = models.IntegerField(default=0)
+    active = models.BooleanField(default=True)
+    def __unicode__(self):
+        return self.name

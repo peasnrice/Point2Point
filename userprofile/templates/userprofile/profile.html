@@ -6,7 +6,7 @@
 <div class="row">
   <div class="col-md-12">
     <div class="well well-sm">
-    	<h1>{{ user.username }}'s Profile</h1>
+    	<h1>{{ username }}'s Profile</h1>
     	<p>Here you can view and modify your profile as well as view your quest history</p>
     </div>
   </div>
@@ -54,7 +54,7 @@ in_progress_list.append(game)
       <h2>Verified Numbers</h2>
       <p>Verifying a phone number lets us display your previous quests on your profile page. We promise that we will only ever
           contact you using your verified numbers with your permission and we will most certainly not sell your information.</p>
-      {% if user.profile.phone_number_verified %}
+      {% if phone_number_verified %}
         <h3>Your Numbers</h3>
           {% for number in verified_number_list %}
             <p>{{ number }}</p>
