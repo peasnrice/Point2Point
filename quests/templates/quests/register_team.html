@@ -22,10 +22,9 @@
     <form action="" method="POST">
       {% csrf_token %}
       {% bootstrap_form form_t %}
-      {{ form_t.stripe_id.as_hidden }}
       {% buttons %}
       <button type="submit" class="btn btn-primary" value="Create Team">
-        {% bootstrap_icon "star" %} Submit 
+        Create Team
       </button>
       {% endbuttons %}
     </form>

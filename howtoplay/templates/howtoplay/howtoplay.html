@@ -1,5 +1,16 @@
 {% extends "default_base.html" %}
 
+{% block head %}
+<script>
+$('#questTypeTabs a').click(function (e) {
+  e.preventDefault()
+  $(this).tab('show')
+})
+</script>
+<script>$('#questTypeTabs a:first').tab('show')
+</script>
+{% endblock %}
+
 {% block jumbotron %}
 <div class="row">
   <div class="col-md-12">
@@ -14,15 +25,49 @@
 {% block content %}
 <div class="container">
   <div class="row">
-    <div class="media">
-      <a class="pull-left">
-        <img>
-      </a>
-      <div class="media-body">
-        <h4 class="media-heading">1.</h4>
-        Step 1
+    {% if quest_types %}
+      <!-- Nav tabs -->
+      <ul class="nav nav-tabs" role="tablist">
+        {% for quest_type in quest_types %}
+          {% if forloop.counter0 == 0 %}
+            <li class="active"><a href="#{{ quest_type.short_name }}" role="tab" data-toggle="pill">{{ quest_type.name }}s</a></li>
+          {% else %}
+            <li><a href="#{{ quest_type.short_name }}" role="tab" data-toggle="pill">{{ quest_type.name }}s</a></li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+
+      <!-- Tab panes -->
+      <div class="tab-content">
+        {% for quest_type in quest_types %}
+          {% if forloop.counter0 == 0 %}
+            <div class="tab-pane fade in active" id="{{ quest_type.short_name }}">
+              <h2>Who's It For</h2>
+              {{ quest_type.who_is_it_for|linebreaks }}
+              <h2>What It Is</h2>
+              {{ quest_type.what_it_is|linebreaks }}
+              <h2>How It Works</h2>
+              {{ quest_type.how_it_works|linebreaks }}
+              <h2>Other Details</h2>
+              {{ quest_type.other_details|linebreaks }}
+            </div>
+          {% else %}
+            <div class="tab-pane fade" id="{{ quest_type.short_name }}">
+              <h2>Who's It For</h2>
+              {{ quest_type.who_is_it_for|linebreaks }}
+              <h2>What It Is</h2>
+              {{ quest_type.what_it_is|linebreaks }}
+              <h2>How It Works</h2>
+              {{ quest_type.how_it_works|linebreaks }}
+              <h2>Other Details</h2>
+              {{ quest_type.other_details|linebreaks }}
+            </div>
+          {% endif %}
+        {% endfor %}
       </div>
-    </div>
+    {% else %}
+        No rules detected, anarchy mode enabled!
+    {% endif %}
   </div>
 </div>
 {% endblock %}

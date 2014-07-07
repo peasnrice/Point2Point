@@ -25,8 +25,10 @@ class TeamForm(ModelForm):
         if ts:
             for t in ts:
                 if t.gameinstance.ended == False:
-                    raise forms.ValidationError('Sorry, this number is already participating in an active game')
-        
+                    if t.has_paid == True:
+                        raise forms.ValidationError('Sorry, this number is already participating in an active game. Please log in for more control over this quest')
+                    else:
+                        raise forms.ValidationError('Sorry, you have registered a team for a quest with this number but have not yet paid. Please follow this link to either cancel or pay for the quest') 
         #Check for trusted phone numbers in promo code list
         trusted_numbers = PromoCode.objects.filter(valid=True)
         number_found = False
