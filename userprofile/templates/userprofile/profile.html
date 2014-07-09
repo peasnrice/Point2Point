@@ -89,14 +89,28 @@ in_progress_list.append(game)
               <h4 class="modal-title" id="myModalLabel">Verify a Number</h4>
             </div>
             <div class="modal-body">
-              <form method="post" action="">
-                {% csrf_token %}
-                {% bootstrap_form form %}
-                {% buttons %}
-                <p id="sendwrapper"><input type="submit" value="Send" id="sendbutton"/></p>
-                {% endbuttons %}
-              </form>    
-
+              <div class="well">
+                <form method="post" action="">
+                  {% csrf_token %}
+                  {% bootstrap_form get_pin_form %}
+                  {% buttons %}
+                    <button type="text" class="btn btn-primary" id="search" name="search">
+                      {% bootstrap_icon "glyphicon glyphicon-share" %} Send me a confirmation PIN
+                    </button>
+                  {% endbuttons %}
+                </form>  
+              </div>
+              <div class="well">
+                <form method="post" action="">
+                  {% csrf_token %}
+                  {% bootstrap_form verify_pin_form %}
+                  {% buttons %}
+                    <button type="submit" class="btn btn-primary" value="verify pin">
+                      {% bootstrap_icon "glyphicon glyphicon-share" %} Verify Pin 
+                    </button>
+                  {% endbuttons %}
+                </form>
+              </div>
             </div>
           </div>
         </div>

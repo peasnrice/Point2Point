@@ -40,6 +40,8 @@ def ajax(request):
 def user_profile(request):
     if request.method == 'POST':
         form = GetPinForm(request.POST)
+        get_pin_form = GetPinForm(data=request.POST)
+        verify_pin_form = VerifyPinForm(request.POST)
         if form.is_valid():
             if request.is_ajax():
                 errors_dict = {}
@@ -50,6 +52,32 @@ def user_profile(request):
                 return HttpResponseBadRequest(json.dumps(errors_dict))
             else:
                 pass
+        
+        elif get_pin_form.is_valid():
+            pin = pin_generator()
+            number = get_pin_form.cleaned_data['phone_number']
+            phone_number = "+" + str(number.country_code) + str(number.national_number)
+            send_msg(phone_number,pin)
+            request.session['pin'] = pin
+            request.session['phone_number'] = phone_number
+        elif verify_pin_form.is_valid():
+            pin = request.session['pin']
+            if pin == verify_pin_form.cleaned_data['pin']:
+                user = request.user
+                profile = user.profile
+
+                phone_number = request.session['phone_number']
+                new_verified_phone_number = ProfilePhoneNumber(user_profile=profile,phone_number=phone_number)
+                new_verified_phone_number.save()
+
+                profile.phone_number_verified = True
+                profile.save()
+
+                teams = Team.objects.filter(phone_number=phone_number)
+                for team in teams:
+                    profile.game_instances.add(team.gameinstance)
+                    profile.save()
+
     else:
         user = request.user
         profile = user.profile
@@ -68,7 +96,9 @@ def user_profile(request):
             num = "+" + str(number.phone_number.country_code) + str(number.phone_number.national_number)
             verified_number_list.append(num)
         form = GetPinForm()
-
+        get_pin_form = GetPinForm()
+        get_pin_form = GetPinForm()
+        verify_pin_form = VerifyPinForm()
     args = {}
     args['in_progress_list'] = in_progress_list
     args['completed_list'] = completed_list
@@ -77,7 +107,8 @@ def user_profile(request):
     args['username'] = user.username
     args['phone_number_verified'] = user.profile.phone_number_verified
     args['verified_number_list'] = verified_number_list
-
+    args['get_pin_form'] = get_pin_form
+    args['verify_pin_form'] = verify_pin_form
     return render_to_response('userprofile/profile.html', args, context_instance=RequestContext(request))
 
 '''
