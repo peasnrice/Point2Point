@@ -224,7 +224,7 @@ class Solution(models.Model):
 
 class QuestType(models.Model):
     name = models.CharField(max_length=64)
-    short_name = models.CharField(max_length=32)
+    slug = models.SlugField(default="will-change-on-save")
     caption = models.CharField(max_length=64)
     description = models.TextField()
     who_is_it_for = models.TextField()
@@ -234,5 +234,10 @@ class QuestType(models.Model):
     front_page = models.BooleanField(default=True)
     priority = models.IntegerField(default=0)
     active = models.BooleanField(default=True)
+    def save(self, *args, **kwargs):
+        if not self.id:
+            # Newly created object, so set slug
+            self.slug = slugify(self.name)
+        super(QuestType, self).save(*args, **kwargs)
     def __unicode__(self):
         return self.name
