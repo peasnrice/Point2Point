@@ -40,7 +40,7 @@ def ajax(request):
 def user_profile(request):
     if request.method == 'POST':
         form = GetPinForm(request.POST)
-        get_pin_form = GetPinForm(data=request.POST)
+        get_pin_form = GetPinForm(user=request.user, data=request.POST)
         verify_pin_form = VerifyPinForm(request.POST)
         if form.is_valid():
             if request.is_ajax():
@@ -95,9 +95,8 @@ def user_profile(request):
         for number in verified_numbers:
             num = "+" + str(number.phone_number.country_code) + str(number.phone_number.national_number)
             verified_number_list.append(num)
-        form = GetPinForm()
-        get_pin_form = GetPinForm()
-        get_pin_form = GetPinForm()
+        form = GetPinForm(user=request.user)
+        get_pin_form = GetPinForm(user=request.user)
         verify_pin_form = VerifyPinForm()
     args = {}
     args['in_progress_list'] = in_progress_list
@@ -181,7 +180,7 @@ def send_msg(to_number, text):
 @login_required
 def get_pin(request):
     if request.method == 'POST':
-        get_pin_form = GetPinForm(data=request.POST)
+        get_pin_form = GetPinForm(user=request.user, data=request.POST)
         if get_pin_form.is_valid():
             pin = pin_generator()
             number = get_pin_form.cleaned_data['phone_number']
@@ -191,7 +190,7 @@ def get_pin(request):
             request.session['phone_number'] = phone_number
             return HttpResponseRedirect('/profile/verifypin')
     else:
-        get_pin_form = GetPinForm()
+        get_pin_form = GetPinForm(user=request.user)
 
     args = {}
     args['get_pin_form'] = get_pin_form
