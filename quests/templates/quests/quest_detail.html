@@ -62,7 +62,7 @@
                   <p class="small">Teams may start between <b>{{ competition.start_time_earliest }}</b> and <b>{{ competition.start_time_latest }}</b></p>
                   <p class="small">Notes: All teams must finish by <b>{{ competition.end_time }}</b></p>
                   <h3 class="featurette-heading">${{ competition.price|floatformat:2 }}<span class="text-muted"></span>
-                    <a class="btn btn-warning" href="{% url 'quest_register_team' quest_type_id=quest_type.id short_name=quest_type.short_name competition_id=competition.id slug=competition.slug %}" role="button">Register Your Team!</a></h3>
+                    <a class="btn btn-warning" href="{% url 'quest_register_team' quest_type_id=quest_type.id short_name=quest_type.slug competition_id=competition.id slug=competition.slug %}" role="button">Register Your Team!</a></h3>
                   </div>
                   <div class="col-md-5">
                 </div>

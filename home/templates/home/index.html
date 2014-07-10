@@ -26,7 +26,7 @@
           <div class="centered">
             <h1>{{ quest_type.caption }}</h1>
             <p>{{ quest_type.description|linebreaks }}</p>
-            <a class="btn btn-primary btn-lg" href="{% url 'quest_type' quest_type.id quest_type.short_name %}" role="button">{{ quest_type.name }}s</a>
+            <a class="btn btn-primary btn-lg" href="{% url 'quest_type' quest_type_id=quest_type.id short_name=quest_type.slug %}" role="button">{{ quest_type.name }}s</a>
           </div>
         </div>
       {% endfor %}

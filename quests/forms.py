@@ -10,14 +10,10 @@ class TeamForm(ModelForm):
         super(TeamForm, self).__init__(*args, **kwargs)
     #beta_access_code = forms.CharField()
     class Meta:
-        stripe_id = forms.CharField(max_length=255)
         model = Team
         fields = ['name', 'captain_name', 'phone_number', 'email']
         labels = {'name': ('Team Name'),
         }
-
-    def add_error(self, message):
-        self.errors[NON_FIELD_ERRORS] = self.error_class([message])
 
     def clean_phone_number(self):
         phone_number = self.cleaned_data['phone_number']

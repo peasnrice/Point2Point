@@ -14,6 +14,7 @@ from twilio.twiml import Response
 from django_twilio.decorators import twilio_view
 from quests.sms_handling import game_logic
 from django.utils.timezone import utc
+from payment import urls
 import datetime
 import stripe
 
@@ -64,12 +65,7 @@ def quest_register_team(request, quest_type_id, short_name, competition_id, slug
             competition.save()
             team = Team.objects.get(id=save_team.id)
             request.session['game_id'] = team.gameinstance.id
-            if short_name == "adventure":
-                return HttpResponseRedirect(reverse('payment success', args=(quest_type_id, short_name, competition_id, slug)))
-            elif short_name == "evening":
-                return HttpResponseRedirect(reverse('payment success', args=(quest_type_id, short_name, competition_id, slug)))
-            elif short_name == "casual":
-                return HttpResponseRedirect(reverse('payment success', args=(quest_type_id, short_name, competition_id, slug)))
+            return HttpResponseRedirect(reverse('payment success', args=(quest_type_id, short_name, competition_id, slug)))
     else:
         form_t = TeamForm(user=request.user)
 
