@@ -32,6 +32,7 @@ def quests(request):
 
 def quest_list_type(request, quest_type_id, short_name):
     quest_type = get_object_or_404(QuestType, pk=quest_type_id)
+    quest_types = QuestType.objects.filter(front_page=True).order_by('priority')
     competitions = Competition.objects.filter(quest_type=quest_type)
     competition_list = []
     expired_list = []
@@ -45,6 +46,7 @@ def quest_list_type(request, quest_type_id, short_name):
     args['competition_list'] = competition_list
     args['expired_list'] = expired_list
     args['quest_type'] = quest_type
+    args['quest_types'] = quest_types
     return render_to_response('quests/quest_detail.html', args, context_instance=RequestContext(request))  
 
 # Displays form page that allows teams to sign up
@@ -52,8 +54,10 @@ def quest_list_type(request, quest_type_id, short_name):
 def quest_register_team(request, quest_type_id, short_name, competition_id, slug):
     competition = get_object_or_404(Competition, pk=competition_id)
     current_date = datetime.datetime.utcnow().replace(tzinfo=utc)
+    quest_types = QuestType.objects.filter(front_page=True).order_by('priority')
     if current_date < competition.start_date or current_date > competition.end_date:
         args = {}
+        args['quest_types'] = quest_types
         return render_to_response('quests/sorry.html', args, context_instance=RequestContext(request)) 
 
     if request.method == 'POST':
@@ -72,6 +76,7 @@ def quest_register_team(request, quest_type_id, short_name, competition_id, slug
     args = {}
     args['competition'] = competition
     args['form_t'] = form_t
+    args['quest_types'] = quest_types
     return render_to_response('quests/register_team.html', args, context_instance=RequestContext(request)) 
 
 # When the user replies to a question the response is checked here

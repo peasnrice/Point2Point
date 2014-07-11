@@ -7,7 +7,7 @@ from twilio.rest import TwilioRestClient
 from forms import UserProfileForm, GetPinForm, VerifyPinForm
 from django.contrib.auth.decorators import login_required
 from phonenumber_field.modelfields import PhoneNumberField
-from quests.models import Team, GameInstance
+from quests.models import Team, GameInstance, QuestType
 from models import ProfilePhoneNumber
 import phonenumbers
 import string
@@ -15,6 +15,7 @@ import random
 import json
 from django.utils import simplejson
 from django.core import serializers
+
 
 @login_required
 def ajax(request):
@@ -98,6 +99,7 @@ def user_profile(request):
         form = GetPinForm(user=request.user)
         get_pin_form = GetPinForm(user=request.user)
         verify_pin_form = VerifyPinForm()
+    quest_types = QuestType.objects.filter(front_page=True).order_by('priority')
     args = {}
     args['in_progress_list'] = in_progress_list
     args['completed_list'] = completed_list
@@ -108,6 +110,7 @@ def user_profile(request):
     args['verified_number_list'] = verified_number_list
     args['get_pin_form'] = get_pin_form
     args['verify_pin_form'] = verify_pin_form
+    args['quest_types'] = quest_types
     return render_to_response('userprofile/profile.html', args, context_instance=RequestContext(request))
 
 '''

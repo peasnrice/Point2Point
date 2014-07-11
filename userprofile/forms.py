@@ -9,6 +9,11 @@ class UserProfileForm(forms.ModelForm):
         fields = ['email_alerts',]
         labels = {'email_alerts': ('I want to receive email alerts'),}
 
+
+
+#Commented out until "This Field Cannot be null" is figured out"
+
+
 class GetPinForm(forms.ModelForm):
     def __init__(self, user, *args, **kwargs):
         self.user = user

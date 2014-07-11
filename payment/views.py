@@ -1,6 +1,6 @@
 from Point2Point.settings import TWILIO_ACCOUNT_SID,TWILIO_AUTH_TOKEN,TWILIO_NUMBER, STRIPE_PUBLIC_KEY
 from django.shortcuts import render, HttpResponseRedirect, render_to_response, RequestContext, get_object_or_404
-from quests.models import Competition, GameInstance, Team
+from quests.models import Competition, GameInstance, Team, QuestType
 from userprofile.models import ProfilePhoneNumber
 from twilio.rest import TwilioRestClient
 from django.core.mail import send_mail
@@ -9,9 +9,11 @@ def request_quest_payment(request, quest_type_id, short_name, competition_id, sl
     competition = get_object_or_404(Competition, pk=competition_id)
     game_id = request.session['game_id']
     game = GameInstance.objects.get(pk=game_id)
+    quest_types = QuestType.objects.filter(front_page=True).order_by('priority')
     args = {}
     args['competition'] = competition
     args['publishable'] = STRIPE_PUBLIC_KEY
+    args['quest_types'] = quest_types
     request.session['game_id'] = team.gameinstance.id
     return render_to_response('payment/payments.html', args, context_instance=RequestContext(request)) 
 
@@ -66,6 +68,7 @@ def payment_accepted(request, quest_type_id, short_name, competition_id, slug):
     body += "!"
     to_email = team.email
     send_mail(subject, body, from_email,[to_email], fail_silently=False)
-
+    quest_types = QuestType.objects.filter(front_page=True).order_by('priority')
     args ={}
+    args['quest_types'] = quest_types
     return render_to_response('payment/thank_you.html', args, context_instance=RequestContext(request)) 

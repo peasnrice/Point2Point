@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, render_to_response, render, RequestContext
-from quests.models import Competition, GameInstance, GameStage
+from quests.models import Competition, GameInstance, GameStage, QuestType
 from time import strftime
 import datetime, timedelta
 from django.utils.timezone import utc
@@ -93,12 +93,13 @@ def leaderboards(request):
             team_number += 1 
             
         competition_number += 1
-
+    quest_types = QuestType.objects.filter(front_page=True).order_by('priority')
     args = {}
     args['competition_list'] = competition_list
     args['ended_game_list'] = ended_game_list
     args['ongoing_game_list'] = ongoing_game_list
     args['dnf_game_list'] = dnf_game_list
+    args['quest_types'] = quest_types
     return render_to_response('leaderboards/leaderboards.html', args, context_instance=RequestContext(request)) 
 
 def leaderboard_detail(request, competition_id, slug):
@@ -151,9 +152,11 @@ def leaderboard_detail(request, competition_id, slug):
         penalties = dnf_game.incorrect_answers + dnf_game.location_hints_used + dnf_game.clue_hints_used
         l = LeaderboardGameData(competition_number, position, team_name, time_bp, time_ap, average_time, penalties)
         dnf_game_list.append(l)  
+    quest_types = QuestType.objects.filter(front_page=True).order_by('priority')
     args = {}
     args['competition'] = competition
     args['ended_game_list'] = ended_game_list
     args['ongoing_game_list'] = ongoing_game_list
     args['dnf_game_list'] = dnf_game_list
+    args['quest_types'] = quest_types
     return render_to_response('leaderboards/leaderboarddetail.html', locals(), context_instance=RequestContext(request)) 

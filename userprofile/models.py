@@ -12,6 +12,6 @@ class UserProfile(models.Model):
 
 class ProfilePhoneNumber(models.Model):
 	user_profile = models.ForeignKey('UserProfile')
-	phone_number = PhoneNumberField()
+	phone_number = models.CharField(max_length=15)
 
 User.profile = property(lambda u: UserProfile.objects.get_or_create(user=u)[0])

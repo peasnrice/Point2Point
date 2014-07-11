@@ -14,7 +14,7 @@
   <meta name="author" content="">
   <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
 
-  <title>Point2Point!</title>
+  <title>Point2Point Quests!</title>
 
   <!-- Custom styles for this template -->
   <link href="{% static "dist/css/jumbotron.css" %}" rel="stylesheet">
@@ -50,9 +50,20 @@
             </div>
             <div class="navbar-collapse collapse">
               <ul class="nav navbar-nav navbar-right">
-                <li>
-                  <a href="/quests">choose a quest</a>
+                {% if quest_types %}
+                <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown">choose a quest<span class="caret"></span></a>
+                  <ul class="dropdown-menu" role="menu">
+                    {% for quest_type in quest_types %}
+                      <li><a href="{% url 'quest_type' quest_type_id=quest_type.id short_name=quest_type.slug %}">{{ quest_type.name }}s</a></li>
+                    {% endfor %}
+                  </ul>
                 </li>
+                {% else %}
+                  <li>
+                    <a href="/quests">choose a quest</a>
+                  </li>  
+                {% endif %}            
                 <li>
                   <a href="/howtoplay">how to play</a>
                 </li>
