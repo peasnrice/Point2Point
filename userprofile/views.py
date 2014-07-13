@@ -56,8 +56,7 @@ def user_profile(request):
         
         elif get_pin_form.is_valid():
             pin = pin_generator()
-            number = get_pin_form.cleaned_data['phone_number']
-            phone_number = "+" + str(number.country_code) + str(number.national_number)
+            phone_number = get_pin_form.cleaned_data['phone_number']
             send_msg(phone_number,pin)
             request.session['pin'] = pin
             request.session['phone_number'] = phone_number
@@ -94,8 +93,7 @@ def user_profile(request):
         verified_numbers = ProfilePhoneNumber.objects.filter(user_profile=profile)
         verified_number_list = []
         for number in verified_numbers:
-            num = "+" + str(number.phone_number.country_code) + str(number.phone_number.national_number)
-            verified_number_list.append(num)
+            verified_number_list.append(number.phone_number)
         form = GetPinForm(user=request.user)
         get_pin_form = GetPinForm(user=request.user)
         verify_pin_form = VerifyPinForm()
@@ -186,9 +184,10 @@ def get_pin(request):
         get_pin_form = GetPinForm(user=request.user, data=request.POST)
         if get_pin_form.is_valid():
             pin = pin_generator()
-            number = get_pin_form.cleaned_data['phone_number']
-            phone_number = "+" + str(number.country_code) + str(number.national_number)
-            send_msg(phone_number,pin)
+            phone_number = get_pin_form.cleaned_data['phone_number']
+            if phone_number == "+15149240757":
+                send_msg(phone_number,pin)
+            
             request.session['pin'] = pin
             request.session['phone_number'] = phone_number
             return HttpResponseRedirect('/profile/verifypin')
