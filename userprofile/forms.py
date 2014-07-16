@@ -16,7 +16,8 @@ class GetPinForm(forms.Form):
 
     phone_number = forms.RegexField(regex=r'^\+?1?\d{9,15}$', 
                                 error_message = ("Phone number must include country code '+x-xxx-xxx-xxxx'."), 
-                                max_length=15)
+                                max_length=15,
+                                label=u'Phone Number')
 
     def __init__(self, user, *args, **kwargs):
         self.user = user

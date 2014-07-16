@@ -42,6 +42,9 @@ INSTALLED_APPS = (
     'allauth.account',
     'allauth.socialaccount',
     'payment',
+    'sms',
+    'dajaxice',
+    'dajax',
     # ... include the providers you want to enable:
     #allauth.socialaccount.providers.google',
     #'allauth.socialaccount.providers.facebook',    

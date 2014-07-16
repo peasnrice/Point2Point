@@ -39,6 +39,12 @@ def ajax(request):
 
 @login_required
 def user_profile(request):
+    args = {}
+    in_progress_list = []
+    completed_list = []
+    verified_number_list = []
+    user = request.user
+    profile = user.profile
     if request.method == 'POST':
         form = GetPinForm(request.POST)
         get_pin_form = GetPinForm(user=request.user, data=request.POST)
@@ -79,11 +85,6 @@ def user_profile(request):
                     profile.save()
 
     else:
-        user = request.user
-        profile = user.profile
-
-        in_progress_list = []
-        completed_list = []
         games = profile.game_instances.all()
         for game in games:
             if game.ended:
@@ -91,21 +92,18 @@ def user_profile(request):
             else:
                 in_progress_list.append(game)
         verified_numbers = ProfilePhoneNumber.objects.filter(user_profile=profile)
-        verified_number_list = []
         for number in verified_numbers:
             verified_number_list.append(number.phone_number)
         form = GetPinForm(user=request.user)
         get_pin_form = GetPinForm(user=request.user)
         verify_pin_form = VerifyPinForm()
     quest_types = QuestType.objects.filter(front_page=True).order_by('priority')
-    args = {}
     args['in_progress_list'] = in_progress_list
     args['completed_list'] = completed_list
     args['verified_number_list'] = verified_number_list
     args['form'] = form
     args['username'] = user.username
     args['phone_number_verified'] = user.profile.phone_number_verified
-    args['verified_number_list'] = verified_number_list
     args['get_pin_form'] = get_pin_form
     args['verify_pin_form'] = verify_pin_form
     args['quest_types'] = quest_types
@@ -185,9 +183,7 @@ def get_pin(request):
         if get_pin_form.is_valid():
             pin = pin_generator()
             phone_number = get_pin_form.cleaned_data['phone_number']
-            if phone_number == "+15149240757":
-                send_msg(phone_number,pin)
-            
+            send_msg(phone_number,pin)
             request.session['pin'] = pin
             request.session['phone_number'] = phone_number
             return HttpResponseRedirect('/profile/verifypin')
@@ -253,6 +249,8 @@ def ajax_send_pin(request):
                         from_=TWILIO_NUMBER,
                     )
     return HttpResponse("Message %s sent" % message.sid, mimetype='text/plain', status=200)
+
+
 
 def process_order(request):
     """ Process orders made via web form and verified by SMS PIN. """

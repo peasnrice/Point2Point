@@ -1,6 +1,66 @@
 {% extends "default_base.html" %}
 
 {% load bootstrap3 %}
+{% load dajaxice_templatetags %}
+{% load static %}
+
+{% block head %}
+{% dajaxice_js_import %}
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="{% static "dist/js/jquery.dajax.core.js" %}" type="text/javascript" charset="UTF-8">></script>
+
+<script>
+$(document).ready(function(){
+  $("#myModal").load(function(event){ 
+    event.preventDefault();
+    $("#pin_form_div").hide();  
+  });
+});
+
+$('#txtSearchProdAssign').keypress(function (e) {
+ var key = e.which;
+ if(key == 13)  // the enter key code
+  {
+    $('input[name = butAssignProd]').click();
+    return false;  
+  }
+});  
+
+function go_to_verify(){
+    $("#phone_number_form_div").hide();
+    $(".help-bock").text("")
+    $("#pin_form_div").show();
+}
+
+function go_to_get_pin(){
+    $("#pin_form_div").hide();
+    $(".help-bock").text("")
+    $("#phone_number_form_div").show();
+}
+
+function modal_be_gone(){
+    $('#myModal').modal('fadeToggle()');
+}
+
+function send_phone_form(){
+    $(".help-block").css('color', 'red');
+    Dajaxice.userprofile.phone_form(Dajax.process,{'get_pin_form':$('#phone_number_form').serialize(true)});
+}
+
+function send_pin_form(){
+    Dajaxice.userprofile.verify_form(Dajax.process,{'verify_pin_form':$('#pin_number_form').serialize(true)});
+}
+
+function are_you_sure(number){
+    Dajaxice.userprofile.delete_number(Dajax.process,{'number':number});
+}
+
+function reload_numbers(){
+  $("#verified_numbers").load()
+}
+
+</script>
+{% endblock %}
 
 {% block jumbotron %}
 <div class="row">
@@ -48,38 +108,31 @@ in_progress_list.append(game)
       <p>Your completed quests will show up here once you finish them, we promise!</p>
     {% endif %}
     </div>
-    <div class="col-md-6">
 
-    	<h1>Your Info</h1>
+    <div class="col-md-6" id="verified_numbers">
+      <h1>Your Info</h1>
       <h2>Verified Numbers</h2>
       <p>Verifying a phone number lets us display your previous quests on your profile page. We promise that we will only ever
           contact you using your verified numbers with your permission and we will most certainly not sell your information.</p>
       {% if phone_number_verified %}
         <h3>Your Numbers</h3>
           {% for number in verified_number_list %}
-            <p>{{ number }}</p>
+            <p><button class="btn btn-danger" data-toggle="modal" onClick="are_you_sure('{{number}}');">{% bootstrap_icon "trash" %}</button>   {{ number }}</p>
           {% endfor %}
-        <a class="btn btn-warning" href="/profile/getpin" role="button">Verify another phone number</a>
+        <button class="btn btn-warning" data-toggle="modal" data-target="#myModal">
+          Verify Another Number
+        </button>
       {% else %}
-        <a class="btn btn-warning" href="/profile/getpin" role="button">Verify your phone number</a>  
+        <button class="btn btn-warning" data-toggle="modal" data-target="#myModal">
+          Verify a Number
+        </button>
       {% endif %} 
+    </div>
+
+
+    <div class="col-md-6">
       <h2>Other things</h2> 
       <a class="btn btn-warning" href="/accounts/password/change/" role="button">Change Your Password</a>   
-      <form method="post" action="">
-        {% csrf_token %}
-        {% bootstrap_form form %}
-        {% buttons %}
-          <button type="submit" class="btn btn-primary" value="Update Profile">
-            Update 
-          </button>
-        {% endbuttons %}
-      </form>
-
-      <!-- Button trigger modal -->
-      <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
-        Verify a Number
-      </button>
-
       <!-- Modal -->
       <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -89,27 +142,19 @@ in_progress_list.append(game)
               <h4 class="modal-title" id="myModalLabel">Verify a Number</h4>
             </div>
             <div class="modal-body">
-              <div class="well">
-                <form method="post" action="">
+              <div class="well" id="phone_number_form_div">
+                <form method="post" action="" id="phone_number_form">
                   {% csrf_token %}
                   {% bootstrap_form get_pin_form %}
-                  {% buttons %}
-                    <button type="text" class="btn btn-primary" id="search" name="search">
-                      {% bootstrap_icon "glyphicon glyphicon-share" %} Send me a confirmation PIN
-                    </button>
-                  {% endbuttons %}
                 </form>  
+                <button id="send_pin_button" class="btn btn-warning" value="Send a confirmation pin" onclick="send_phone_form();">Send a confirmation pin</button>
               </div>
-              <div class="well">
-                <form method="post" action="">
+              <div class="well" id="pin_form_div">
+                <form method="post" action="" id="pin_number_form">
                   {% csrf_token %}
                   {% bootstrap_form verify_pin_form %}
-                  {% buttons %}
-                    <button type="submit" class="btn btn-primary" value="verify pin">
-                      {% bootstrap_icon "glyphicon glyphicon-share" %} Verify Pin 
-                    </button>
-                  {% endbuttons %}
                 </form>
+                <button id="verify_pin_button" class="btn btn-warning" value="verify pin" onclick="send_pin_form();">Verify Pin</button>
               </div>
             </div>
           </div>
