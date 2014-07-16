@@ -37,6 +37,13 @@ def ajax(request):
 
     #return render_to_response('userprofile/ajax.html', locals(), context_instance=RequestContext(request))
 
+def get_phone_numbers(user_profile):
+    verified_numbers = ProfilePhoneNumber.objects.filter(user_profile=user_profile)    
+    verified_number_list = []
+    for number in verified_numbers:
+        verified_number_list.append(number.phone_number)
+    return verified_number_list
+
 @login_required
 def user_profile(request):
     args = {}

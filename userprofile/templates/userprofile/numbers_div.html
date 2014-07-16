@@ -1,19 +1,18 @@
-<div class="col-md-6" id="verified_numbers">
-	<h1>Your Info</h1>
-  <h2>Verified Numbers</h2>
-  <p>Verifying a phone number lets us display your previous quests on your profile page. We promise that we will only ever
-      contact you using your verified numbers with your permission and we will most certainly not sell your information.</p>
-  {% if phone_number_verified %}
-    <h3>Your Numbers</h3>
-      {% for number in verified_number_list %}
-        <p><button class="btn btn-danger" data-toggle="modal" onClick="are_you_sure('{{number}}');">{% bootstrap_icon "trash" %}</button>   {{ number }}</p>
-      {% endfor %}
-    <button class="btn btn-warning" data-toggle="modal" data-target="#myModal">
-      Verify Another Number
-    </button>
-  {% else %}
-    <button class="btn btn-warning" data-toggle="modal" data-target="#myModal">
-      Verify a Number
-    </button>
-  {% endif %} 
+{% load bootstrap3 %}
+{% load dajaxice_templatetags %}
+
+<div id="verified_numbers">
+{% if verified_number_list %}
+  <h3>Your Numbers</h3>
+    {% for number in verified_number_list %}
+      <p><button class="btn btn-danger" data-toggle="modal" onClick="are_you_sure('{{number}}');">{% bootstrap_icon "trash" %}</button>   {{ number }}</p>
+    {% endfor %}
+  <button class="btn btn-warning" data-toggle="modal" data-target="#myModal">
+    Verify Another Number
+  </button>
+{% else %}
+  <button class="btn btn-warning" data-toggle="modal" data-target="#myModal">
+    Verify a Number
+  </button>
+{% endif %} 
 </div>

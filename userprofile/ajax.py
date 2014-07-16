@@ -3,10 +3,12 @@ from dajaxice.utils import deserialize_form
 from dajaxice.decorators import dajaxice_register
 from sms.messaging import send_msg 
 from userprofile.forms import GetPinForm, VerifyPinForm 
-from userprofile.models import ProfilePhoneNumber
+from userprofile.models import ProfilePhoneNumber, UserProfile
 from quests.models import Team
 import string
 import random
+from django.template.loader import render_to_string
+from userprofile.views import get_phone_numbers
 
 def pin_generator(size=5, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
@@ -42,21 +44,30 @@ def verify_form(request, verify_pin_form):
         pin = request.session['pin']
         if pin == verify_pin_form.cleaned_data['pin']:
             user = request.user
-            profile = user.profile
+            user_profile = UserProfile.objects.get(user=user)
 
             phone_number = request.session['phone_number']
-            new_verified_phone_number = ProfilePhoneNumber(user_profile=profile,phone_number=phone_number)
-            new_verified_phone_number.save()
+            phone_number_check = ProfilePhoneNumber.objects.filter(user_profile=userprofile).filter(phone_number=phone_number)
 
-            profile.phone_number_verified = True
-            profile.save()
+            if not phone_number_check:
+                new_verified_phone_number = ProfilePhoneNumber(user_profile=user_profile,phone_number=phone_number)
+                new_verified_phone_number.save()
 
-            teams = Team.objects.filter(phone_number=phone_number)
-            for team in teams:
-                profile.game_instances.add(team.gameinstance)
-                profile.save()
-            dajax.clear('.help-block', 'innerHTML')
-            dajax.script('modal_be_gone();')
+                user_profile.phone_number_verified = True
+                user_profile.save()    
+                
+                teams = Team.objects.filter(phone_number=phone_number)
+                for team in teams:
+                    user_profile.game_instances.add(team.gameinstance)
+                    user_profile.save()
+                verified_numbers = ProfilePhoneNumber.objects.filter(user_profile=user_profile)
+                verified_number_list = []
+                for number in verified_numbers:
+                    verified_number_list.append(number.phone_number)
+                render = render_to_string('userprofile/numbers_div.html', {'verified_number_list': verified_number_list})
+                dajax.assign('#verified_numbers', 'innerHTML', render)
+            else:
+                dajax.assign('.help-block', 'innerHTML',  'Number Already Registered')
         else:
             dajax.assign('.help-block', 'innerHTML',  'Incorrect Pin')
     else:
@@ -64,17 +75,21 @@ def verify_form(request, verify_pin_form):
         for error in verify_pin_form.errors:
             dajax.add_css_class('#id_%s' % error, 'error')
         dajax.assign('.help-block', 'innerHTML',  verify_pin_form.errors.values())
+
     return dajax.json()
 
 @dajaxice_register
 def delete_number(request, number):
-    dajax = Dajax()
     user = request.user
-    ppn = ProfilePhoneNumber.objects.filter(user_profile=user).filter(phone_number=number)
+    user_profile = UserProfile.objects.get(user=user)
+    ppn = ProfilePhoneNumber.objects.filter(user_profile=user_profile).filter(phone_number=number)
     ppn.delete()
+    verified_numbers = ProfilePhoneNumber.objects.filter(user_profile=user_profile)
+    verified_number_list = []
+    for number in verified_numbers:
+        verified_number_list.append(number.phone_number)
+    render = render_to_string('userprofile/numbers_div.html', {'verified_number_list': verified_number_list})
     
-    verified_number_list = ProfilePhoneNumber.objects.filter(user_profile=user)
-    render = render_to_string('userprofile/profile.html', {'verified_number_list': verify_number_list})
-    
+    dajax = Dajax()    
     dajax.assign('#verified_numbers', 'innerHTML', render)
     return dajax.json()
