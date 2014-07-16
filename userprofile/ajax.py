@@ -47,7 +47,7 @@ def verify_form(request, verify_pin_form):
             user_profile = UserProfile.objects.get(user=user)
 
             phone_number = request.session['phone_number']
-            phone_number_check = ProfilePhoneNumber.objects.filter(user_profile=userprofile).filter(phone_number=phone_number)
+            phone_number_check = ProfilePhoneNumber.objects.filter(user_profile=user_profile).filter(phone_number=phone_number)
 
             if not phone_number_check:
                 new_verified_phone_number = ProfilePhoneNumber(user_profile=user_profile,phone_number=phone_number)
