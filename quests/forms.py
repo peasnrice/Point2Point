@@ -2,13 +2,10 @@ from django.forms import ModelForm
 from django import forms
 from quests.models import Team, Player, GameInstance
 from promotions.models import PromoCode
-from django.contrib.auth.models import User
+from django.forms.formsets import formset_factory
+from django.forms.models import inlineformset_factory, BaseInlineFormSet
 
 class TeamForm(ModelForm):
-    def __init__(self, user, *args, **kwargs):
-        self.user = user
-        super(TeamForm, self).__init__(*args, **kwargs)
-    #beta_access_code = forms.CharField()
     class Meta:
         model = Team
         fields = ['name', 'captain_name', 'phone_number', 'email']
@@ -17,7 +14,7 @@ class TeamForm(ModelForm):
 
     def clean_phone_number(self):
         phone_number = self.cleaned_data['phone_number']
-        ts = Team.objects.filter(phone_number=phone_number)        
+        ts = Team.objects.filter(phone_number=phone_number)
         if ts:
             for t in ts:
                 if t.gameinstance.ended == False:
@@ -54,6 +51,28 @@ class TeamForm(ModelForm):
             else:
                 raise forms.ValidationError("Sorry you can't use this code at this time")
 
+PlayerFormset = inlineformset_factory(Team, Player,  extra=1)
+
+class BaseTeamFormset(BaseInlineFormSet):
+    def add_fields(self, form, index):
+        # allow the super class to create the fields as usual
+        super(BaseTeamFormset, self).add_fields(form, index)
+
+        # created the nested formset
+        try:
+            instance = self.get_queryset()[index]
+            pk_value = instance.pk
+        except IndexError:
+            instance=None
+            pk_value = hash(form.prefix)
+
+        # store the formset in the .nested property
+        form.nested = [
+            PlayerFormset(data=self.data,
+                            instance = instance,
+                            prefix = 'PLAYERS_%s' % pk_value)]
+
+TeamFormset = inlineformset_factory(Team, Player, formset=BaseTeamFormset, extra=1)
 
 class LoggedInTeamForm(ModelForm):
     class Meta:

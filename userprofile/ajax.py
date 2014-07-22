@@ -20,10 +20,9 @@ def phone_form(request, get_pin_form):
 
     if get_pin_form.is_valid():
         dajax.remove_css_class('#phone_number_form input', 'error')
-        #pin = pin_generator()
-        pin = '1234'
+        pin = pin_generator()
         phone_number = get_pin_form.cleaned_data['phone_number']
-        #send_msg(phone_number,pin)
+        send_msg(phone_number,pin)
         request.session['pin'] = pin
         request.session['phone_number'] = phone_number
         dajax.clear('.help-block', 'innerHTML')
