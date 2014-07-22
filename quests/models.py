@@ -69,8 +69,14 @@ def strfdelta(tdelta, fmt):
     d["minutes"], d["seconds"] = divmod(rem, 60)
     return fmt.format(**d)
 
+class GameInstanceConnector(models.Model):
+    id = models.AutoField(primary_key=True)
+    def __unicode__(self):
+        return str(self.id)
+
 class GameInstance(models.Model):
     competition = models.ForeignKey('Competition')
+    game_instance_connector = models.ForeignKey('GameInstanceConnector', blank=True, null=True)
     date_created = models.DateTimeField(auto_now_add=True)
     date_started = models.DateTimeField(default=datetime.datetime.utcnow().replace(tzinfo=utc), blank=True)
 
@@ -97,8 +103,6 @@ class GameInstance(models.Model):
     ended = models.BooleanField(default=False)
     paused = models.BooleanField(default=False)
     dnf = models.BooleanField(default=False)
-
-
 
     #returns time excluding break/pause time
     def getGameTime(self):

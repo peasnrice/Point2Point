@@ -1,5 +1,5 @@
 from django.contrib import admin
-from quests.models import Competition, GameInstance, Team, Player, QuestionsSolutionPair, Solution, GameStage, QuestType
+from quests.models import Competition, GameInstance, Team, Player, QuestionsSolutionPair, Solution, GameStage, QuestType, GameInstanceConnector
 
 class GameSolutionInline(admin.TabularInline):
     model = GameInstance
@@ -39,6 +39,7 @@ class TeamAdmin(admin.ModelAdmin):
 
 admin.site.register(Competition, CompetitionAdmin)
 admin.site.register(GameInstance, GameInstanceAdmin)
+admin.site.register(GameInstanceConnector)
 admin.site.register(GameStage)
 admin.site.register(Team, TeamAdmin)
 admin.site.register(Player)

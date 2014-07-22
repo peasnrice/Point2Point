@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render, get_object_or_404, render_to_response, render, RequestContext, HttpResponseRedirect
 from django.http import Http404
 from django.core.mail import send_mail
-from quests.models import Competition, Team, Player, GameInstance, QuestType
+from quests.models import Competition, Team, Player, GameInstance, QuestType, GameInstanceConnector
 from userprofile.models import ProfilePhoneNumber
 from quests.forms import PlayerForm, TeamForm, TeamFormset
 from django.views.decorators.csrf import csrf_exempt
@@ -77,13 +77,26 @@ def quest_register_team(request, quest_type_id, short_name, competition_id, slug
         formset = TeamFormSet(data=request.POST or None)
         form_t = TeamForm(data=request.POST or None)
         if formset.is_valid():
+            game_instance = GameInstance()
+            team_id_list = []
+            count = 0
             for form in formset:
                 save_team = form.save(commit=False)
                 save_team.save()
-                competition.createGameInstance(save_team.id)
+                game_instance = competition.createGameInstance(save_team.id)
                 competition.save()
-                team = Team.objects.get(id=save_team.id)
-                request.session['game_id'] = team.gameinstance.id
+                team_id_list.append(save_team.id)
+                count += 1
+            if count > 1:
+                gi_connector = GameInstanceConnector()
+                gi_connector.save()
+                for team_id in team_id_list:
+                    team = Team.objects.get(id=team_id)
+                    game_instance = team.gameinstance
+                    game_instance.game_instance_connector = gi_connector
+                    game_instance.save()
+            team = Team.objects.get(id=team_id_list[0])
+            request.session['game_id'] = team.gameinstance.id
             return HttpResponseRedirect(reverse('payment success', args=(quest_type_id, short_name, competition_id, slug)))
     else:
         form_t = TeamForm()
