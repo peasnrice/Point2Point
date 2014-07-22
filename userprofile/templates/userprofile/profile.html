@@ -14,8 +14,17 @@ $(document).ready(function(){
   $("#myModal").load(function(event){ 
     event.preventDefault();
     $("#pin_form_div").hide();  
+    $("#id_phone_number").focus();
   });
 });
+
+function stopRKey(evt) { 
+  var evt = (evt) ? evt : ((event) ? event : null); 
+  var node = (evt.target) ? evt.target : ((evt.srcElement) ? evt.srcElement : null); 
+  if ((evt.keyCode == 13) && (node.type=="text"))  {return false;} 
+} 
+
+document.onkeypress = stopRKey; 
 
 function go_to_verify(){
     $("#phone_number_form_div").hide();
@@ -31,7 +40,8 @@ function go_to_get_pin(){
 
 function send_phone_form(){
     $(".help-block").css('color', 'red');
-    Dajaxice.userprofile.phone_form(Dajax.process,{'get_pin_form':$('#phone_number_form').serialize(true)});
+    Dajaxice.userprofile.phone_form(Dajax.process,{'get_pin_form':$('#phone_number_form').serialize(true)});    
+    $("#id_pin").focus();
 }
 
 function send_pin_form(){
@@ -41,6 +51,12 @@ function send_pin_form(){
     $("#phone_number_form_div").show();
     $("#phone_number_form").trigger("reset");
     $("#pin_form").trigger("reset");
+}
+
+function clear_fields(){
+    $("#phone_number_form").trigger("reset");
+    $("#pin_form").trigger("reset"); 
+    $("#id_phone_number").focus();
 }
 
 function are_you_sure(number){
@@ -103,9 +119,7 @@ in_progress_list.append(game)
       <p>Verifying a phone number lets us display your previous quests on your profile page. We promise that we will only ever
           contact you using your verified numbers with your permission and we will most certainly not sell your information.</p>
       {% include "userprofile/numbers_div.html" %}
-    </div>
 
-    <div class="col-md-6">
       <h2>Other things</h2> 
       <a class="btn btn-warning" href="/accounts/password/change/" role="button">Change Your Password</a>   
       <!-- Modal -->
@@ -113,19 +127,19 @@ in_progress_list.append(game)
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+              <button type="button" class="close" onclick="clear_fields();" data-dismiss="modal" aria-hidden="true">&times;</button>
               <h4 class="modal-title" id="myModalLabel">Verify a Number</h4>
             </div>
             <div class="modal-body">
               <div class="well" id="phone_number_form_div">
-                <form method="post" action="" id="phone_number_form">
+                <form method="post" action="" id="phone_number_form" onsubmit="send_phone_form();">
                   {% csrf_token %}
                   {% bootstrap_form get_pin_form %}
                 </form>  
                 <button id="send_pin_button" class="btn btn-warning" value="Send a confirmation pin" onclick="send_phone_form();">Send a confirmation pin</button>
               </div>
               <div class="well" id="pin_form_div">
-                <form method="post" action="" id="pin_number_form">
+                <form method="post" action="" id="pin_number_form" onsubmit="send_pin_form();">
                   {% csrf_token %}
                   {% bootstrap_form verify_pin_form %}
                 </form>
