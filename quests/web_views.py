@@ -76,16 +76,15 @@ def quest_register_team(request, quest_type_id, short_name, competition_id, slug
     if request.method == 'POST':
         formset = TeamFormSet(data=request.POST or None)
         form_t = TeamForm(data=request.POST or None)
-        if form_t.is_valid():
-            save_team = form_t.save(commit=False)
-            save_team.save()
-            competition.createGameInstance(save_team.id)
-            competition.save()
-            team = Team.objects.get(id=save_team.id)
-            request.session['game_id'] = team.gameinstance.id
-            return HttpResponseRedirect(reverse('payment success', args=(quest_type_id, short_name, competition_id, slug)))
         if formset.is_valid():
-            pass
+            for form in formset:
+                save_team = form.save(commit=False)
+                save_team.save()
+                competition.createGameInstance(save_team.id)
+                competition.save()
+                team = Team.objects.get(id=save_team.id)
+                request.session['game_id'] = team.gameinstance.id
+            return HttpResponseRedirect(reverse('payment success', args=(quest_type_id, short_name, competition_id, slug)))
     else:
         form_t = TeamForm()
         formset = formset_factory(TeamForm)
@@ -96,43 +95,6 @@ def quest_register_team(request, quest_type_id, short_name, competition_id, slug
     args['formset'] = formset
     args['quest_types'] = quest_types
     return render_to_response('quests/register_team.html', args, context_instance=RequestContext(request)) 
-
-def index(request):
-    # This class is used to make empty formset forms required
-    # See http://stackoverflow.com/questions/2406537/django-formsets-make-first-required/4951032#4951032
-    class RequiredFormSet(BaseFormSet):
-        def __init__(self, *args, **kwargs):
-            super(RequiredFormSet, self).__init__(*args, **kwargs)
-            for form in self.forms:
-                form.empty_permitted = False
-
-    TodoItemFormSet = formset_factory(TodoItemForm, max_num=10, formset=RequiredFormSet)
-
-    if request.method == 'POST': # If the form has been submitted...
-        todo_list_form = TodoListForm(request.POST) # A form bound to the POST data
-        # Create a formset from the submitted data
-        todo_item_formset = TodoItemFormSet(request.POST, request.FILES)
-        
-        if todo_list_form.is_valid() and todo_item_formset.is_valid():
-            todo_list = todo_list_form.save()
-            for form in todo_item_formset.forms:
-                todo_item = form.save(commit=False)
-                todo_item.list = todo_list
-                todo_item.save()
-
-            return HttpResponseRedirect('thanks') # Redirect to a 'success' page
-    else:
-        todo_list_form = TodoListForm()
-        todo_item_formset = TodoItemFormSet()
-    
-    # For CSRF protection
-    # See http://docs.djangoproject.com/en/dev/ref/contrib/csrf/ 
-    c = {'todo_list_form': todo_list_form,
-         'todo_item_formset': todo_item_formset,
-        }
-    c.update(csrf(request))
-    
-    return render_to_response('todo/index.html', c)
 
 # When the user replies to a question the response is checked here
 @twilio_view

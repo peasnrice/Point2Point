@@ -10,6 +10,20 @@
 
 <script>
 $(document).ready(function () {
+
+    var divCount = $("label:contains('Team Name')").length;
+    if (divCount == 1){
+      $( ".delete" ).hide();
+    }
+    else{
+      $( ".delete" ).show();
+    }
+  
+    $( ".team_numbers" ).remove();
+    $("label:contains('Team Name')").each(function(i, obj){
+      $(this).before("<div class=\"team_numbers\"><h2>Team " + ++i +"</h2></div>")
+    });
+
     // Code adapted from http://djangosnippets.org/snippets/1389/  
     function updateElementIndex(el, prefix, ndx) {
       var id_regex = new RegExp('(' + prefix + '-\\d+-)');
@@ -40,11 +54,11 @@ $(document).ready(function () {
             alert("You have to enter at least one todo item!");
         }
         $( ".team_numbers" ).remove();
-        $("div[id$=-name]").each(function(i, obj){
+        $("label:contains('Team Name')").each(function(i, obj){
           $(this).before("<div class=\"team_numbers\"><h2>Team " + ++i +"</h2></div>")
         });
 
-        var divCount = $("div[id$=-name]").length;
+        var divCount = $("label:contains('Team Name')").length;
         if (divCount == 1){
           $( ".delete" ).hide();
         }
@@ -83,11 +97,11 @@ $(document).ready(function () {
         }
 
         $( ".team_numbers" ).remove();
-        $("div[id$=-name]").each(function(i, obj){
+        $("label:contains('Team Name')").each(function(i, obj){
           $(this).before("<div class=\"team_numbers\"><h2>Team " + ++i +"</h2></div>")
         });
 
-        var divCount = $("div[id$=-name]").length;
+        var divCount = $("label:contains('Team Name')").length;
         if (divCount != 1){
           $( ".delete" ).show();
         }
@@ -101,21 +115,9 @@ $(document).ready(function () {
     $(".delete").click(function () {
         return deleteForm(this, "form");
     });
-
-    var divCount = $("div[id$=-name]").length;
-    if (divCount == 1){
-      $( ".delete" ).hide();
-    }
-    else{
-      $( ".delete" ).show();
-    }
-  
-    $( ".team_numbers" ).remove();
-      $("div[id$=-name]").each(function(i, obj){
-        $(this).before("<div class=\"team_numbers\"><h2>Team " + ++i +"</h2></div>")
-      });
 });
 </script>
+
 
 {% endblock %}
 
@@ -159,9 +161,11 @@ $(document).ready(function () {
     <form role ="form" action="" method="POST">
       <div class="form-group">{% csrf_token %}
       {{ formset.management_form }}
+
       {% for form in formset %}
+      <div class="team_numbers"></div>
       <div class="item">
-        {{ form|crispy }}
+        {% bootstrap_form form %}
 
         <p style=""><a id="remove" class="delete" href="#">Delete</a></p>
       </div>
