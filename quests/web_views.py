@@ -75,36 +75,22 @@ def quest_register_team(request, quest_type_id, short_name, competition_id, slug
 
     if request.method == 'POST':
         formset = TeamFormSet(data=request.POST or None)
-        form_t = TeamForm(data=request.POST or None)
         if formset.is_valid():
-            game_instance = GameInstance()
-            team_id_list = []
-            count = 0
+            gi_connector = GameInstanceConnector()
+            gi_connector.save()
             for form in formset:
                 save_team = form.save(commit=False)
                 save_team.save()
                 game_instance = competition.createGameInstance(save_team.id)
-                competition.save()
-                team_id_list.append(save_team.id)
-                count += 1
-            if count > 1:
-                gi_connector = GameInstanceConnector()
-                gi_connector.save()
-                for team_id in team_id_list:
-                    team = Team.objects.get(id=team_id)
-                    game_instance = team.gameinstance
-                    game_instance.game_instance_connector = gi_connector
-                    game_instance.save()
-            team = Team.objects.get(id=team_id_list[0])
-            request.session['game_id'] = team.gameinstance.id
+                game_instance.game_instance_connector = gi_connector
+                game_instance.save()
+            request.session['game_connector_id'] = gi_connector.id
             return HttpResponseRedirect(reverse('payment success', args=(quest_type_id, short_name, competition_id, slug)))
     else:
-        form_t = TeamForm()
         formset = formset_factory(TeamForm)
 
     args = {}
     args['competition'] = competition
-    args['form_t'] = form_t
     args['formset'] = formset
     args['quest_types'] = quest_types
     return render_to_response('quests/register_team.html', args, context_instance=RequestContext(request)) 

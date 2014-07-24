@@ -72,7 +72,8 @@ def strfdelta(tdelta, fmt):
 class GameInstanceConnector(models.Model):
     id = models.AutoField(primary_key=True)
     def __unicode__(self):
-        return str(self.id)
+        gi = GameInstance.objects.filter(game_instance_connector=self)[0]
+        return "id: " + str(self.id) + ", date: " + gi.date_created.strftime('%m/%d/%Y - %H:%M:%S')
 
 class GameInstance(models.Model):
     competition = models.ForeignKey('Competition')
@@ -190,7 +191,7 @@ class Team(models.Model):
     name = models.CharField(max_length=32)
     captain_name = models.CharField(max_length=32)
     phone_number = models.CharField(max_length=12)
-    email = models.EmailField(null=True, blank=True)
+    email = models.EmailField()
     has_paid = models.BooleanField(default=False)
     def addPlayer(self, phone_number_, name_, email_):
         plyr = Player(first_name = name_, phone_number = phone_number_, email = email_)
