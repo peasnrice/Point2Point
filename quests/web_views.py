@@ -5,7 +5,7 @@ from django.http import Http404
 from django.core.mail import send_mail
 from quests.models import Competition, Team, Player, GameInstance, QuestType, GameInstanceConnector
 from userprofile.models import ProfilePhoneNumber
-from quests.forms import PlayerForm, TeamForm, TeamFormset
+from quests.forms import TeamForm, BaseTeamFormSet
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from twilio.rest import TwilioRestClient
@@ -22,10 +22,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 stripe.api_key = STRIPE_SECRET_KEY
-
-def create_gameinstances_teams(request, quest_type_id, short_name, competition_id, slug):
-    """Create one or many game instances consisting of at least 1 team and optional players."""
-
 
 # Returns Home Page from url /quests/
 def quests(request):
@@ -56,14 +52,8 @@ def quest_list_type(request, quest_type_id, short_name):
 # Displays form page that allows teams to sign up
 # upon signing up twilio sends the user an sms message
 def quest_register_team(request, quest_type_id, short_name, competition_id, slug):
-    
-    class RequiredFormSet(BaseFormSet):
-        def __init__(self, *args, **kwargs):
-            super(RequiredFormSet, self).__init__(*args, **kwargs)
-            for form in self.forms:
-                form.empty_permitted = False
-    
-    TeamFormSet = formset_factory(TeamForm, formset=RequiredFormSet)
+    competition = Competition.objects.get(pk=competition_id)
+    TeamFormSet = formset_factory(TeamForm, formset=BaseTeamFormSet)
 
     competition = get_object_or_404(Competition, pk=competition_id)
     current_date = datetime.datetime.utcnow().replace(tzinfo=utc)
@@ -74,20 +64,21 @@ def quest_register_team(request, quest_type_id, short_name, competition_id, slug
         return render_to_response('quests/sorry.html', args, context_instance=RequestContext(request)) 
 
     if request.method == 'POST':
-        formset = TeamFormSet(data=request.POST or None)
+        formset = TeamFormSet(data=request.POST or None, competition=competition)
         if formset.is_valid():
             gi_connector = GameInstanceConnector()
             gi_connector.save()
             for form in formset:
                 save_team = form.save(commit=False)
+                save_team.competition = Competition.objects.get(pk=competition_id)
                 save_team.save()
                 game_instance = competition.createGameInstance(save_team.id)
                 game_instance.game_instance_connector = gi_connector
                 game_instance.save()
             request.session['game_connector_id'] = gi_connector.id
-            return HttpResponseRedirect(reverse('payment success', args=(quest_type_id, short_name, competition_id, slug)))
+            return HttpResponseRedirect(reverse('quest payment', args=(quest_type_id, short_name, competition_id, slug)))
     else:
-        formset = formset_factory(TeamForm)
+        formset = TeamFormSet(competition=competition)
 
     args = {}
     args['competition'] = competition

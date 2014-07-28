@@ -5,9 +5,32 @@
 
 {% block head %}
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.13.0/jquery.validate.min.js"></script>
 <script src="{% static "dist/js/jquery.dajax.core.js" %}" type="text/javascript" charset="UTF-8">></script>
 
 <script>
+jQuery.validator.addMethod("unique", function(value, element, params) {
+    var prefix = params;
+    var selector = jQuery.validator.format("[name$='-phone_number']", element.name, prefix);
+    var matches = new Array();
+    $(selector).each(function(index, item) {
+        if (value == $(item).val()) {
+            matches.push(item);
+        }
+    });
+
+    return matches.length == 0;
+}, "Value is not unique.");
+
+jQuery.validator.classRuleSettings.unique = {
+    unique: true
+};
+$("#registration_form").validate();
+
+$("#validate").click(function() {
+    $("#registration_form").valid();
+});
+
 $(document).ready(function () {
 
     var divCount = $("label:contains('Team Name')").length;
@@ -132,34 +155,18 @@ $(document).ready(function () {
 {% endblock %}
 
 {% block content %}
-<!--
 <div class="container">
   <div class="col-md-12">
     <div class="page-header">
       <h1>Register today, play when you want!</h1>
     </div>
-    <form action="" method="POST">
-      {% csrf_token %}
-      {% buttons %}
-      <button type="submit" class="btn btn-primary" value="Create Team">
-        Create Team
-      </button>
-      {% endbuttons %}
-    </form>
-  </div>
-</div>
---> 
-
-
-<div class="container">
-  <div class="col-md-12">
-    <div class="page-header">
-      <h1>Register today, play when you want!</h1>
-    </div>
-    <form role ="form" action="" method="POST">
+    <form id="registration_form" role="form" action="" method="POST">
       <div class="form-group">{% csrf_token %}
       {{ formset.management_form }}
 
+      {% if formset.non_form_errors %}
+        <div class="alert alert-danger" role="alert">{{ formset.non_form_errors }}</div>
+      {% endif %}
       {% for form in formset %}
       <div class="team_numbers"></div>
       <div class="item">
@@ -171,6 +178,7 @@ $(document).ready(function () {
       <p><a id="add" href="#">Add Team</a></p>
     <button type="submit" class="btn btn-primary">Submit</button>
     </form>
+    <button id="validate">Validate</button>
   </div>
 </div>
 {% endblock %}

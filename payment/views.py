@@ -1,26 +1,14 @@
-from Point2Point.settings import TWILIO_ACCOUNT_SID,TWILIO_AUTH_TOKEN,TWILIO_NUMBER, STRIPE_PUBLIC_KEY
+from Point2Point.settings import TWILIO_ACCOUNT_SID,TWILIO_AUTH_TOKEN,TWILIO_NUMBER, STRIPE_PUBLIC_KEY, STRIPE_SECRET_KEY
 from django.shortcuts import render, HttpResponseRedirect, render_to_response, RequestContext, get_object_or_404
 from quests.models import Competition, GameInstance, Team, QuestType
 from userprofile.models import ProfilePhoneNumber
 from twilio.rest import TwilioRestClient
 from django.core.mail import send_mail
+from django.core.context_processors import csrf
+from django.core.urlresolvers import reverse
+import stripe
 
-def request_quest_payment(request, quest_type_id, short_name, competition_id, slug):
-    competition = get_object_or_404(Competition, pk=competition_id)
-    game_connector_id = request.session['game_connector_id']
-    game_connector = GameInstance.objects.get(pk=game_connector_id)
-    quest_types = QuestType.objects.filter(front_page=True).order_by('priority')
-    args = {}
-    args['competition'] = competition
-    args['publishable'] = STRIPE_PUBLIC_KEY
-    args['quest_types'] = quest_types
-    request.session['game_id'] = team.gameinstance.id
-    return render_to_response('payment/payments.html', args, context_instance=RequestContext(request)) 
-
-# Create your views here.
-
-def payment_accepted(request, quest_type_id, short_name, competition_id, slug):
-    game_connector_id = request.session['game_connector_id']
+def send_confirmation(game_connector_id):
     game_connector = get_object_or_404(GameInstance, pk=game_connector_id)
     games = GameInstance.objects.filter(game_instance_connector=game_connector)
 
@@ -71,9 +59,56 @@ def payment_accepted(request, quest_type_id, short_name, competition_id, slug):
         body += team.name
         body += "!"
         to_email = team.email
-        send_mail(subject, body, from_email,[to_email], fail_silently=False)
-    
+        send_mail(subject, body, from_email,[to_email], fail_silently=False)    
+
+def payment(request, quest_type_id, short_name, competition_id, slug):
+    competition = get_object_or_404(Competition, pk=competition_id)
+    amount = int(competition.price)*100
+    # Set your secret key: remember to change this to your live secret key in production
+    # See your keys here https://dashboard.stripe.com/account
+    stripe.api_key = STRIPE_SECRET_KEY
+
+    # Get the credit card details submitted by the form
+    if request.method == 'POST':
+        token = request.POST.get('stripeToken')
+
+        # Create the charge on Stripe's servers - this will charge the user's card
+        try:
+            charge = stripe.Charge.create(
+                amount=amount, # amount in cents, again
+                currency="cad",
+                card=token,
+                description="payinguser@example.com"
+            )
+
+            game_connector_id = request.session['game_connector_id']
+            send_confirmation(game_connector_id)
+
+            return HttpResponseRedirect(reverse('payment success', args=(quest_type_id, short_name, competition_id, slug)))
+        except stripe.CardError, e:
+          # The card has been declined
+          pass
+
+
+    args = {}
+    args['publishable'] = STRIPE_PUBLIC_KEY
+    return render_to_response('payment/payments.html', args, context_instance=RequestContext(request)) 
+
+def request_quest_payment(request, quest_type_id, short_name, competition_id, slug):
+    competition = get_object_or_404(Competition, pk=competition_id)
+    game_connector_id = request.session['game_connector_id']
+    game_connector = GameInstance.objects.get(pk=game_connector_id)
     quest_types = QuestType.objects.filter(front_page=True).order_by('priority')
-    args ={}
+    args = {}
+    args['competition'] = competition
+    args['publishable'] = STRIPE_PUBLIC_KEY
     args['quest_types'] = quest_types
+    args.update(csrf(request))
+    request.session['game_id'] = team.gameinstance.id
+    return render_to_response('payment/payments.html', args, context_instance=RequestContext(request)) 
+
+# Create your views here.
+
+def payment_accepted(request, quest_type_id, short_name, competition_id, slug):
+    args ={}
     return render_to_response('payment/thank_you.html', args, context_instance=RequestContext(request)) 

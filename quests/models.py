@@ -187,6 +187,7 @@ class GameStage(models.Model):
         return "COMP: " + str(self.gameinstance.competition.name) + "- GAME INST: " + str(self.gameinstance.id) + " - STAGE: " + str(self.stage) + " - TIME STAMP: " + str(self.time_stamp)
 
 class Team(models.Model):
+    competition = models.ForeignKey('Competition', blank=True, null=True)
     gameinstance = models.ForeignKey('GameInstance', blank=True, null=True)
     name = models.CharField(max_length=32)
     captain_name = models.CharField(max_length=32)

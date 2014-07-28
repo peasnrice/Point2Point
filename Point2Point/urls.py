@@ -18,5 +18,6 @@ urlpatterns = patterns('',
    	url(r'^accounts/', include('allauth.urls')),    
     url(r'^profile/', include('userprofile.urls')),
     url(r'^howtoplay/', include('howtoplay.urls')),  
+    url(r'^payment/', include('payment.urls')),
     url(dajaxice_config.dajaxice_url, include('dajaxice.urls')),  
 )
