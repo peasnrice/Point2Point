@@ -67,7 +67,12 @@ def send_confirmation(game_connector_id):
 def payment(request, quest_type_id, short_name, competition_id, slug, game_connector_id):
     game_connector = get_object_or_404(GameInstanceConnector, pk=game_connector_id)
     competition = get_object_or_404(Competition, pk=competition_id)
-    amount = int(competition.price)*100
+
+    number_of_teams = GameInstance.objects.filter(game_instance_connector = game_connector).count()
+
+    amount = int(competition.price)*number_of_teams
+    stripe_amount = amount*100
+
     # Set your secret key: remember to change this to your live secret key in production
     # See your keys here https://dashboard.stripe.com/account
     stripe.api_key = STRIPE_SECRET_KEY
@@ -79,7 +84,7 @@ def payment(request, quest_type_id, short_name, competition_id, slug, game_conne
         # Create the charge on Stripe's servers - this will charge the user's card
         try:
             charge = stripe.Charge.create(
-                amount=amount, # amount in cents, again
+                amount=stripe_amount, # amount in cents, again
                 currency="cad",
                 card=token,
                 description="payinguser@example.com"
@@ -96,6 +101,7 @@ def payment(request, quest_type_id, short_name, competition_id, slug, game_conne
     args = {}
     args['publishable'] = STRIPE_PUBLIC_KEY
     args['has_paid'] = game_connector.has_paid
+    args['amount'] = amount
     return render_to_response('payment/payments.html', args, context_instance=RequestContext(request)) 
 
 def request_quest_payment(request, quest_type_id, short_name, competition_id, slug):
