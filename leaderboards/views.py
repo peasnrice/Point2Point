@@ -4,6 +4,7 @@ from time import strftime
 import datetime, timedelta
 from django.utils.timezone import utc
 
+
 class LeaderboardGameData:
     def __init__(self, competition_number_, position_, name_, time_bp_, time_ap_, 
                  average_time_, penalties_):

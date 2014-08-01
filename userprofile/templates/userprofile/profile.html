@@ -16,6 +16,12 @@ $(document).ready(function(){
     $("#pin_form_div").hide();  
     $("#id_phone_number").focus();
   });
+
+  $('.ConfirmDelete').click(function() {
+      var question = $(this).attr('title');
+      if (question == '') question = 'Delete this record?';
+      return confirm(question);
+  });
 });
 
 function stopRKey(evt) { 
@@ -62,6 +68,9 @@ function clear_fields(){
 function are_you_sure(number){
     Dajaxice.userprofile.delete_number(Dajax.process,{'number':number});
 }
+
+jQuery(document).ready(function($) {
+});
 
 </script>
 {% endblock %}

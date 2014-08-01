@@ -7,6 +7,7 @@ from django.db import models
 from django.template.defaultfilters import slugify
 import timedelta, datetime
 from django.utils.timezone import utc
+import string, random
 
 class Competition(models.Model):
     quest_type = models.ForeignKey('QuestType')
@@ -71,6 +72,7 @@ def strfdelta(tdelta, fmt):
 
 class GameInstanceConnector(models.Model):
     id = models.AutoField(primary_key=True)
+    has_paid = models.BooleanField(default=False)
     def __unicode__(self):
         gi = GameInstance.objects.filter(game_instance_connector=self)[0]
         return "id: " + str(self.id) + ", date: " + gi.date_created.strftime('%m/%d/%Y - %H:%M:%S')
@@ -194,6 +196,7 @@ class Team(models.Model):
     phone_number = models.CharField(max_length=12)
     email = models.EmailField()
     has_paid = models.BooleanField(default=False)
+    organiser = models.BooleanField(default=False)
     def addPlayer(self, phone_number_, name_, email_):
         plyr = Player(first_name = name_, phone_number = phone_number_, email = email_)
         plyr.save()

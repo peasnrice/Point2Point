@@ -27,7 +27,7 @@ class TeamForm(ModelForm):
                     if t.has_paid == True:
                         raise forms.ValidationError('Sorry, this number is already participating in an active game. Please log in for more control over this quest')
                     else:
-                        raise forms.ValidationError('Sorry, this number is already registred to another game') 
+                        raise forms.ValidationError('Sorry, you\'ve registered but haven\'t paid yet. To return to the payment page, please check your email for your unique payment url') 
         #Check for trusted phone numbers in promo code list
         trusted_numbers = PromoCode.objects.filter(valid=True)
         number_found = False

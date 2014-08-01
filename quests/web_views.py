@@ -68,15 +68,34 @@ def quest_register_team(request, quest_type_id, short_name, competition_id, slug
         if formset.is_valid():
             gi_connector = GameInstanceConnector()
             gi_connector.save()
-            for form in formset:
+            organiser_email = ""
+            for i,form in enumerate(formset):
                 save_team = form.save(commit=False)
                 save_team.competition = Competition.objects.get(pk=competition_id)
+                if i == 0:
+                    save_team.organiser = True
+                    organiser_email = save_team.email
                 save_team.save()
                 game_instance = competition.createGameInstance(save_team.id)
                 game_instance.game_instance_connector = gi_connector
                 game_instance.save()
             request.session['game_connector_id'] = gi_connector.id
-            return HttpResponseRedirect(reverse('quest payment', args=(quest_type_id, short_name, competition_id, slug)))
+            game_connector_id = gi_connector.id
+
+            subject = "Thanks for registering!"
+            from_email = 'andy@p2pquests.com'
+            body = "Awesome, You have registered for the quest " + competition.name + ".\n"
+            body += "Your team(s) have been reserved and we are just awaiting payment."
+            body += "We will keep your team names and information for 24 hours before we remove them from our system.\n"
+            body += "If you happened to leave the payment page and want to get back to it here is a handy url.\n"
+            body += "http://localhost:8110/quests/" + str(quest_type_id) + "/" + short_name + "/" + str(competition_id) + "/" + slug + "/" + str(game_connector_id) + "/payment/\n\n"
+            body += "Happy questing\n\n"
+            body += "~ the p2pquest team"
+
+            to_email = organiser_email
+            send_mail(subject, body, from_email,[to_email], fail_silently=False) 
+
+            return HttpResponseRedirect(reverse('quest payment', args=(quest_type_id, short_name, competition_id, slug, game_connector_id)))
     else:
         formset = TeamFormSet(competition=competition)
 

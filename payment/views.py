@@ -1,6 +1,6 @@
 from Point2Point.settings import TWILIO_ACCOUNT_SID,TWILIO_AUTH_TOKEN,TWILIO_NUMBER, STRIPE_PUBLIC_KEY, STRIPE_SECRET_KEY
 from django.shortcuts import render, HttpResponseRedirect, render_to_response, RequestContext, get_object_or_404
-from quests.models import Competition, GameInstance, Team, QuestType
+from quests.models import Competition, GameInstance, Team, QuestType, GameInstanceConnector
 from userprofile.models import ProfilePhoneNumber
 from twilio.rest import TwilioRestClient
 from django.core.mail import send_mail
@@ -9,11 +9,14 @@ from django.core.urlresolvers import reverse
 import stripe
 
 def send_confirmation(game_connector_id):
-    game_connector = get_object_or_404(GameInstance, pk=game_connector_id)
+    game_connector = get_object_or_404(GameInstanceConnector, pk=game_connector_id)
     games = GameInstance.objects.filter(game_instance_connector=game_connector)
 
     for game in games:
         team = Team.objects.get(gameinstance=game.id)
+
+        game_connector.has_paid = True
+        game_connector.save()
 
         team.has_paid=True
         team.save()
@@ -61,7 +64,8 @@ def send_confirmation(game_connector_id):
         to_email = team.email
         send_mail(subject, body, from_email,[to_email], fail_silently=False)    
 
-def payment(request, quest_type_id, short_name, competition_id, slug):
+def payment(request, quest_type_id, short_name, competition_id, slug, game_connector_id):
+    game_connector = get_object_or_404(GameInstanceConnector, pk=game_connector_id)
     competition = get_object_or_404(Competition, pk=competition_id)
     amount = int(competition.price)*100
     # Set your secret key: remember to change this to your live secret key in production
@@ -81,7 +85,6 @@ def payment(request, quest_type_id, short_name, competition_id, slug):
                 description="payinguser@example.com"
             )
 
-            game_connector_id = request.session['game_connector_id']
             send_confirmation(game_connector_id)
 
             return HttpResponseRedirect(reverse('payment success', args=(quest_type_id, short_name, competition_id, slug)))
@@ -92,6 +95,7 @@ def payment(request, quest_type_id, short_name, competition_id, slug):
 
     args = {}
     args['publishable'] = STRIPE_PUBLIC_KEY
+    args['has_paid'] = game_connector.has_paid
     return render_to_response('payment/payments.html', args, context_instance=RequestContext(request)) 
 
 def request_quest_payment(request, quest_type_id, short_name, competition_id, slug):

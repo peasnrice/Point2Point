@@ -50,6 +50,8 @@ INSTALLED_APPS = (
     #'allauth.socialaccount.providers.facebook',    
 )
 
+
+
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

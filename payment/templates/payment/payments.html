@@ -58,56 +58,61 @@
 {% block content %}
 <div class="container">
   <div class='row'>
-    <div class='col-md-4 .col-md-offset-4'>
-      <form action="" method="POST" id="payment-form">
-        {% csrf_token %}
-        <div class="form-group">
-          <span class="payment-errors"></span>
+    {% if has_paid == True %}
+      <h2>You've already paid!</h2>
+      <p>...and if you haven't, this can be our little secret.</p>
+    {% else %}
+      <div class='col-md-4 .col-md-offset-4'>
+        <form action="" method="POST" id="payment-form">
+          {% csrf_token %}
+          <div class="form-group">
+            <span class="payment-errors"></span>
 
-          <div class="form-row">
-            <label>
-              <span>Card Number</span>
-              <input class="form-control" type="text" size="20" data-stripe="number"/>
-            </label>
-          </div>
+            <div class="form-row">
+              <label>
+                <span>Card Number</span>
+                <input class="form-control" type="text" size="20" data-stripe="number"/>
+              </label>
+            </div>
 
-          <div class="form-row">
-            <label>
-              <span>CVC</span>
-              <input class="form-control" type="text" size="4" data-stripe="cvc"/>
-            </label>
-          </div>
+            <div class="form-row">
+              <label>
+                <span>CVC</span>
+                <input class="form-control" type="text" size="4" data-stripe="cvc"/>
+              </label>
+            </div>
 
-          <div class="form-row">
-            <label>
-              <span>Expiration Date</span>
-              <select class="form-control" data-stripe="exp-month">
-                {% for i in "xxxxxxxxxxxx" %}
-                  <option value={{forloop.counter}}>{{forloop.counter}}</option>
-                {% endfor %}
-              </select>
-            </label>
-            <label>
-              <select class="form-control" data-stripe="exp-year">
-                <option value=2014>2014</option>
-                <option value=2015>2015</option>
-                <option value=2016>2016</option>
-                <option value=2017>2017</option>
-                <option value=2018>2018</option>
-                <option value=2019>2019</option>
-                <option value=2020>2020</option>
-                <option value=2021>2021</option>
-                <option value=2022>2022</option>
-                <option value=2023>2023</option>
-                <option value=2024>2024</option>
-                <option value=2025>2025</option>
-              </select>
-            </label>
+            <div class="form-row">
+              <label>
+                <span>Expiration Date</span>
+                <select class="form-control" data-stripe="exp-month">
+                  {% for i in "xxxxxxxxxxxx" %}
+                    <option value={{forloop.counter}}>{{forloop.counter}}</option>
+                  {% endfor %}
+                </select>
+              </label>
+              <label>
+                <select class="form-control" data-stripe="exp-year">
+                  <option value=2014>2014</option>
+                  <option value=2015>2015</option>
+                  <option value=2016>2016</option>
+                  <option value=2017>2017</option>
+                  <option value=2018>2018</option>
+                  <option value=2019>2019</option>
+                  <option value=2020>2020</option>
+                  <option value=2021>2021</option>
+                  <option value=2022>2022</option>
+                  <option value=2023>2023</option>
+                  <option value=2024>2024</option>
+                  <option value=2025>2025</option>
+                </select>
+              </label>
+            </div>
+            <button class="btn btn-primary" type="submit">Submit Payment</button>
           </div>
-          <button class="btn btn-primary" type="submit">Submit Payment</button>
-        </div>
-      </form>
-    </div>
+        </form>
+      </div>
+    {% endif %}
   </div>
 </div>
 {% endblock %}
