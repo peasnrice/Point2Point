@@ -9,5 +9,5 @@ urlpatterns = patterns('',
     url(r'^(?P<quest_type_id>\d+)/(?P<short_name>[-\w\d]+)/(?P<competition_id>\d+)/(?P<slug>[-\w\d]+)/(?P<game_connector_id>[-\w\d]+)/payment/$', payment_views.payment, name='quest payment'),
     url(r'^(?P<quest_type_id>\d+)/(?P<short_name>[-\w\d]+)/(?P<competition_id>\d+)/(?P<slug>[-\w\d]+)/success/$', payment_views.payment_accepted, name='payment success'),
     url(r'^verify_sms/$', web_views.verify_sms, name='verify_sms'),
-    #url(r'^leaderboards/$', web_views.leaderboards, name='leaderboards'),
+    url(r'^deregister/(?P<game_connector_id>\d+)/$', web_views.quest_deregister_team, name='deregister'),
 )

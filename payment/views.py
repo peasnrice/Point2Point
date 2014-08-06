@@ -102,6 +102,7 @@ def payment(request, quest_type_id, short_name, competition_id, slug, game_conne
     args['publishable'] = STRIPE_PUBLIC_KEY
     args['has_paid'] = game_connector.has_paid
     args['amount'] = amount
+    args['game_connector_id'] = game_connector_id
     return render_to_response('payment/payments.html', args, context_instance=RequestContext(request)) 
 
 def request_quest_payment(request, quest_type_id, short_name, competition_id, slug):
@@ -116,8 +117,6 @@ def request_quest_payment(request, quest_type_id, short_name, competition_id, sl
     args.update(csrf(request))
     request.session['game_id'] = team.gameinstance.id
     return render_to_response('payment/payments.html', args, context_instance=RequestContext(request)) 
-
-# Create your views here.
 
 def payment_accepted(request, quest_type_id, short_name, competition_id, slug):
     args ={}

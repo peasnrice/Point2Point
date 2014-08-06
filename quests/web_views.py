@@ -25,6 +25,7 @@ stripe.api_key = STRIPE_SECRET_KEY
 
 # Returns Home Page from url /quests/
 def quests(request):
+    print cool
     quest_types = QuestType.objects.filter(front_page=True).order_by('priority')
     args = {}
     args['quest_types'] = quest_types
@@ -52,7 +53,6 @@ def quest_list_type(request, quest_type_id, short_name):
 # Displays form page that allows teams to sign up
 # upon signing up twilio sends the user an sms message
 def quest_register_team(request, quest_type_id, short_name, competition_id, slug):
-    competition = Competition.objects.get(pk=competition_id)
     TeamFormSet = formset_factory(TeamForm, formset=BaseTeamFormSet)
 
     competition = get_object_or_404(Competition, pk=competition_id)
@@ -104,6 +104,14 @@ def quest_register_team(request, quest_type_id, short_name, competition_id, slug
     args['formset'] = formset
     args['quest_types'] = quest_types
     return render_to_response('quests/register_team.html', args, context_instance=RequestContext(request)) 
+
+def quest_deregister_team(request, game_connector_id):
+    game_connector = get_object_or_404(GameInstanceConnector, pk=game_connector_id)
+    if game_connector.has_paid == False:
+        game_connector.delete()
+    else:
+        raise "Why are you trying to delete a game instance that has already been paid for? Get outta here!"
+    return render_to_response('quests/register_team.html', context_instance=RequestContext(request)) 
 
 # When the user replies to a question the response is checked here
 @twilio_view

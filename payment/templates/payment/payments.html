@@ -1,6 +1,7 @@
 {% extends "default_base.html" %}
 
 {% load bootstrap3 %}
+{% load static %}
 
 {% block head %}
   <!-- jQuery is used only for this example; it isn't required to use Stripe -->
@@ -112,6 +113,32 @@
             <button class="btn btn-primary" type="submit">Submit Payment of ${{amount}}.00</button>
           </div>
         </form>
+
+        <!-- Button trigger modal -->
+        <button class="btn btn-danger" data-toggle="modal" data-target="#myModal">
+          Cancel Payment & Deregister Team(s)
+        </button>
+
+        <!-- Modal -->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="myModalLabel">Are you sure you want to deregister your teams?</h4>
+              </div>
+              <div class="modal-body">
+                <p>This will delete your team information from our records.</p>
+                <p>It will also free up your phone number, allowing you to sign up for another quest</p>
+              </div>
+              <div class="modal-footer">
+                <a type="button" class="btn btn-danger" href="{% url 'deregister' game_connector_id %}">Yes, I'm sure</a>
+                <button type="button" class="btn btn-success" data-dismiss="modal">No, take me back</button>
+              </div>
+            </div>
+          </div>
+        </div>      
+
       </div>
     {% endif %}
   </div>
